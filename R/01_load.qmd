@@ -1,0 +1,20 @@
+### Libraries:
+
+```{r}
+#| message: false
+library("tidyverse")
+```
+
+### Load files:
+
+```{r}
+feature_data <- read_csv("../data/GSE27272Norm_featureData.csv")
+
+pheno_data <- read_csv("../data/GSE27272Norm_phenoData.csv")
+
+norm_exprs <- read_csv("../data/GSE27272Norm_exprs.csv")
+
+feature_data |> sample_n(20)
+pheno_data |> sample_n(20)
+norm_exprs |> sample_n(20)
+```
