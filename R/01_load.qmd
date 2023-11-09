@@ -1,7 +1,13 @@
+---
+title: "some_title"
+format: html
+editor: source
+author: authors
+---
 ### Source functions
 
 ```{r}
-source(file = "R/99_project_functions.R")
+# some source code
 ```
 
 ### Libraries:

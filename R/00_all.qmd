@@ -1,5 +1,11 @@
-source(file = "R/01_load.qmd")
-source(file = "R/02_clean.qmd")
-source(file = "R/03_describe.qmd")
-source(file = "R/04_augment.qmd")
-source(file = "R/05_analysis_1.qmd")
+---
+title: "some_title"
+format: html
+editor: source
+author: authors
+---
+{{< include 01_load.qmd >}}
+{{< include 02_clean.qmd >}}
+{{< include 03_describe.qmd >}}
+{{< include 04_augment.qmd >}}
+{{< include 05_analysis_1.qmd >}}
