@@ -1,1 +1,5 @@
 source(file = "R/01_load.qmd")
+source(file = "R/02_clean.qmd")
+source(file = "R/03_describe.qmd")
+source(file = "R/04_augment.qmd")
+source(file = "R/05_analysis_1.qmd")

@@ -1,3 +1,9 @@
+### Source functions
+
+```{r}
+source(file = "R/99_project_functions.R")
+```
+
 ### Libraries:
 
 ```{r}
