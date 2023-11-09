@@ -30,3 +30,17 @@ feature_data |> sample_n(20)
 pheno_data |> sample_n(20)
 norm_exprs |> sample_n(20)
 ```
+### Write files
+
+We should write a tsv file to our data folder containing the data frames that have been loaded in. To be improved...
+```{r}
+write_tsv(x = feature_data,
+          file = "data/01_feature_data.tsv")
+
+write_tsv(x = pheno_data,
+          file = "data/01_pheno_data.tsv")
+
+write_tsv(x = norm_exprs,
+          file = "data/01_norm_exprs.tsv")
+```
+
