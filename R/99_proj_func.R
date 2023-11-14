@@ -20,9 +20,10 @@ download_dataset <- function(raw_dir) {
   unzip(str_c(raw_dir, "raw_data.zip"), exdir=raw_dir)
 }
 
-read_tibble <- function(raw_dir, file_name) {
+read_table <- function(raw_dir, file_name) {
 
-  read_data <- as_tibble(read.table(str_c(raw_dir, file_name, ".txt"),sep="\t", header=TRUE))
+  read_data <- read.table(str_c(raw_dir, file_name, ".txt"),sep="\t", header=TRUE)
+  #read_data <- as_tibble(read_data)
   return(read_data)
   
 }
