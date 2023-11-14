@@ -40,7 +40,17 @@ norm_exprs |> sample_n(5)
 
 ```{r}
 clean_pheno_data <- pheno_data |>
-  rename("gene_id" = "geo_accession") |>
+  rename("sample_id" = "geo_accession") |>
   rename("Mother_age_years" = "age..years..ch1","apgar_score" = "apgar.score..5s..ch1", "cord_blood_cotinine_ng_ml" = "cord.blood.cotinine..ng.ml..ch1", "gestational_age_weeks" = "gestational.age..weeks..ch1", "maternal_blood_cotinine_ng_ml" ="maternal.blood.cotinine..ng.ml..ch1", "maternal_bmi" = "maternal.bmi.ch1", "smoking_status" = "smoking.status.ch1","newborn_weight_g"="newborn.weight..g..ch1") |>
-  select(gene_id, "Mother_age_years", apgar_score,"cord_blood_cotinine_ng_ml","gestational_age_weeks","maternal_blood_cotinine_ng_ml",maternal_bmi,smoking_status,newborn_weight_g,sex, description)
+  select("sample_id",
+         "Mother_age_years",
+         "apgar_score",
+         "cord_blood_cotinine_ng_ml",
+         "gestational_age_weeks",
+         "maternal_blood_cotinine_ng_ml",
+         "maternal_bmi",
+         "smoking_status",
+         "newborn_weight_g",
+         "sex",
+         "description")
 ```
