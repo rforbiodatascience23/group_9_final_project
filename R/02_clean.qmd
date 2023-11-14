@@ -16,15 +16,17 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 library("tidyverse")
+library(vroom)
 ```
 
 ### Clean
 
 ```{r}
 
-feature_data <- vroom::vroom("../data/01_feature_data.tsv.gz", delim = "\t")
-pheno_data <- vroom::vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
-norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
+pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
+norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+ncbi_pheno_data2 <- vroom("../data/01_ncbi_pheno_data.tsv.gz", delim = "\t")
 
 ```
 
@@ -33,9 +35,6 @@ norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 feature_data |> sample_n(5)
 pheno_data |> sample_n(5)
 norm_exprs |> sample_n(5)
-
-```
-
-```{r}
+ncbi_pheno_data2 |> sample(5)
 
 ```
