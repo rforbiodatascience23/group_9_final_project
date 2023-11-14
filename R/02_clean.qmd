@@ -26,7 +26,7 @@ library(vroom)
 feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
 pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
 norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
-ncbi_pheno_data2 <- vroom("../data/01_ncbi_pheno_data.tsv.gz", delim = "\t")
+ncbi_pheno_data <- vroom("../data/01_ncbi_pheno_data.tsv.gz", delim = "\t")
 
 ```
 
