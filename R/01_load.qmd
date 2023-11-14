@@ -60,11 +60,11 @@ norm_exprs <- norm_exprs |>
   relocate(gene_id)
 
 write_tsv(x = as_tibble(feature_data),
-          file = "../data/01_feature_data.tsv")
+          file = "../data/01_feature_data.tsv.gz")
 
 write_tsv(x = as_tibble(pheno_data),
-          file = "../data/01_pheno_data.tsv")
+          file = "../data/01_pheno_data.tsv.gz")
 
 write_tsv(x = as_tibble(norm_exprs),
-          file = "../data/01_norm_exprs.tsv")
+          file = "../data/01_norm_exprs.tsv.gz")
 ```
