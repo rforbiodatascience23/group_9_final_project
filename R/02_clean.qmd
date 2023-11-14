@@ -54,3 +54,9 @@ clean_pheno_data <- pheno_data |>
          "sex",
          "description")
 ```
+
+## Raw phenotype extraction from NCBI (Masha and Oliver)
+
+```{r}
+
+```
