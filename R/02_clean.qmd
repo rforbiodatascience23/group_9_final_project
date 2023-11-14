@@ -1,5 +1,29 @@
+---
+title: "Clean data"
+format: html
+editor: source
+author: authors
+---
+
 ### Source functions
 
 ```{r}
-# some source code
+source("../R/99_proj_func.R")
+```
+
+### Libraries:
+
+```{r}
+#| message: false
+library("tidyverse")
+```
+
+### Clean
+
+```{r}
+
+feature_data <- vroom::vroom("../data/01_feature_data.tsv", delim = "/t")
+pheno_data <- vroom::vroom("../data/01_pheno_data.tsv", delim = "/t")
+norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv", delim = "/t")
+
 ```
