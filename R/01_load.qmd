@@ -18,6 +18,7 @@ source("../R/99_proj_func.R")
 library("tidyverse")
 library(httr)
 library(jsonlite)
+library(dplyr)
 ```
 
 ### Generate data directories
@@ -39,9 +40,9 @@ file_feature_data <- "GSE27272Norm_featureData"
 file_pheno_data <- "GSE27272Norm_phenoData"
 file_norm_exprs <- "GSE27272Norm_exprs"
 
-feature_data <- read_tibble(raw_dir, file_feature_data)
-pheno_data <- read_tibble(raw_dir, file_pheno_data)
-norm_exprs <- read_tibble(raw_dir, file_norm_exprs)
+feature_data <- read_table(raw_dir, file_feature_data)
+pheno_data <- read_table(raw_dir, file_pheno_data)
+norm_exprs <- read_table(raw_dir, file_norm_exprs)
 
 feature_data |> sample_n(5)
 pheno_data |> sample_n(5)
@@ -53,12 +54,17 @@ norm_exprs |> sample_n(5)
 We should write a tsv file to our data folder containing the data frames that have been loaded in. To be improved...
 
 ```{r}
-write_tsv(x = feature_data,
+
+norm_exprs <- norm_exprs |> 
+  mutate(gene_id = rownames(norm_exprs)) |> 
+  relocate(gene_id)
+
+write_tsv(x = as_tibble(feature_data),
           file = "../data/01_feature_data.tsv")
 
-write_tsv(x = pheno_data,
+write_tsv(x = as_tibble(pheno_data),
           file = "../data/01_pheno_data.tsv")
 
-write_tsv(x = norm_exprs,
+write_tsv(x = as_tibble(norm_exprs),
           file = "../data/01_norm_exprs.tsv")
 ```

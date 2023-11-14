@@ -22,8 +22,20 @@ library("tidyverse")
 
 ```{r}
 
-feature_data <- vroom::vroom("../data/01_feature_data.tsv", delim = "/t")
-pheno_data <- vroom::vroom("../data/01_pheno_data.tsv", delim = "/t")
-norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv", delim = "/t")
+feature_data <- vroom::vroom("../data/01_feature_data.tsv", delim = "\t")
+pheno_data <- vroom::vroom("../data/01_pheno_data.tsv", delim = "\t")
+norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv", delim = "\t")
+
+```
+
+```{r}
+
+feature_data |> sample_n(5)
+pheno_data |> sample_n(5)
+norm_exprs |> sample_n(5)
+
+```
+
+```{r}
 
 ```
