@@ -19,6 +19,8 @@ library("tidyverse")
 library(httr)
 library(jsonlite)
 library(dplyr)
+library(R.utils)
+library(illuminaio)
 ```
 
 ### Generate data directories
@@ -36,6 +38,7 @@ make_dir("../data")
 raw_dir <- "../_raw/"
 download_dataset_kaggle(raw_dir)
 download_dataset_ncbi(raw_dir)
+download_data_annotation_ncbi(raw_dir)
 
 file_feature_data <- "GSE27272Norm_featureData"
 file_pheno_data <- "GSE27272Norm_phenoData"

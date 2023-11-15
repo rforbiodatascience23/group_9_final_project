@@ -28,6 +28,9 @@ pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
 norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 
 ncbi_data <- read.table("../data/01_ncbi_pheno_data.txt", header=FALSE, fill = TRUE)
+
+ncbi_annot_probes <- read.table("../data/01_ncbi_annot_probes.txt")
+ncbi_annot_control <- read.table("../data/01_ncbi_annot_controls.txt")
 ```
 
 ```{r}
@@ -85,7 +88,10 @@ ncbi_exp <- ncbi_data |>
   mutate_all(as.numeric)
 
 ncbi_norm_exp <- as.tibble(quantile_normalisation(ncbi_exp))
-colnames(ncbi_norm_exp) <- ncbi_data[88, 2:184]
+
+colnames(ncbi_norm_exp) <- ncbi_data |> 
+  slice(88) |> 
+  select(2:184)
 
 rownames <- ncbi_data |> 
   slice(89:24615) |> 
@@ -99,6 +105,5 @@ ncbi_norm_exp <- ncbi_norm_exp |>
 ```
 
 ```{r}
-
 
 ```
