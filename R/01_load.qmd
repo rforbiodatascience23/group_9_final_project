@@ -73,6 +73,7 @@ write_tsv(x = as_tibble(pheno_data),
 write_tsv(x = as_tibble(norm_exprs),
           file = "../data/01_norm_exprs.tsv.gz")
 
-write_tsv(x = as_tibble(ncbi_pheno_data),
-          file = "../data/01_ncbi_pheno_data.tsv.gz")
+write.table(ncbi_pheno_data,
+            file = "../data/01_ncbi_pheno_data.txt",
+            row.names = FALSE, col.names = FALSE)
 ```
