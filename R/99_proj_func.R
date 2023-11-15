@@ -13,7 +13,6 @@ download_dataset <- function(raw_dir, rcall, file_name) {
 
 download_dataset_ncbi <- function(raw_dir) {
   
-  raw_dir <- "../_raw/"
   file_ncbi_name <- "raw_ncbi_data.txt.gz"
   
   if (file.exists(str_c(raw_dir, file_ncbi_name)))
@@ -27,6 +26,16 @@ download_dataset_ncbi <- function(raw_dir) {
   
 }
 
+download_data_annotation_ncbi <- function(raw_dir) {
+  
+  anotation_file_name <- "raw_annotation.bgx.gz"
+  file_path <- str_c(raw_dir, anotation_file_name)
+  
+  url_ncbi <- "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GPL6883&format=file&file=GPL6883%5FHumanRef%2D8%5FV3%5F0%5FR0%5F11282963%5FA%2Ebgx%2Egz"
+  rcall <- httr::GET(url_ncbi)
+  download.file(rcall$url, str_c(raw_dir, anotation_file_name))
+  
+}
 
 download_dataset_kaggle <- function(raw_dir) {
 
@@ -61,6 +70,13 @@ read_unstructured_ncbi_table <- function(file_path) {
   table <- read.table(file_path, header=FALSE, fill = TRUE, col.names = paste0("col_",seq_len(184)))
   return(table) 
     
+}
+
+read_bgx_file <- function(raw_dir, file_name) {
+  
+  outputFilePath <- gunzip(str_c(raw_dir, file_name), remove=FALSE, temporary=TRUE)
+  return (readBGX(outputFilePath))
+  
 }
 
 quantile_normalisation <- function(df){
