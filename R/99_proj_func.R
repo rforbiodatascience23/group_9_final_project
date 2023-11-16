@@ -74,6 +74,7 @@ read_unstructured_ncbi_table <- function(file_path) {
 
 read_bgx_file <- function(raw_dir, file_name) {
   
+  tmp_dir <- tempdir()
   outputFilePath <- gunzip(str_c(raw_dir, file_name), remove=FALSE, temporary=TRUE)
   return (readBGX(outputFilePath))
   
