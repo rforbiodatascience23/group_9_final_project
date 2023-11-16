@@ -17,15 +17,18 @@ library("ggrepel")
 #| eval: false
 source("../R/99_proj_func.R")
 
-feature_data <- vroom::vroom("../data/01_feature_data.tsv", delim = "\t")
-pheno_data <- vroom::vroom("../data/01_pheno_data.tsv", delim = "\t")
-norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv", delim = "\t")
+feature_data <- vroom::vroom("../data/01_feature_data.tsv.gz", delim = "\t")
+pheno_data <- vroom::vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
+norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 ```
 
 ### wrangling fix exprs:
 
 ```{r}
-wrangled_norm_exprs <- norm_exprs |> pivot_longer(cols= -1) |> pivot_wider(names_from = "gene_id",values_from = "value") |>
+wrangled_norm_exprs <- norm_exprs |> 
+  pivot_longer(cols= -1) |> 
+  pivot_wider(names_from = "gene_id",
+              values_from = "value") |>
   rename("gene_id" = "name")
 ```
 
@@ -35,8 +38,28 @@ wrangled_norm_exprs <- norm_exprs |> pivot_longer(cols= -1) |> pivot_wider(names
 
 clean_pheno_data <- pheno_data |>
   rename("gene_id" = geo_accession) |>
-  rename("Mother_age_years" = age..years..ch1,"apgar_score" = apgar.score..5s..ch1, "cord_blood_cotinine_ng_ml" = cord.blood.cotinine..ng.ml..ch1, "gestational_age_weeks" = gestational.age..weeks..ch1, "maternal_blood_cotinine_ng_ml" = maternal.blood.cotinine..ng.ml..ch1, "maternal_bmi" = maternal.bmi.ch1, "smoking_status" = smoking.status.ch1,"newborn_weight_g"= newborn.weight..g..ch1,"individual" = individual.ch1,"placental_weight_g" = placental.weight..g..ch1) |>
-  select(gene_id, "Mother_age_years", "apgar_score","cord_blood_cotinine_ng_ml","gestational_age_weeks","maternal_blood_cotinine_ng_ml","maternal_bmi","smoking_status","newborn_weight_g","sex","individual", "placental_weight_g")
+  rename("Mother_age_years" = age..years..ch1,
+         "apgar_score" = apgar.score..5s..ch1, 
+         "cord_blood_cotinine_ng_ml" = cord.blood.cotinine..ng.ml..ch1, 
+         "gestational_age_weeks" = gestational.age..weeks..ch1, 
+         "maternal_blood_cotinine_ng_ml" = maternal.blood.cotinine..ng.ml..ch1, 
+         "maternal_bmi" = maternal.bmi.ch1, 
+         "smoking_status" = smoking.status.ch1,
+         "newborn_weight_g"= newborn.weight..g..ch1,
+         "individual" = individual.ch1,
+         "placental_weight_g" = placental.weight..g..ch1) |>
+  select(gene_id, 
+         "Mother_age_years",
+         "apgar_score",
+         "cord_blood_cotinine_ng_ml",
+         "gestational_age_weeks",
+         "maternal_blood_cotinine_ng_ml",
+         "maternal_bmi",
+         "smoking_status",
+         "newborn_weight_g",
+         "sex",
+         "individual",
+         "placental_weight_g")
 ```
 
 ### joining:
@@ -51,16 +74,23 @@ joined_tables <- clean_pheno_data |>
 ```{r}
 
 clean_pheno_data |>
-  ggplot(aes(`Mother_age_years`,fill=smoking_status)) +
+  ggplot(aes(`Mother_age_years`,
+             fill=smoking_status)) +
   geom_boxplot()
+
 clean_pheno_data |>
-  ggplot(aes(maternal_bmi,fill=smoking_status)) +
+  ggplot(aes(maternal_bmi,
+             fill=smoking_status)) +
   geom_boxplot()
+
 clean_pheno_data |>
-  ggplot(aes(`maternal_blood_cotinine_ng_ml`,fill=smoking_status)) +
+  ggplot(aes(`maternal_blood_cotinine_ng_ml`,
+             fill=smoking_status)) +
   geom_boxplot()
+
 clean_pheno_data |>
-  ggplot(aes(`cord_blood_cotinine_ng_ml`,fill=smoking_status)) +
+  ggplot(aes(`cord_blood_cotinine_ng_ml`,
+             fill=smoking_status)) +
   geom_boxplot()
 
 joined_tables |>
@@ -72,7 +102,9 @@ col_names <- joined_tables |>
   colnames()
 
 joined_tables |>
-  summarise(across(col_names[1]:col_names[100],~mean(., na.rm = TRUE)),
+  summarise(across(col_names[1]:col_names[100],
+                   ~mean(., 
+                         na.rm = TRUE)),
             .by = smoking_status)
 ```
 
@@ -80,11 +112,17 @@ joined_tables |>
 
 ```{r}
 
-joined_colnames <- joined_tables |> colnames()
+joined_colnames <- joined_tables |> 
+  colnames()
 
-auged_norm_exprs_00 <- joined_tables |> select(-joined_colnames[1:7],-joined_colnames[9:12]) |>
-  mutate(is_smoker = case_when(str_detect(smoking_status, "non") == 1 ~ 0,
-                               str_detect(smoking_status, "non") == 0 ~ 1), .before = 1) |>
+auged_norm_exprs_00 <- joined_tables |> 
+  select(-joined_colnames[1:7],-
+           joined_colnames[9:12]) |>
+  mutate(is_smoker = case_when(str_detect(smoking_status, 
+                                          "non") == 1 ~ 0,
+                               str_detect(smoking_status, 
+                                          "non") == 0 ~ 1), 
+         .before = 1) |>
   select(-smoking_status)
 
 auged_norm_exprs_01 <- auged_norm_exprs_00 |>
@@ -138,7 +176,9 @@ significant_labels <- subset(auged_norm_exprs_04 ,
 auged_norm_exprs_04 |>
   ggplot(aes(x = gene,
              y = -log(p.value,10),
-             label = ifelse(is_significant == "yes", gene, ""))) + 
+             label = ifelse(is_significant == "yes", 
+                            gene, 
+                            ""))) + 
   geom_point(aes(x = estimate, 
                  color = is_significant),
              alpha = .5,
@@ -157,13 +197,18 @@ auged_norm_exprs_04 |>
 ## more rangling:
 
 ```{r}
-joined_tables |> select(-joined_colnames[1:7],-joined_colnames[9:12]) |>
-  mutate(is_smoker = case_when(str_detect(smoking_status, "non") == 1 ~ 0,
-                               str_detect(smoking_status, "non") == 0 ~ 1), .before = 1) |>
+joined_tables |> select(-joined_colnames[1:7],
+                        -joined_colnames[9:12]) |>
+  mutate(is_smoker = case_when(str_detect(smoking_status, 
+                                          "non") == 1 ~ 0,
+                               str_detect(smoking_status, 
+                                          "non") == 0 ~ 1), 
+         .before = 1) |>
   pivot_longer(cols = starts_with("EN"),
                names_to = "gene",
                values_to = "expr_level") |>
   sample_n(20) |>
-  ggplot(aes(expr_level, fill = smoking_status)) +
+  ggplot(aes(expr_level, 
+             fill = smoking_status)) +
   geom_boxplot()
 ```
