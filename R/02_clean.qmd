@@ -16,16 +16,21 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 library("tidyverse")
+library(vroom)
 ```
 
 ### Clean
 
 ```{r}
 
-feature_data <- vroom::vroom("../data/01_feature_data.tsv.gz", delim = "\t")
-pheno_data <- vroom::vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
-norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
+pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
+norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 
+ncbi_data <- read.table("../data/01_ncbi_pheno_data.txt", header=FALSE, fill = TRUE)
+
+ncbi_annot_probes <- read.table("../data/01_ncbi_annot_probes.txt")
+ncbi_annot_control <- read.table("../data/01_ncbi_annot_controls.txt")
 ```
 
 ```{r}
@@ -33,6 +38,7 @@ norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 feature_data |> sample_n(5)
 pheno_data |> sample_n(5)
 norm_exprs |> sample_n(5)
+ncbi_data |> sample(5)
 
 ```
 
@@ -41,7 +47,15 @@ norm_exprs |> sample_n(5)
 ```{r}
 clean_pheno_data <- pheno_data |>
   rename("sample_id" = "geo_accession") |>
-  rename("Mother_age_years" = "age..years..ch1","apgar_score" = "apgar.score..5s..ch1", "cord_blood_cotinine_ng_ml" = "cord.blood.cotinine..ng.ml..ch1", "gestational_age_weeks" = "gestational.age..weeks..ch1", "maternal_blood_cotinine_ng_ml" ="maternal.blood.cotinine..ng.ml..ch1", "maternal_bmi" = "maternal.bmi.ch1", "smoking_status" = "smoking.status.ch1","newborn_weight_g"="newborn.weight..g..ch1") |>
+  rename(
+    "Mother_age_years" = "age..years..ch1",
+    "apgar_score" = "apgar.score..5s..ch1",
+    "cord_blood_cotinine_ng_ml" = "cord.blood.cotinine..ng.ml..ch1",
+    "gestational_age_weeks" = "gestational.age..weeks..ch1",
+    "maternal_blood_cotinine_ng_ml" ="maternal.blood.cotinine..ng.ml..ch1",
+    "maternal_bmi" = "maternal.bmi.ch1",
+    "smoking_status" = "smoking.status.ch1",
+    "newborn_weight_g"="newborn.weight..g..ch1") |>
   select("sample_id",
          "Mother_age_years",
          "apgar_score",
@@ -55,7 +69,40 @@ clean_pheno_data <- pheno_data |>
          "description")
 ```
 
-## Raw phenotype extraction from NCBI (Masha and Oliver)
+### Raw phenotype extraction from NCBI (Masha and Oliver)
+
+```{r}
+
+```
+
+### Extract and normalize gene expression
+
+```{r}
+
+# boxplot(norm_exprs[, 2:10])
+# boxplot(ncbi_pheno_data[89:100, 2:6] |> mutate_all(as.numeric))
+
+ncbi_exp <- ncbi_data |> 
+  slice(89:24615) |> 
+  select(-1) |> 
+  mutate_all(as.numeric)
+
+ncbi_norm_exp <- as.tibble(quantile_normalisation(ncbi_exp))
+
+colnames(ncbi_norm_exp) <- ncbi_data |> 
+  slice(88) |> 
+  select(2:184)
+
+rownames <- ncbi_data |> 
+  slice(89:24615) |> 
+  select(1) |> 
+  pull()
+
+ncbi_norm_exp <- ncbi_norm_exp |> 
+  mutate(Probe_IDs = rownames) |> 
+  relocate(Probe_IDs)
+
+```
 
 ```{r}
 
