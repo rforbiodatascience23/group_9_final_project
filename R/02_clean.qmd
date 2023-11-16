@@ -69,10 +69,10 @@ clean_pheno_data <- pheno_data |>
          "description")
 ```
 
-### Raw phenotype extraction from NCBI (Masha and Oliver)
+### Raw phenotype extraction from NCBI (Masha, Einstein & Magnus)
 
 ```{r}
-
+ncbi_clean_data <- ncbi_pheno_data
 ```
 
 ### Extract and normalize gene expression
