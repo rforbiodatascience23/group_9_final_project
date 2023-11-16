@@ -72,7 +72,7 @@ clean_pheno_data <- pheno_data |>
 ### Raw phenotype extraction from NCBI (Masha, Einstein & Magnus)
 
 ```{r}
-ncbi_clean_data <- annotation_data$probes
+ncbi_clean_data <- ncbi_pheno_data
 ```
 
 ### Extract and normalize gene expression
