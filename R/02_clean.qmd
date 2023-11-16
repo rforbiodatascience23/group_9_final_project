@@ -72,7 +72,13 @@ clean_pheno_data <- pheno_data |>
 ### Raw phenotype extraction from NCBI (Masha, Einstein & Magnus)
 
 ```{r}
-ncbi_clean_data <- ncbi_pheno_data
+## Magnus
+ncbi_dirty_data <- ncbi_pheno_data |> filter(ncbi_pheno_data, 
+                                             col_1 != "ILMN")
+
+ncbi_dirty_pheno <- ncbi_pheno_data |> filter() 
+
+## Oliver
 ```
 
 ### Extract and normalize gene expression
