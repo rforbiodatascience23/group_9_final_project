@@ -162,10 +162,9 @@ auged_norm_exprs_04 <- auged_norm_exprs_03 |>
   ungroup() |>
   
 # creating variables "q-value" which is the p-value adjusted for multiple comparisons and "is_significant" which indicates whether observations are statistically significant when using a level of significance of 0.0
-  mutate(q.value = p.adjust(p.value),
-         is_significant = case_when(
-           q.value < 0.2 ~ "yes",
-           0.2 < q.value ~ "no"
+  mutate(is_significant = case_when(
+           p.value < 0.05 ~ "yes",
+           0.05 < p.value ~ "no"
          ))
 ```
 
