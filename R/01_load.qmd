@@ -48,14 +48,15 @@ feature_data <- read_table(raw_dir, file_feature_data)
 pheno_data <- read_table(raw_dir, file_pheno_data)
 norm_exprs <- read_table(raw_dir, file_norm_exprs)
 
-ncbi_pheno_data <- read_unstructured_ncbi_table(str_c(raw_dir, "raw_ncbi_data.txt.gz"))
+ncbi_data <- read_unstructured_ncbi_table(str_c(raw_dir, "raw_ncbi_data.txt.gz"))
 annotation_data <- read_bgx_file(raw_dir, "raw_annotation.bgx.gz")
 
 feature_data |> sample_n(5)
 pheno_data |> sample_n(5)
 norm_exprs |> sample_n(5)
-ncbi_pheno_data |> sample_n(5)
+ncbi_data |> sample_n(5)
 
+annotation_data$probes
 ```
 
 ### Write files
@@ -77,16 +78,9 @@ write_tsv(x = as_tibble(pheno_data),
 write_tsv(x = as_tibble(norm_exprs),
           file = "../data/01_norm_exprs.tsv.gz")
 
-write.table(ncbi_pheno_data,
-            file = "../data/01_ncbi_pheno_data.txt",
-            row.names = FALSE,
-            col.names = FALSE)
+write_tsv(ncbi_data,
+            file = "../data/01_ncbi_data.tsv.gz")
 
-write.table(annotation_data$probes,
-            file = "../data/01_ncbi_annot_probes.txt",
-            row.names = FALSE)
-
-write.table(annotation_data$controls,
-            file = "../data/01_ncbi_annot_controls.txt",
-            row.names = FALSE)
+write_tsv(annotation_data$probes,
+            file = "../data/01_ncbi_annot_probes.tsv.gz")
 ```

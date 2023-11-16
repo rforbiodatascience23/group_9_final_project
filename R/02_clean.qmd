@@ -27,10 +27,8 @@ feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
 pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
 norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 
-ncbi_data <- read.table("../data/01_ncbi_pheno_data.txt", header=FALSE, fill = TRUE)
-
-ncbi_annot_probes <- read.table("../data/01_ncbi_annot_probes.txt")
-ncbi_annot_control <- read.table("../data/01_ncbi_annot_controls.txt")
+ncbi_data <- read_tsv("../data/01_ncbi_data.tsv.gz")
+ncbi_annot_probes <- read_tsv("../data/01_ncbi_annot_probes.tsv.gz")
 ```
 
 ```{r}
@@ -79,8 +77,11 @@ ncbi_clean_data <- ncbi_pheno_data
 
 ```{r}
 
-# boxplot(norm_exprs[, 2:10])
-# boxplot(ncbi_pheno_data[89:100, 2:6] |> mutate_all(as.numeric))
+ncbi_data[89:100, 2:6] |> 
+  mutate_all(as.numeric) |>
+  boxplot()
+boxplot(norm_exprs[, 2:10])
+#######
 
 ncbi_exp <- ncbi_data |> 
   slice(89:24615) |> 
@@ -102,6 +103,8 @@ ncbi_norm_exp <- ncbi_norm_exp |>
   mutate(Probe_IDs = rownames) |> 
   relocate(Probe_IDs)
 
+
+boxplot(ncbi_norm_exp[2:10, 2:10])
 ```
 
 ```{r}
