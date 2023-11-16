@@ -73,11 +73,33 @@ clean_pheno_data <- pheno_data |>
 
 ```{r}
 ## Magnus
-ncbi_dirty_data <- ncbi_pheno_data |> filter(ncbi_pheno_data, 
-                                             col_1 != "ILMN")
+#Choose relevant data
+ncbi_dirty_pheno <- ncbi_pheno_data |> 
+  as_tibble() |>
+  filter(!str_detect(col_1, 
+                     "ILMN")) |>
+  filter(!str_detect(col_1, 
+                     "ID_REF")) |>
+  slice(41:n()) |>
+  t() # REMOVE V46 and V47 somehow
+#Rename coloums
+colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |> 
+  stringr::str_replace_all("!","") 
 
-ncbi_dirty_pheno <- ncbi_pheno_data |> filter() 
+#Add colnames to 
+ncbi_dirty_pheno <- ncbi_dirty_pheno[-1, ] |> 
+  as_tibble() |>
+  rename_with(tolower, .cols = everything()) 
+View(ncbi_dirty_pheno)
+colnames(ncbi_dirty_pheno)
 
+######################
+ncbi_dirty_data <- ncbi_pheno_data[88:nrow(ncbi_pheno_data), , 
+                                   drop = FALSE]
+colnames(ncbi_dirty_data) <- ncbi_dirty_data[1, ] |>
+  stringr::str_replace_all("!","")
+ncbi_dirty_data <- ncbi_dirty_data[-1, ]
+View(ncbi_dirty_data)
 ## Oliver
 
 #Firstly chosing the right rows and transposing
