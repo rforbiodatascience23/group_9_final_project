@@ -87,7 +87,10 @@ auged_norm_exprs_00 <- joined_tables |> select(-joined_colnames[1:7],-joined_col
 auged_norm_exprs_01 <- auged_norm_exprs_00 |>
   pivot_longer(cols = starts_with("EN"),
                names_to = "gene",
-               values_to = "expr_level")
+               values_to = "expr_level") |>
+  mutate(log_2_expr_level = map(.x = expr_level,
+                                .f = ~log2(.x))) |>
+  select(-expr_level)
 
 auged_norm_exprs_02 <- auged_norm_exprs_01 |>
   group_by(gene) |>
@@ -98,14 +101,14 @@ auged_norm_exprs_02 <- auged_norm_exprs_01 |>
 auged_norm_exprs_03 <- auged_norm_exprs_02 |>
   group_by(gene) |>
   mutate(model_object = map(.x = data,
-                            .f = ~lm(formula = expr_level ~ is_smoker,
+                            .f = ~lm(formula = log_2_expr_level ~ is_smoker,
                                      data = .x))) |>
   
 # using tidy function to turn model summary into a tibble instead of a list  
   mutate(model_object_tidy = map(.x = model_object,
                                  .f = ~ tidy(.x,
-                                             conf.int = FALSE,
-                                             conf.level = 0.9)))
+                                             conf.int = TRUE,
+                                             conf.level = 0.5)))
 
 # unnesting the tidy models, filtering to only get "slope"-coefficients for models and selecting desired variables
 auged_norm_exprs_04 <- auged_norm_exprs_03 |>
