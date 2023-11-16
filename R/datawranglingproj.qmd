@@ -129,8 +129,7 @@ auged_norm_exprs_01 <- auged_norm_exprs_00 |>
   pivot_longer(cols = starts_with("EN"),
                names_to = "gene",
                values_to = "expr_level") |>
-  mutate(log_2_expr_level = map(.x = expr_level,
-                                .f = ~log2(.x))) |>
+  mutate(log_2_expr_level =log2(expr_level)) |>
   dplyr::select(-expr_level)
 
 auged_norm_exprs_02 <- auged_norm_exprs_01 |>
@@ -155,7 +154,11 @@ auged_norm_exprs_03 <- auged_norm_exprs_02 |>
 auged_norm_exprs_04 <- auged_norm_exprs_03 |>
   unnest(model_object_tidy) |>
   filter(term == "is_smoker") |>
-  dplyr::select(gene, p.value, estimate, conf.low, conf.high) |>
+  dplyr::select(gene, 
+                p.value, 
+                estimate, 
+                conf.low, 
+                conf.high) |>
   ungroup() |>
   
 # creating variables "q-value" which is the p-value adjusted for multiple comparisons and "is_significant" which indicates whether observations are statistically significant when using a level of significance of 0.0
