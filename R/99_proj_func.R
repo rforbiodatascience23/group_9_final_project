@@ -95,3 +95,17 @@ quantile_normalisation <- function(df){
   rownames(df_final) <- rownames(df)
   return(df_final)
 }
+
+get_gene_expr_by_source <- function(gene_expr_df, sample_source_table, source_abr) {
+  
+  relevant_sample_ids <- sample_source_table |> 
+    filter(sample_source == source_abr) |> 
+    select(sample_id) |>
+    unlist() |> 
+    unname()
+  
+  gene_exp_from_source <- gene_expr_df |> 
+    select(Gene, all_of(relevant_sample_ids))
+  
+  return(gene_exp_from_source)
+}
