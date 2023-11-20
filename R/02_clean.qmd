@@ -25,7 +25,7 @@ library(vroom)
 
 feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
 pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
-norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz")
 
 ncbi_data <- read_tsv("../data/01_ncbi_data.tsv.gz")
 ncbi_annot_probes <- read_tsv("../data/01_ncbi_annot_probes.tsv.gz")
@@ -77,16 +77,21 @@ clean_pheno_data <- pheno_data |>
 
 ```{r}
 
-ncbi_data[89:100, 2:6] |> 
+# check ncbi data (original)
+b_raw <- ncbi_data[89:24615, 2:10] |> 
   mutate_all(as.numeric) |>
   boxplot()
-boxplot(norm_exprs[, 2:10])
-#######
+b_raw
+
+
+####### NORMALIZATION
 
 ncbi_exp <- ncbi_data |> 
   slice(89:24615) |> 
   select(-1) |> 
   mutate_all(as.numeric)
+
+boxplot(ncbi_exp[1:nrow(ncbi_exp), 1:10])
 
 ncbi_norm_exp <- as.tibble(quantile_normalisation(ncbi_exp))
 
@@ -102,11 +107,49 @@ rownames <- ncbi_data |>
 ncbi_norm_exp <- ncbi_norm_exp |> 
   mutate(Probe_IDs = rownames) |> 
   relocate(Probe_IDs)
+#######################################
+
+# my normalized data
+boxplot(ncbi_norm_exp[1:nrow(ncbi_exp), 2:10])
+
+# Kaggle normalized data
+b <- norm_exprs[1:nrow(norm_exprs), 1:10] |> 
+  boxplot()
+b
 
 
-boxplot(ncbi_norm_exp[2:10, 2:10])
+# RAW NON NORMALIZED PLACENTA FILE
+file_n <- "GSE27272_non-normalized_placenta.txt.gz"
+raw_dir <- "../_raw/"
+t <- read.table(gzfile(str_c(raw_dir, file_n)))
+nrow(t)
+t[2:nrow(t), 2:10] |> 
+  mutate_all(as.numeric) |> 
+  boxplot()
+
+################################# Nicer boxplots
+
+ggplot(data=ncbi_exp, mapping=aes(x=label, y=temperature)) +
+  geom_boxplot()
+
 ```
 
 ```{r}
+gene_exp_idx <- 89
+
+gene_exp <- ncbi_data |> 
+  slice(gene_exp_idx:nrow(ncbi_data))
+  
+colnames(gene_exp) <-
+  ncbi_data |> 
+  slice(88) |>
+  unlist()
+        
+gene_exp <- gene_exp |> 
+  rename(gene_id = ID_REF) |>
+  mutate(across(-gene_id, ~ as.numeric(.x)))
+
+
+
 
 ```

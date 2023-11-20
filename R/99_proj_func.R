@@ -74,6 +74,9 @@ read_unstructured_ncbi_table <- function(file_path) {
 
 read_bgx_file <- function(raw_dir, file_name) {
   
+  if (file.exists(str_c(raw_dir, "raw_annotation.bgx")))
+    return (readBGX(str_c(raw_dir, "raw_annotation.bgx")))
+  
   outputFilePath <- gunzip(str_c(raw_dir, file_name), remove=FALSE)
   return (readBGX(outputFilePath))
   
