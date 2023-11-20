@@ -81,7 +81,7 @@ ncbi_dirty_pheno <- ncbi_pheno_data |>
   filter(!str_detect(col_1, 
                      "ID_REF")) |>
   slice(41:n()) |>
-  t() # REMOVE V46 and V47 somehow
+  t()
 #Rename coloums
 colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |> 
   stringr::str_replace_all("!","") 
@@ -89,9 +89,16 @@ colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |>
 #Add colnames to 
 ncbi_dirty_pheno <- ncbi_dirty_pheno[-1, ] |> 
   as_tibble() |>
-  rename_with(tolower, .cols = everything()) 
-View(ncbi_dirty_pheno)
+  rename_with(tolower, 
+              .cols = everything()) 
+
 colnames(ncbi_dirty_pheno)
+
+# more data wrangling
+ncbi_dirty_pheno <- ncbi_dirty_pheno |>
+  separate(col = sample_title,
+           into = c("smoking","title"),
+           sep = " ")
 
 ######################
 ncbi_dirty_data <- ncbi_pheno_data[88:nrow(ncbi_pheno_data), , 
