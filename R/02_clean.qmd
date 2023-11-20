@@ -25,7 +25,7 @@ library(vroom)
 
 feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
 pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
-norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz")
 
 ncbi_data <- read_tsv("../data/01_ncbi_data.tsv.gz")
 ncbi_annot_probes <- read_tsv("../data/01_ncbi_annot_probes.tsv.gz")
@@ -73,40 +73,95 @@ clean_pheno_data <- pheno_data |>
 ncbi_clean_data <- ncbi_pheno_data
 ```
 
-### Extract and normalize gene expression
+### Boxplots showing normalization 
 
 ```{r}
 
-ncbi_data[89:100, 2:6] |> 
+# BOXPLOTS to check NORMALIZATION
+
+# check ncbi data (original)
+b_raw <- ncbi_data[89:nrow(ncbi_data), 2:10] |> 
   mutate_all(as.numeric) |>
   boxplot()
-boxplot(norm_exprs[, 2:10])
-#######
-
-ncbi_exp <- ncbi_data |> 
-  slice(89:24615) |> 
-  select(-1) |> 
-  mutate_all(as.numeric)
-
-ncbi_norm_exp <- as.tibble(quantile_normalisation(ncbi_exp))
-
-colnames(ncbi_norm_exp) <- ncbi_data |> 
-  slice(88) |> 
-  select(2:184)
-
-rownames <- ncbi_data |> 
-  slice(89:24615) |> 
-  select(1) |> 
-  pull()
-
-ncbi_norm_exp <- ncbi_norm_exp |> 
-  mutate(Probe_IDs = rownames) |> 
-  relocate(Probe_IDs)
 
 
-boxplot(ncbi_norm_exp[2:10, 2:10])
+# Kaggle normalized data
+b <- norm_exprs[1:nrow(norm_exprs), 1:10] |> 
+  boxplot()
+
+
+# RAW NON NORMALIZED PLACENTA FILE
+file_n <- "GSE27272_non-normalized_placenta.txt.gz"
+raw_dir <- "../_raw/"
+non-normalized_placenta <- read.table(gzfile(str_c(raw_dir, file_n)))
+non-normalized_placenta[2:nrow(non-normalized_placenta), 2:10] |> 
+  mutate_all(as.numeric) |> 
+  boxplot()
+
+       
 ```
 
-```{r}
+### Extract gene expression
 
+```{r}
+# extract gene expression from ncbi data
+
+gene_exp_idx <- 89
+
+gene_exp <- ncbi_data |> 
+  slice(gene_exp_idx:nrow(ncbi_data))
+  
+colnames(gene_exp) <-
+  ncbi_data |> 
+  slice(88) |>
+  unlist()
+        
+gene_exp <- gene_exp |> 
+  rename(probe_id = ID_REF) |>
+  mutate(across(-probe_id, ~ as.numeric(.x)))
+
+
+###### Nicer boxplot to show normalization
+gene_exp_longer <- gene_exp  |> 
+  select(1:10) |> 
+  pivot_longer(
+    cols = starts_with("GSM"),
+    names_to = "sample_id",
+    values_to = "gene_expression"
+  )
+
+ggplot(data=gene_exp_longer, mapping=aes(x=sample_id, y=gene_expression)) +
+  geom_boxplot()
+```
+
+### Split gene expression by source of the samples
+
+```{r}
+# extract important columns from annotation
+
+gene_annotation <- ncbi_annot_probes |> 
+  select(Symbol, Probe_Id, Definition, Entrez_Gene_ID, starts_with("Ontology"))
+
+gene_exp <- gene_annotation |> 
+  select(Symbol, Probe_Id) |> 
+  right_join(gene_exp, by=c('Probe_Id'='probe_id')) |> 
+  rename(Gene = Symbol) |> 
+  select(-Probe_Id)
+
+####### need ncbi_pheno_data_impure_cut df
+
+sample_source_table <- ncbi_pheno_data_impure_cut |>
+  select(Sample_geo_accession, 30) |>  # 30 = Sample_description
+  mutate(sample_source = str_match(Sample_description, "[[:upper:]]+")) |> 
+  rename(sample_id = Sample_geo_accession)
+  select(-Sample_description)
+
+# gene_exp_placenta
+gene_exp_placenta <- get_gene_expr_by_source(gene_exp, sample_source_table, "PL")
+
+# gene_exp_maternal_blood
+gene_exp_maternal_blood <- get_gene_expr_by_source(gene_exp, sample_source_table, "M")
+
+# gene_exp cord blood
+gene_exp_cord_blood <- get_gene_expr_by_source(gene_exp, sample_source_table, "D")
 ```
