@@ -153,7 +153,7 @@ gene_exp <- gene_annotation |>
 sample_source_table <- ncbi_pheno_data_impure_cut |>
   select(Sample_geo_accession, 30) |>  # 30 = Sample_description
   mutate(sample_source = str_match(Sample_description, "[[:upper:]]+")) |> 
-  rename(sample_id = Sample_geo_accession)
+  rename(sample_id = Sample_geo_accession) |> 
   select(-Sample_description)
 
 # gene_exp_placenta
