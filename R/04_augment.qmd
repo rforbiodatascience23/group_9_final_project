@@ -3,3 +3,38 @@
 ```{r}
 # some source code
 ```
+
+### BMI augmenation:
+
+```{r}
+BMI_data <- metric_data |>
+  drop_na(c(hdl,weight,height)) |>
+  tibble(BMI = weight/((height/100)**2)) |>
+  mutate(BMI_class = case_when(
+    BMI < 16.5 ~ "Severely underweight",
+    16.5 <= BMI & BMI < 18.5 ~ "Underweight",
+    18.5 <= BMI & BMI < 24.9 ~ "Normal weight",
+    24.9 <= BMI & BMI < 30 ~ "Overweight",
+    BMI >= 30 & BMI < 35 ~ "Obesity class I",
+    BMI >= 35 & BMI < 40 ~ "Obesity class II",
+    BMI >= 40 ~ "Obesity class III")) |>
+  mutate(BMI_class = factor(BMI_class,
+                            levels = c("Severely underweight","Underweight",
+                                       "Normal weight", "Overweight",
+                                       "Obesity", "Obesity class I",
+                                       "Obesity class II", "Obesity class III")))
+BMI_data |>
+  ggplot(aes(x = hdl, y = BMI_class)) +
+    geom_boxplot()
+```
+
+### Age group Augmentation:
+
+```{r}
+meta_data |>
+  drop_na(Gender) |>
+  select(Age,Gender) |>
+  mutate(Age_group =  cut(Age, breaks = c(20,30,40,50,60,70,80))) |>
+  ggplot(aes(Age_group, fill = Gender, alpha = 0.3)) +
+  geom_histogram(stat = "count", position = "dodge")
+```
