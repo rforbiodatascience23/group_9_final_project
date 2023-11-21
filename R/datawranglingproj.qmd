@@ -15,6 +15,7 @@ library("ggrepel")
 
 ```{r}
 #| eval: false
+#| message: false
 source("../R/99_proj_func.R")
 
 feature_data <- vroom::vroom("../data/01_feature_data.tsv.gz", delim = "\t")
@@ -25,6 +26,7 @@ norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 ### wrangling fix exprs:
 
 ```{r}
+# We Fix naming and we transpose
 wrangled_norm_exprs <- norm_exprs |> 
   pivot_longer(cols= -1) |> 
   pivot_wider(names_from = "gene_id",
@@ -35,7 +37,7 @@ wrangled_norm_exprs <- norm_exprs |>
 ### wrangling fix pheno:
 
 ```{r}
-
+# We change naming and select important rows
 clean_pheno_data <- pheno_data |>
   rename("gene_id" = geo_accession) |>
   rename("Mother_age_years" = age..years..ch1,
@@ -65,6 +67,8 @@ clean_pheno_data <- pheno_data |>
 ### joining:
 
 ```{r}
+
+# Joining
 joined_tables <- clean_pheno_data |>
   full_join(wrangled_norm_exprs)
 ```
@@ -72,7 +76,6 @@ joined_tables <- clean_pheno_data |>
 ### plotting:
 
 ```{r}
-
 clean_pheno_data |>
   ggplot(aes(`Mother_age_years`,
              fill=smoking_status)) +
@@ -93,22 +96,14 @@ clean_pheno_data |>
              fill=smoking_status)) +
   geom_boxplot()
 
+# Plot of a single genes exprs by non- and smokers
 joined_tables |>
   sample_n(20) |>
   ggplot(aes(fill=smoking_status)) +
   geom_boxplot(aes(ENSG00000233927))
-
-col_names <- joined_tables |>
-  colnames()
-
-joined_tables |>
-  summarise(across(col_names[1]:col_names[100],
-                   ~mean(., 
-                         na.rm = TRUE)),
-            .by = smoking_status)
 ```
 
-### more wrangling:
+### Data statistics:
 
 ```{r}
 
@@ -168,7 +163,7 @@ auged_norm_exprs_04 <- auged_norm_exprs_03 |>
          ))
 ```
 
-### plotting:
+### Volcano plot:
 
 ```{r}
 significant_labels <- subset(auged_norm_exprs_04 , 
@@ -199,13 +194,11 @@ auged_norm_exprs_04 |>
 ## more rangling:
 
 ```{r}
+
+# General exprs of all genes comparing smoking
+
 joined_tables |> select(-joined_colnames[1:7],
                         -joined_colnames[9:12]) |>
-  mutate(is_smoker = case_when(str_detect(smoking_status, 
-                                          "non") == 1 ~ 0,
-                               str_detect(smoking_status, 
-                                          "non") == 0 ~ 1), 
-         .before = 1) |>
   pivot_longer(cols = starts_with("EN"),
                names_to = "gene",
                values_to = "expr_level") |>
