@@ -1,11 +1,11 @@
-### Source functions
+### Library
 
 ```{r}
-# MAGNUS IS WORKING HERE
 library("tidyverse")
-
+```
+### Loading
+```{r}
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
-
 ```
 
 ### BMI class and Age group augmenation:
