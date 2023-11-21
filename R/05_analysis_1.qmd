@@ -16,9 +16,15 @@ library("ggrepel")
 #| message: false
 source("../R/99_proj_func.R")
 
-feature_data <- vroom::vroom("../data/01_feature_data.tsv.gz", delim = "\t")
-pheno_data <- vroom::vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
-norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
+expr_data <- vroom::vroom("../data/02_ncbi_clean_expr.tsv.gz", delim = "\t")
+
+pheno_data |> sample_n(5)
+
+transposed_expr_data <- expr_data |> pivot_longer(cols= -1) |> pivot_wider(names_from = "Gene",values_from = "value") |>
+rename("id"=name)
+
+transposed_expr_data |> sample_n(5)
 ```
 
 ### joining:
@@ -26,8 +32,8 @@ norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
 ```{r}
 
 # Joining
-joined_tables <- clean_pheno_data |>
-  full_join(wrangled_norm_exprs)
+joined_tables <- pheno_data |>
+  full_join(transposed_expr_data)
 ```
 
 ### plotting:
@@ -45,32 +51,50 @@ clean_pheno_data |>
   theme(legend.position = "bottom")
 
 clean_pheno_data |>
-  ggplot(aes(maternal_bmi,
+  ggplot(aes(y = maternal_bmi,
              fill=smoking_status)) +
   geom_boxplot() +
+  labs(x = "",
+       y= "Maternal BMI",
+       caption = "Data from NCBI (2011)",
+       title = "Comparison of mother's BMI by smoking status",
+       fill = "Smoking status") +
+  theme(legend.position = "bottom")
+
+
+clean_pheno_data |>
+  ggplot(aes(y = `maternal_blood_cotinine_ng_ml`,
+             fill=smoking_status)) +
+  geom_boxplot() +
+  labs(x = "",
+       y= "Blood cotinine (ng/ml)",
+       caption = "Data from NCBI (2011)",
+       title = "Comparison of mother's blood cotinine concentration by smoking status",
+       fill = "Smoking status") +
+  theme(legend.position = "bottom")
+
+clean_pheno_data |>
+  ggplot(aes(`cord_blood_cotinine_ng_ml`,
+             fill=smoking_status)) +
+  geom_boxplot() +
+  labs(x = "",
+       y= "Cord blood cotinine (ng/ml)",
+       caption = "Data from NCBI (2011)",
+       title = "Comparison of mother's blood cotinine concentration by smoking status",
+       fill = "Smoking status") +
+  theme(legend.position = "bottom")
+
+# Plot of a single genes exprs by non- and smokers
+joined_tables |>
+  sample_n(20) |>
+  ggplot(aes(fill=smoking_status)) +
+  geom_boxplot(aes(ENSG00000233927)) +
   labs(x = "",
        y= "",
        caption = "Data from NCBI (2011)",
        title = "",
        fill = "Smoking status") +
   theme(legend.position = "bottom")
-
-
-clean_pheno_data |>
-  ggplot(aes(`maternal_blood_cotinine_ng_ml`,
-             fill=smoking_status)) +
-  geom_boxplot()
-
-clean_pheno_data |>
-  ggplot(aes(`cord_blood_cotinine_ng_ml`,
-             fill=smoking_status)) +
-  geom_boxplot()
-
-# Plot of a single genes exprs by non- and smokers
-joined_tables |>
-  sample_n(20) |>
-  ggplot(aes(fill=smoking_status)) +
-  geom_boxplot(aes(ENSG00000233927))
 ```
 
 ### Data statistics:
