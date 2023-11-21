@@ -70,7 +70,105 @@ clean_pheno_data <- pheno_data |>
 ### Raw phenotype extraction from NCBI (Masha, Einstein & Magnus)
 
 ```{r}
-ncbi_clean_data <- ncbi_pheno_data
+## Magnus
+#Choose relevant data
+ncbi_dirty_pheno <- ncbi_pheno_data |> 
+  as_tibble() |>
+  filter(!str_detect(col_1, 
+                     "ILMN")) |>
+  filter(!str_detect(col_1, 
+                     "ID_REF")) |>
+  slice(41:n()) |>
+  t()
+#Rename coloums
+colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |> 
+  stringr::str_replace_all("!Sample_","")
+
+#Add colnames to 
+ncbi_dirty_pheno <- ncbi_dirty_pheno[-1, ] |> 
+  as_tibble() |>
+  rename_with(tolower, 
+              .cols = everything()) 
+
+colnames(ncbi_dirty_pheno)
+
+# more data wrangling
+ncbi_clean_pheno <- ncbi_dirty_pheno |>
+  # Choose important coloums to further wrangle. 
+  select(matches(
+    "geo_accession|title|characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")
+    ) |>
+  # mutate coloumn name and variable string
+  mutate(
+    smoking_status = str_remove(
+      v11, "smoking status: "),
+    tissue = str_remove(characteristics_ch1, "tissue: "),
+    age = as.numeric(str_remove(
+      v12, "age \\(years\\): ")),
+    maternal_bmi = as.numeric(str_remove(
+      v13, "maternal bmi: ")),
+    parity = str_remove(v14, "parity: "),
+    gestational_age = as.numeric(str_remove(
+      v15, "gestational age \\(weeks\\): ")),
+    birth_type = str_remove(
+      v16, "mode of delivery: "),
+    placental_weight = as.numeric(str_remove(
+      v17, "placental weight \\(g\\): ")),
+    newborn_weight = as.numeric(str_remove(
+      v18, "newborn weight \\(g\\): ")),
+    apgar_score = as.numeric(str_remove(
+      v19, "apgar score \\(5s\\): ")),
+    cotinine_conc_maternal = as.numeric(str_remove(
+      v20, "maternal blood cotinine \\(ng/ml\\): ")),
+    cotinine_conc_cord = as.numeric(str_remove(
+      v21, "cord blood cotinine \\(ng/ml\\): ")),
+    individual = str_remove(
+      v22, "individual: ")) |>
+  # Keep new columns
+  select(-matches("characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")
+         ) |>
+  t() |> 
+  as.data.frame() |>
+  rename_with(~str_replace_all(., "V", "patient"), .cols = everything()
+              ) |>
+  t()
+
+######################
+ncbi_dirty_data <- ncbi_pheno_data[88:nrow(ncbi_pheno_data), , 
+                                   drop = FALSE]
+colnames(ncbi_dirty_data) <- ncbi_dirty_data[1, ]
+ncbi_dirty_data <- ncbi_dirty_data[-1, ] |>
+  t()
+
+#Add colnames to 
+ncbi_clean_data <- ncbi_dirty_data
+
+ncbi_clean_data <- ncbi_dirty_data[-1,] |> 
+  as.data.frame() |>
+  rename_with(tolower, 
+              .cols = everything()) 
+
+## Oliver
+
+#Firstly chosing the right rows and transposing
+ncbi_pheno_data_impure <- ncbi_pheno_data[1:86,] |> t()
+
+#Then choosing the right columns and making as tibble
+ncbi_pheno_data_impure_cut <- ncbi_pheno_data_impure[,41:86] |> as_tibble()
+
+
+#Removing ! from the names and Convert first row to header
+colnames(ncbi_pheno_data_impure_cut) <- ncbi_pheno_data_impure_cut[1, ] |>
+  stringr::str_replace_all("!", "")
+
+ncbi_pheno_data_impure_cut_renamed
+
+
+
+ncbi_pheno_data_impure_cut |> View()
+is.data.frame(ncbi_pheno_data_impure_cut) 
+
+
 ```
 
 ### Boxplots showing normalization 
