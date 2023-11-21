@@ -129,7 +129,7 @@ ncbi_clean_pheno <- ncbi_dirty_pheno |>
          ) |>
   t() |> 
   as.data.frame() |>
-  rename_with(~str_replace_all(., "V", "patient"), .cols = everything()
+  rename_with(~str_replace_all(., "V", ""), .cols = everything()
               ) |>
   t()
 
