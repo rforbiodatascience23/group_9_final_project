@@ -1,0 +1,47 @@
+### Library:
+
+```{r}
+#| eval: false 
+#| echo: true
+#| message: false
+library("tidyverse")
+library("ggridges")
+library("viridis")
+library("broom")
+library("ggrepel")
+```
+
+### loading:
+
+```{r}
+#| eval: false
+#| echo: true
+#| message: false
+source("../R/99_proj_func.R")
+
+pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
+expr_data <- vroom::vroom("../data/02_ncbi_clean_expr.tsv.gz", delim = "\t")
+
+feature_data <- vroom::vroom("../data/04_feature_data.tsv.gz", delim = "\t")
+pheno_data <- vroom::vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
+norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+```
+
+### joining:
+
+```{r}
+#| eval: false 
+#| echo: true
+
+# Joining
+joined_tables <- pheno_data |>
+  full_join(wrangled_norm_exprs)
+```
+
+### plotting:
+
+```{r}
+#| eval: false 
+#| echo: true
+
+```
