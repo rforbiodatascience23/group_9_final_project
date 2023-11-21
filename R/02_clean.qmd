@@ -131,15 +131,25 @@ ncbi_clean_pheno <- ncbi_dirty_pheno |>
          ) |>
   t() |> 
   as.data.frame() |>
-  rename_with(~str_replace_all(., "V", "patient"), .cols = everything())
+  rename_with(~str_replace_all(., "V", "patient"), .cols = everything()
+              ) |>
+  t()
 
 ######################
 ncbi_dirty_data <- ncbi_pheno_data[88:nrow(ncbi_pheno_data), , 
                                    drop = FALSE]
-colnames(ncbi_dirty_data) <- ncbi_dirty_data[1, ] |>
-  stringr::str_replace_all("!","")
-ncbi_dirty_data <- ncbi_dirty_data[-1, ]
-View(ncbi_dirty_data)
+colnames(ncbi_dirty_data) <- ncbi_dirty_data[1, ]
+ncbi_dirty_data <- ncbi_dirty_data[-1, ] |>
+  t()
+
+#Add colnames to 
+ncbi_clean_data <- ncbi_dirty_data
+
+ncbi_clean_data <- ncbi_dirty_data[-1,] |> 
+  as.data.frame() |>
+  rename_with(tolower, 
+              .cols = everything()) 
+
 ## Oliver
 
 #Firstly chosing the right rows and transposing
