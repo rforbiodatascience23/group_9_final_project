@@ -195,7 +195,7 @@ ncbi_clean_expr <- ncbi_clean_expr[-1,]
 write_tsv(x = ncbi_clean_pheno,
           file = "../data/02_ncbi_clean_pheno.tsv.gz")
 
-write_tsv(x = as_tibble(ncbi_clean_expr),
+write_tsv(x = ncbi_clean_expr,
           file = "../data/02_ncbi_clean_expr.tsv.gz")
 
 write_tsv(x = gene_expr_cord_blood,
