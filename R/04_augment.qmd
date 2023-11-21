@@ -11,12 +11,22 @@ library("tidyverse")
 #| eval: false
 #| echo: true
 
-# making vroom work
-Sys.setenv(VROOM_CONNECTION_SIZE = "5000000") # Attempt to make ncbi_clean_expr
-
 # load tsv files
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
-ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expr.tsv.gz") #NOT WORKING
+ncbi_clean_expression <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
+```
+
+```{r}
+# transpose expression data
+ncbi_clean_expr <- ncbi_clean_expression |>
+  as.data.frame() |>
+  t() |>
+  as.data.frame()
+
+# fixing the column names
+colnames(ncbi_clean_expr) <- ncbi_clean_expr[1,]
+ncbi_clean_expr <- ncbi_clean_expr[-1,]
+
 ```
 
 ### BMI class and Age group augmenation:
@@ -59,7 +69,6 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
 # Making a joined table
 joined_tables <- ncbi_augment_pheno |>
   full_join(ncbi_clean_expr)
-
 
 ```
 ### Write tsv file
