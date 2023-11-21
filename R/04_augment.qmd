@@ -22,10 +22,14 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
     maternal_bmi >= 35 & maternal_bmi < 40 ~ "Obesity class II",
     maternal_bmi >= 40 ~ "Obesity class III")) |>
   mutate(BMI_class = factor(BMI_class,
-                            levels = c("Severely underweight","Underweight",
-                                       "Normal weight", "Overweight",
-                                       "Obesity", "Obesity class I",
-                                       "Obesity class II", "Obesity class III"))
+                            levels = c("Severely underweight",
+                                       "Underweight",
+                                       "Normal weight", 
+                                       "Overweight",
+                                       "Obesity", 
+                                       "Obesity class I",
+                                       "Obesity class II", 
+                                       "Obesity class III"))
          ) |>
   relocate(BMI_class,.before = maternal_bmi
            ) |>
