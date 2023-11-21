@@ -49,7 +49,7 @@ ncbi_dirty_pheno <- ncbi_data |>
 colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |> 
   stringr::str_replace_all("!Sample_",
                            "")
-# Add colnames to 
+# Remove first row
 ncbi_dirty_pheno <- ncbi_dirty_pheno[-1, ] |> 
   as_tibble() |>
   rename_with(tolower, 
@@ -184,14 +184,10 @@ ncbi_clean_expr <- ncbi_clean_expression |>
   t() |>
   as.data.frame()
 
-## draft stuff
+# fixing the column names
+colnames(ncbi_clean_expr) <- ncbi_clean_expr[1,]
+ncbi_clean_expr <- ncbi_clean_expr[-1,]
 
-#ncbi_clean_draft |>
- # head(1) |>
-  #as.list() |>
-  
-
-has_rownames(ncbi_clean_draft)
 ```
 
 ### Write tsv-files containing the data frames
@@ -199,7 +195,7 @@ has_rownames(ncbi_clean_draft)
 write_tsv(x = ncbi_clean_pheno,
           file = "../data/02_ncbi_clean_pheno.tsv.gz")
 
-write_tsv(x = as_tibble(ncbi_clean_expr),
+write_tsv(x = ncbi_clean_expr,
           file = "../data/02_ncbi_clean_expr.tsv.gz")
 
 write_tsv(x = gene_expr_cord_blood,
