@@ -1,40 +1,46 @@
 ### Source functions
 
 ```{r}
-# some source code
+# MAGNUS IS WORKING HERE
+library("tidyverse")
+
+ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
+
 ```
 
-### BMI augmenation:
+### BMI class and Age group augmenation:
 
 ```{r}
-BMI_data <- metric_data |>
-  drop_na(c(hdl,weight,height)) |>
-  tibble(BMI = weight/((height/100)**2)) |>
+ncbi_augment_pheno <- ncbi_clean_pheno |>
+  drop_na(maternal_bmi) |>
   mutate(BMI_class = case_when(
-    BMI < 16.5 ~ "Severely underweight",
-    16.5 <= BMI & BMI < 18.5 ~ "Underweight",
-    18.5 <= BMI & BMI < 24.9 ~ "Normal weight",
-    24.9 <= BMI & BMI < 30 ~ "Overweight",
-    BMI >= 30 & BMI < 35 ~ "Obesity class I",
-    BMI >= 35 & BMI < 40 ~ "Obesity class II",
-    BMI >= 40 ~ "Obesity class III")) |>
+    maternal_bmi < 16.5 ~ "Severely underweight",
+    16.5 <= maternal_bmi & maternal_bmi < 18.5 ~ "Underweight",
+    18.5 <= maternal_bmi & maternal_bmi < 24.9 ~ "Normal weight",
+    24.9 <= maternal_bmi & maternal_bmi < 30 ~ "Overweight",
+    maternal_bmi >= 30 & maternal_bmi < 35 ~ "Obesity class I",
+    maternal_bmi >= 35 & maternal_bmi < 40 ~ "Obesity class II",
+    maternal_bmi >= 40 ~ "Obesity class III")) |>
   mutate(BMI_class = factor(BMI_class,
                             levels = c("Severely underweight","Underweight",
                                        "Normal weight", "Overweight",
                                        "Obesity", "Obesity class I",
-                                       "Obesity class II", "Obesity class III")))
-BMI_data |>
-  ggplot(aes(x = hdl, y = BMI_class)) +
-    geom_boxplot()
+                                       "Obesity class II", "Obesity class III"))
+         ) |>
+  relocate(BMI_class,.before = maternal_bmi
+           ) |>
+  select(-maternal_bmi
+         ) |>
+  mutate(age_group = cut(age, breaks = c(20,30,40,50,
+                                         60,70,80))
+         ) |>
+  relocate(age_group,.before = age
+           ) |>
+  select(-age)
+             
+# Write tsv file
+write_tsv(x = ncbi_augment_pheno,
+          file = "../data/04_ncbi_augment_pheno.tsv.gz")
+
 ```
 
-### Age group Augmentation:
-
-```{r}
-meta_data |>
-  drop_na(Gender) |>
-  select(Age,Gender) |>
-  mutate(Age_group =  cut(Age, breaks = c(20,30,40,50,60,70,80))) |>
-  ggplot(aes(Age_group, fill = Gender, alpha = 0.3)) +
-  geom_histogram(stat = "count", position = "dodge")
-```
