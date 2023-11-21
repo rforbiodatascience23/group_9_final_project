@@ -70,8 +70,6 @@ clean_pheno_data <- pheno_data |>
 ### Raw phenotype extraction from NCBI (Masha, Einstein & Magnus)
 
 ```{r}
-ncbi_clean_data <- ncbi_pheno_data
-
 ## Magnus
 #Choose relevant data
 ncbi_dirty_pheno <- ncbi_pheno_data |> 
@@ -154,27 +152,24 @@ ncbi_clean_data <- ncbi_dirty_data[-1,] |>
 ## Oliver
 
 #Firstly chosing the right rows and transposing
-ncbi_pheno_data_impure <- ncbi_pheno_data[1:86,] |> t()
+#ncbi_pheno_data_impure <- ncbi_pheno_data[1:86,] |> t()
 
 #Then choosing the right columns and making as tibble
-ncbi_pheno_data_impure_cut <- ncbi_pheno_data_impure[,41:86] |> as_tibble()
+#ncbi_pheno_data_impure_cut <- ncbi_pheno_data_impure[,41:86] |> as_tibble()
 
 
 #Removing ! from the names and Convert first row to header
-colnames(ncbi_pheno_data_impure_cut) <- ncbi_pheno_data_impure_cut[1, ] |>
-  stringr::str_replace_all("!", "")
+#colnames(ncbi_pheno_data_impure_cut) <- ncbi_pheno_data_impure_cut[1, ] |> stringr::str_replace_all("!", "")
 
-ncbi_pheno_data_impure_cut_renamed
+#ncbi_pheno_data_impure_cut_renamed
 
-
-
-ncbi_pheno_data_impure_cut |> View()
-is.data.frame(ncbi_pheno_data_impure_cut) 
+#ncbi_pheno_data_impure_cut |> View()
+#is.data.frame(ncbi_pheno_data_impure_cut) 
 
 
 ```
 
-### Boxplots showing normalization
+### Boxplots showing normalization 
 
 ```{r}
 
@@ -254,7 +249,7 @@ gene_exp <- gene_annotation |>
 sample_source_table <- ncbi_pheno_data_impure_cut |>
   select(Sample_geo_accession, 30) |>  # 30 = Sample_description
   mutate(sample_source = str_match(Sample_description, "[[:upper:]]+")) |> 
-  rename(sample_id = Sample_geo_accession) |> 
+  rename(sample_id = Sample_geo_accession)
   select(-Sample_description)
 
 # gene_exp_placenta
