@@ -1,0 +1,27 @@
+---
+title: "presentation"
+author: "group 9"
+format: revealjs
+editor: visual
+---
+#Introduction
+
+## Subsection 1
+
+- Bullet point 1
+- Bullet point 2
+
+## Subsection 2
+
+::: {.incremental}
+- Bullet point 2.1 incremental
+- Bullet point 2.2 also incremental
+:::
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
