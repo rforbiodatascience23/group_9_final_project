@@ -70,6 +70,8 @@ clean_pheno_data <- pheno_data |>
 ### Raw phenotype extraction from NCBI (Masha, Einstein & Magnus)
 
 ```{r}
+ncbi_clean_data <- ncbi_pheno_data
+
 ## Magnus
 #Choose relevant data
 ncbi_dirty_pheno <- ncbi_pheno_data |> 
@@ -172,7 +174,7 @@ is.data.frame(ncbi_pheno_data_impure_cut)
 
 ```
 
-### Boxplots showing normalization 
+### Boxplots showing normalization
 
 ```{r}
 
@@ -252,7 +254,7 @@ gene_exp <- gene_annotation |>
 sample_source_table <- ncbi_pheno_data_impure_cut |>
   select(Sample_geo_accession, 30) |>  # 30 = Sample_description
   mutate(sample_source = str_match(Sample_description, "[[:upper:]]+")) |> 
-  rename(sample_id = Sample_geo_accession)
+  rename(sample_id = Sample_geo_accession) |> 
   select(-Sample_description)
 
 # gene_exp_placenta
