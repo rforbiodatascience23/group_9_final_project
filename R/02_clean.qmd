@@ -148,6 +148,7 @@ ncbi_clean_data <- ncbi_dirty_data[-1,] |>
   rename_with(tolower, 
               .cols = everything()) 
 
+
 ## Oliver
 
 #Firstly chosing the right rows and transposing
