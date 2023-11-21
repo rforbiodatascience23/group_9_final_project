@@ -1,16 +1,25 @@
 ### Library
 
 ```{r}
+#| eval: false
+#| echo: true
+
 library("tidyverse")
 ```
 ### Loading
 ```{r}
+#| eval: false
+#| echo: true
+
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
 ```
 
 ### BMI class and Age group augmenation:
 
 ```{r}
+#| eval: false
+#| echo: true
+
 ncbi_augment_pheno <- ncbi_clean_pheno |>
   drop_na(maternal_bmi) |>
   mutate(BMI_class = case_when(
@@ -41,10 +50,13 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
   relocate(age_group,.before = age
            ) |>
   select(-age)
-             
-# Write tsv file
-write_tsv(x = ncbi_augment_pheno,
-          file = "../data/04_ncbi_augment_pheno.tsv.gz")
 
 ```
+### Write tsv file
+```{r}
+#| eval: false
+#| echo: true
 
+write_tsv(x = ncbi_augment_pheno,
+          file = "../data/04_ncbi_augment_pheno.tsv.gz")
+```
