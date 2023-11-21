@@ -12,6 +12,7 @@ library("tidyverse")
 #| echo: true
 
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
+ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expr.tsv.gz")
 ```
 
 ### BMI class and Age group augmenation:
@@ -51,6 +52,11 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
            ) |>
   select(-age)
 
+# Making a joined table
+joined_tables <- ncbi_augment_pheno |>
+  full_join(ncbi_clean_expr)
+
+
 ```
 ### Write tsv file
 ```{r}
@@ -59,4 +65,7 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
 
 write_tsv(x = ncbi_augment_pheno,
           file = "../data/04_ncbi_augment_pheno.tsv.gz")
+
+write_tsv(x = ncbi_joined,
+          file = "../data/04_ncbi_joined.tsv.gz")
 ```
