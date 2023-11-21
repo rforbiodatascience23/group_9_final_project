@@ -47,7 +47,8 @@ ncbi_dirty_pheno <- ncbi_data |>
   t()
 #Rename coloums
 colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |> 
-  stringr::str_replace_all("!Sample_","")
+  stringr::str_replace_all("!Sample_",
+                           "")
 
 #Add colnames to 
 ncbi_dirty_pheno <- ncbi_dirty_pheno[-1, ] |> 
@@ -60,8 +61,7 @@ colnames(ncbi_dirty_pheno)
 ncbi_clean_pheno <- ncbi_dirty_pheno |>
   # Choose important colunms to further wrangle. 
   select(matches(
-    "geo_accession|title|characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")
-    ) |>
+    "geo_accession|title|characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")) |>
   # mutate column name and variable string
   mutate(
     smoking_status = str_remove(v11, 
