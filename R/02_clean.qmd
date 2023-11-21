@@ -45,12 +45,11 @@ ncbi_dirty_pheno <- ncbi_data |>
                      "ID_REF")) |>
   slice(41:n()) |>
   t()
-#Rename coloums
+# Rename coloums
 colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |> 
   stringr::str_replace_all("!Sample_",
                            "")
-
-#Add colnames to 
+# Add colnames to 
 ncbi_dirty_pheno <- ncbi_dirty_pheno[-1, ] |> 
   as_tibble() |>
   rename_with(tolower, 
@@ -150,11 +149,12 @@ gene_annotation <- ncbi_annot_probes |>
 ncbi_clean_expr <- gene_annotation |> 
   select(Symbol, 
          Probe_Id) |> 
-  right_join(ncbi_clean_expr, 
+  right_join(ncbi_dirty_expr, 
              by = c('Probe_Id' = 'probe_id')) |> 
   rename(Gene = Symbol) |> 
   select(-Probe_Id)
 
+# to know what material samples are
 sample_source_table <- ncbi_clean_pheno |>
   select(geo_accession, 
          title) |>  
@@ -163,18 +163,37 @@ sample_source_table <- ncbi_clean_pheno |>
   rename(sample_id = geo_accession) |> 
   select(-title)
 
-# gene_exp_placenta
+# gene_expr_placenta
 gene_expr_placenta <- get_gene_expr_by_source(ncbi_clean_expr, 
                                               sample_source_table, 
                                               "PL")
 
-# gene_exp_maternal_blood
+# gene_expr_maternal_blood
 gene_expr_maternal_blood <- get_gene_expr_by_source(ncbi_clean_expr, 
                                                     sample_source_table, 
                                                     "M")
 
-# gene_exp cord blood
+# gene_expr cord blood
 gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expr, 
                                                 sample_source_table, 
                                                 "D")
 ```
+
+### Write tsv-files containing the data frames
+```{r}
+write_tsv(x = ncbi_clean_pheno,
+          file = "../data/02_ncbi_clean_pheno.tsv.gz")
+
+write_tsv(x = as_tibble(ncbi_clean_expr),
+          file = "../data/02_ncbi_clean_expr.tsv.gz")
+
+write_tsv(x = gene_expr_cord_blood,
+          file = "../data/02_gene_expr_cord_blood.tsv.gz")
+
+write_tsv(x = gene_expr_maternal_blood,
+          file = "../data/02_gene_expr_maternal_blood.tsv.gz")
+
+write_tsv(x = gene_expr_placenta,
+          file = "../data/02_gene_expr_placenta.tsv.gz")
+```
+
