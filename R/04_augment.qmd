@@ -11,8 +11,12 @@ library("tidyverse")
 #| eval: false
 #| echo: true
 
+# making vroom work
+Sys.setenv(VROOM_CONNECTION_SIZE = "5000000") # Attempt to make ncbi_clean_expr
+
+# load tsv files
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
-ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expr.tsv.gz")
+ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expr.tsv.gz") #NOT WORKING
 ```
 
 ### BMI class and Age group augmenation:
