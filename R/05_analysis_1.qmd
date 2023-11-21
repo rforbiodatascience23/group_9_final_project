@@ -18,6 +18,7 @@ source("../R/99_proj_func.R")
 
 pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
 expr_data <- vroom::vroom("../data/02_ncbi_clean_expr.tsv.gz", delim = "\t")
+joined_table <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", delim = "\t")
 
 pheno_data |> sample_n(5)
 
@@ -27,75 +28,6 @@ rename("id"=name)
 transposed_expr_data |> sample_n(5)
 ```
 
-### joining:
-
-```{r}
-
-# Joining
-joined_tables <- pheno_data |>
-  full_join(transposed_expr_data)
-```
-
-### plotting:
-
-```{r}
-clean_pheno_data |>
-  ggplot(aes(y = `Mother_age_years`,
-             fill=smoking_status)) +
-  geom_boxplot() +
-  labs(y = "Mother age (years)",
-       x= "",
-       caption = "Data from NCBI (2011)",
-       title = "Comparison of mother's age by smoking status",
-       fill = "Smoking status") +
-  theme(legend.position = "bottom")
-
-clean_pheno_data |>
-  ggplot(aes(y = maternal_bmi,
-             fill=smoking_status)) +
-  geom_boxplot() +
-  labs(x = "",
-       y= "Maternal BMI",
-       caption = "Data from NCBI (2011)",
-       title = "Comparison of mother's BMI by smoking status",
-       fill = "Smoking status") +
-  theme(legend.position = "bottom")
-
-
-clean_pheno_data |>
-  ggplot(aes(y = `maternal_blood_cotinine_ng_ml`,
-             fill=smoking_status)) +
-  geom_boxplot() +
-  labs(x = "",
-       y= "Blood cotinine (ng/ml)",
-       caption = "Data from NCBI (2011)",
-       title = "Comparison of mother's blood cotinine concentration by smoking status",
-       fill = "Smoking status") +
-  theme(legend.position = "bottom")
-
-clean_pheno_data |>
-  ggplot(aes(`cord_blood_cotinine_ng_ml`,
-             fill=smoking_status)) +
-  geom_boxplot() +
-  labs(x = "",
-       y= "Cord blood cotinine (ng/ml)",
-       caption = "Data from NCBI (2011)",
-       title = "Comparison of mother's blood cotinine concentration by smoking status",
-       fill = "Smoking status") +
-  theme(legend.position = "bottom")
-
-# Plot of a single genes exprs by non- and smokers
-joined_tables |>
-  sample_n(20) |>
-  ggplot(aes(fill=smoking_status)) +
-  geom_boxplot(aes(ENSG00000233927)) +
-  labs(x = "",
-       y= "",
-       caption = "Data from NCBI (2011)",
-       title = "",
-       fill = "Smoking status") +
-  theme(legend.position = "bottom")
-```
 
 ### Data statistics:
 
