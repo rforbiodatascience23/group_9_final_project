@@ -11,9 +11,11 @@ library("tidyverse")
 #| eval: false
 #| echo: true
 
+# load tsv files
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
 ncbi_clean_expression <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
 ```
+
 ```{r}
 # transpose expression data
 ncbi_clean_expr <- ncbi_clean_expression |>
@@ -24,6 +26,7 @@ ncbi_clean_expr <- ncbi_clean_expression |>
 # fixing the column names
 colnames(ncbi_clean_expr) <- ncbi_clean_expr[1,]
 ncbi_clean_expr <- ncbi_clean_expr[-1,]
+
 ```
 
 ### BMI class and Age group augmenation:

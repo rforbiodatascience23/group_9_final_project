@@ -1,10 +1,13 @@
 ---
 title: "presentation"
 author: "group 9"
-format: revealjs
-editor: visual
+format:
+  revealjs:
+    theme: dark
+    slide-number: true
+    show-slide-number: all
 ---
-#Introduction
+# Introduction
 
 ## Subsection 1
 
@@ -18,10 +21,25 @@ editor: visual
 - Bullet point 2.2 also incremental
 :::
 
-## Code
+## Image that Lucio made
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+![](../results/Plots/description_age_boxplot.png)
 
-```{r}
-1 + 1
+# Materials and Methods
+
+## Data handling
+```{mermaid}
+flowchart LR
+  A[Hard edge] --> B(Round edge)
+  B --> C{Decision}
+  C --> D[Result one]
+  C --> E[Result two]
 ```
+
+# Results (And)
+ 
+## Results (some dramatic name)
+
+# Discussion
+
+## (Discussion about specifics in the data)
