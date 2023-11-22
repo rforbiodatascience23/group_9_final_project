@@ -6,7 +6,7 @@
 <script src="presentation_files/libs/quarto-html/tippy.umd.min.js"></script>
 <link href="presentation_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="presentation_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="presentation_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="presentation_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.2.475">
 
   <meta name="author" content="group 9">
@@ -322,7 +322,7 @@
   <script src="presentation_files/libs/quarto-diagram/mermaid-init.js"></script>
   <link href="presentation_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
 </head>
-<body class="quarto-dark">
+<body class="quarto-light">
   <div class="reveal">
     <div class="slides">
 
@@ -337,6 +337,12 @@ group 9
 </div>
 </div>
 
+</section>
+<section class="slide level2">
+
+<div class="cell">
+
+</div>
 </section>
 <section>
 <section id="introduction" class="title-slide slide level1 center">
@@ -362,23 +368,43 @@ group 9
 <section id="image-that-lucio-made" class="slide level2">
 <h2>Image that Lucio made</h2>
 
-<img data-src="%22../results/Plots/description_age_boxplot.png%22" class="r-stretch"></section></section>
+<img data-src="../results/plots/description_age_boxplot.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section></section>
 <section>
 <section id="materials-and-methods" class="title-slide slide level1 center">
 <h1>Materials and Methods</h1>
 
 </section>
-<section id="data-handling" class="slide level2">
+<section id="data-handling" class="slide level2 scrollable">
 <h2>Data handling</h2>
 <div class="cell" data-reveal="true">
 <div class="cell-output-display">
 <div>
 <p>
-</p><pre class="mermaid mermaid-js" data-tooltip-selector="#mermaid-tooltip-1">flowchart LR
-  A[Hard edge] --&gt; B(Round edge)
-  B --&gt; C{Decision}
-  C --&gt; D[Result one]
-  C --&gt; E[Result two]
+</p><pre class="mermaid mermaid-js" data-tooltip-selector="#mermaid-tooltip-1">flowchart TD
+  subgraph 01_load
+  A[ncbi_data] --&gt;|"write_tsv"| B[01_ncbi_data.tsv.gz]
+  I["annotation_data$probes"] --&gt; |"write_tsv"| J["01_ncbi_annot_probes.tsv.gz"]
+  end
+  subgraph 02_clean
+  B[01_ncbi_data.tsv.gz] --&gt;|"read_tsv"| C[ncbi_data]
+  C[ncbi_data] --&gt;|"as_tibble |&gt; &lt;br/&gt;filter(!str_detect) |&gt; &lt;br/&gt;slice(41:n) |&gt; &lt;br/&gt;t()"| D[ncbi_dirty_pheno]
+  D[ncbi_dirty_pheno] --&gt; |"colnames[1, ] |&gt; &lt;br/&gt;str_replace_all('!sample_', ' ')"| E[ncbi_dirty_pheno]
+  E[ncbi_dirty_pheno] --&gt; |"[-1, ] |&gt; &lt;br/&gt;as_tibble() |&gt; &lt;br/&gt;rename_with()"| F[ncbi_dirty_pheno]
+  F[ncbi_dirty_pheno] --&gt; |"select() |&gt; &lt;br/&gt;mutate() |&gt; &lt;br/&gt;select() |&gt; &lt;br/&gt;t() |&gt; &lt;br/&gt;as.data.frame() |&gt; &lt;br/&gt;rename_with() |&gt; &lt;br/&gt;as_tibble()"| H[ncbi_clean_pheno]
+  
+  C[ncbi_data] --&gt; G[ncbi_dirty_expr]
+  G[ncbi_dirty_expr] --&gt; |"slice() |&gt;  &lt;br/&gt;colnames() |&gt;  &lt;br/&gt;slice() |&gt;  &lt;br/&gt;unlist()"| L[ncbi_dirty_expr]
+  L[ncbi_dirty_expr] --&gt; |"rename() |&gt; &lt;br/&gt;mutate(across(-probe.id, ~ as numeric(.x))) "| M[ncbi_dirty_expr]
+  
+  
+  J["01_ncbi_annot_probes.tsv.gz"] --&gt;|"read_tsv()"| N["ncbi_annot_probes"]
+  N["ncbi_annot_probes"] --&gt; |"select()"| O["gene_annotation"]
+  
+  O["gene_annotation"] ---|"select()"| P( ):::empty
+  M["ncbi_dirty_expr"] --- P( )
+  P( ) --&gt;|"right_join(by = c('Probe_Id' = 'probe_id')) |&gt; &lt;br/&gt;rename() |&gt; &lt;br/&gt;select()"| Q["ncbi_clean_expression"]
+  
+  end
 </pre>
 <div id="mermaid-tooltip-1" class="mermaidTooltip">
 
@@ -387,6 +413,8 @@ group 9
 </div>
 </div>
 </div>
+<p>%%sample_source_table &lt;- ncbi_clean_pheno |&gt; %% select(geo_accession, %% title) |&gt;<br>
+%% mutate(sample_source = str_match(title, %% “[[:upper:]]+”)) |&gt; %% rename(sample_id = geo_accession) |&gt; %% select(-title) %% %%# gene_expr_placenta %%gene_expr_placenta &lt;- get_gene_expr_by_source(ncbi_clean_expression, %% sample_source_table, %% “PL”) %% %%# gene_expr_maternal_blood %%gene_expr_maternal_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, %% sample_source_table, %% “M”) %% %%# gene_expr cord blood %%gene_expr_cord_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, %% sample_source_table, %% “D”) %% %% %%ncbi_clean_expr &lt;- ncbi_clean_expression |&gt; %% as.data.frame() |&gt; %% t() |&gt; %% as.data.frame() %% # fixing the column names colnames(ncbi_clean_expr) &lt;- ncbi_clean_expr[1,] ncbi_clean_expr &lt;- ncbi_clean_expr[-1,]</p>
 </section></section>
 <section>
 <section id="results-and" class="title-slide slide level1 center">
@@ -395,6 +423,33 @@ group 9
 </section>
 <section id="results-some-dramatic-name" class="slide level2">
 <h2>Results (some dramatic name)</h2>
+<div class="cell" data-reveal="true">
+<div class="cell-output-display">
+<div>
+<p>
+</p><pre class="mermaid mermaid-js" data-tooltip-selector="#mermaid-tooltip-2">flowchart TB
+    c1--&gt;a2
+    subgraph one
+    a1--&gt;a2
+    end
+    subgraph two
+    b1--&gt;b2
+    end
+    subgraph three
+    c1--&gt;c2
+    end
+    one --&gt; two
+    three --&gt; two
+    two --&gt; c2
+    
+</pre>
+<div id="mermaid-tooltip-2" class="mermaidTooltip">
+
+</div>
+<p></p>
+</div>
+</div>
+</div>
 </section></section>
 <section>
 <section id="discussion" class="title-slide slide level1 center">
@@ -404,7 +459,7 @@ group 9
 <section id="discussion-about-specifics-in-the-data" class="slide level2">
 <h2>(Discussion about specifics in the data)</h2>
 <div class="footer footer-default">
-
+<p>Group 9 presentation</p>
 </div>
 </section></section>
     </div>
@@ -618,6 +673,44 @@ group 9
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
