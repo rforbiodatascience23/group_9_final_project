@@ -146,7 +146,7 @@ gene_annotation <- ncbi_annot_probes |>
          Entrez_Gene_ID, 
          starts_with("Ontology"))
 
-ncbi_clean_expression <- gene_annotation |> 
+ncbi_clean_expr <- gene_annotation |> 
   select(Symbol, 
          Probe_Id) |> 
   right_join(ncbi_dirty_expr, 
@@ -185,8 +185,8 @@ gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expression,
 write_tsv(x = ncbi_clean_pheno,
           file = "../data/02_ncbi_clean_pheno.tsv.gz")
 
-write_tsv(x = ncbi_clean_expression,
-          file = "../data/02_ncbi_clean_expression.tsv.gz")
+write_tsv(x = ncbi_clean_expr,
+          file = "../data/02_ncbi_clean_expr.tsv.gz")
 
 write_tsv(x = gene_expr_cord_blood,
           file = "../data/02_gene_expr_cord_blood.tsv.gz")

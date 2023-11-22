@@ -1,3 +1,9 @@
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
 ### Library:
 
 ```{r}
@@ -12,33 +18,42 @@ library("ggrepel")
 ### loading:
 
 ```{r}
-#| eval: false
+#| eval: true
 #| message: false
-source("../R/99_proj_func.R")
 
-pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz", delim = "\t")
-expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
-joined_table <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", delim = "\t")
+pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
+                           delim = "\t")
 
-pheno_data |> sample_n(5)
-transposed_expr_data |> sample_n(5)
-joined_table |> sample_n(5)
+# we haven't augmented expr (Masha)
+# expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
+
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
+                             delim = "\t")
+ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
+                                 delim = "\t")
+
+pheno_data |> 
+  sample_n(5)
+ncbi_joined |> 
+  sample_n(5)
+ncbi_joined_aug |> 
+  sample_n(5)
 ```
 
 ### Data statistics:
 
 ```{r}
 
-joined_colnames <- joined_tables |> 
+joined_colnames <- ncbi_joined_aug |> 
   colnames()
 
-auged_norm_exprs_00 <- joined_tables |> 
-  dplyr::select(-joined_colnames[1:7],-
-           joined_colnames[9:12]) |>
+auged_norm_exprs_00 <- ncbi_joined_aug |> 
+  dplyr::select(-joined_colnames[1],
+                -joined_colnames[4:15]) |>
   mutate(is_smoker = case_when(str_detect(smoking_status, 
                                           "non") == 1 ~ 0,
                                str_detect(smoking_status, 
-                                          "non") == 0 ~ 1), 
+                                          "non") == 0 ~ 1),
          .before = 1) |>
   dplyr::select(-smoking_status)
 
