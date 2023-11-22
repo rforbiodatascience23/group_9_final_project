@@ -1,5 +1,101 @@
-### Source functions
+### Library
 
 ```{r}
-# some source code
+#| eval: true
+#| echo: true
+
+library("tidyverse")
+```
+
+### Loading
+
+```{r}
+#| eval: true
+#| echo: true
+
+# load tsv files
+ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
+ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expr.tsv.gz")
+```
+
+```{r}
+# transpose expression data
+transposed_expr_data <- ncbi_clean_expr |> 
+  distinct(Gene,
+           .keep_all = TRUE) |>
+  pivot_longer(cols = -Gene,
+               names_to = "gene",
+               values_to = "value") |>
+  pivot_wider(names_from = "Gene",
+              values_from = "value") |>
+  rename("geo_accession" = gene)
+
+ncbi_joined <- ncbi_clean_pheno |>
+  full_join(transposed_expr_data)
+
+# fixing the column names (unnessecary)
+#colnames(ncbi_clean_expr) <- ncbi_clean_expression[1,]
+#ncbi_clean_expr <- ncbi_clean_expr[-1,]
+
+```
+
+### BMI class and Age group augmenation:
+
+```{r}
+#| eval: true
+#| echo: true
+
+ncbi_augment_pheno <- ncbi_clean_pheno |>
+  drop_na(maternal_bmi) |>
+  mutate(BMI_class = case_when(maternal_bmi < 16.5 ~ "Severely underweight",
+                               16.5 <= maternal_bmi & maternal_bmi < 18.5 ~ "Underweight",
+                               18.5 <= maternal_bmi & maternal_bmi < 24.9 ~ "Normal weight",
+                               24.9 <= maternal_bmi & maternal_bmi < 30 ~ "Overweight",
+                               maternal_bmi >= 30 & maternal_bmi < 35 ~ "Obesity class I",
+                               maternal_bmi >= 35 & maternal_bmi < 40 ~ "Obesity class II",
+                               maternal_bmi >= 40 ~ "Obesity class III")) |>
+  mutate(BMI_class = factor(BMI_class,
+                            levels = c("Severely underweight",
+                                       "Underweight",
+                                       "Normal weight", 
+                                       "Overweight",
+                                       "Obesity", 
+                                       "Obesity class I",
+                                       "Obesity class II", 
+                                       "Obesity class III"))) |>
+  relocate(BMI_class,
+           .before = maternal_bmi) |>
+  select(-maternal_bmi) |>
+  mutate(age_group = cut(age,
+                         breaks = c(20,
+                                    30,
+                                    40,
+                                    50,
+                                    60,
+                                    70,
+                                    80))) |>
+  relocate(age_group,
+           .before = age) |>
+  select(-age)
+
+# Making a joined table
+ncbi_joined_aug <- ncbi_augment_pheno |>
+  full_join(transposed_expr_data)
+
+```
+
+### Write tsv file
+
+```{r}
+#| eval: true
+#| echo: true
+
+write_tsv(x = ncbi_augment_pheno,
+          file = "../data/04_ncbi_augment_pheno.tsv.gz")
+
+write_tsv(x = ncbi_joined,
+          file = "../data/04_ncbi_joined.tsv.gz")
+
+write_tsv(x = ncbi_joined_aug,
+          file = "../data/04_ncbi_joined_aug.tsv.gz")
 ```

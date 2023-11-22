@@ -1,0 +1,97 @@
+## All from 02_clean
+```{r}
+#| label: Phenotypic clean file stuff (kaggle)
+clean_pheno_data <- pheno_data |>
+  rename("sample_id" = "geo_accession") |>
+  rename(
+    "Mother_age_years" = "age..years..ch1",
+    "apgar_score" = "apgar.score..5s..ch1",
+    "cord_blood_cotinine_ng_ml" = "cord.blood.cotinine..ng.ml..ch1",
+    "gestational_age_weeks" = "gestational.age..weeks..ch1",
+    "maternal_blood_cotinine_ng_ml" ="maternal.blood.cotinine..ng.ml..ch1",
+    "maternal_bmi" = "maternal.bmi.ch1",
+    "smoking_status" = "smoking.status.ch1",
+    "newborn_weight_g"="newborn.weight..g..ch1") |>
+  select("sample_id",
+         "Mother_age_years",
+         "apgar_score",
+         "cord_blood_cotinine_ng_ml",
+         "gestational_age_weeks",
+         "maternal_blood_cotinine_ng_ml",
+         "maternal_bmi",
+         "smoking_status",
+         "newborn_weight_g",
+         "sex",
+         "description")
+```
+
+```{r}
+#| label: from 02_clean kaggle load
+
+feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
+pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
+norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz")
+
+```
+
+```{r}
+#| label: from 02_clean Oliver and Magnus
+
+######################
+ncbi_dirty_data <- ncbi_data[88:nrow(ncbi_data), , 
+                                   drop = FALSE]
+
+colnames(ncbi_dirty_data) <- ncbi_dirty_data[1, ]
+
+ncbi_dirty_data <- ncbi_dirty_data[-1, ] |>
+  t()
+
+#Add colnames to 
+ncbi_clean_expr <- ncbi_dirty_data
+
+ncbi_clean_expr <- ncbi_dirty_data[-1,] |> 
+  as.data.frame() |>
+  rename_with(tolower, 
+              .cols = everything()) 
+
+## Oliver
+
+#Firstly chosing the right rows and transposing
+ncbi_pheno_data_impure <- ncbi_pheno_data[1:86,] |> t()
+
+#Then choosing the right columns and making as tibble
+ncbi_pheno_data_impure_cut <- ncbi_pheno_data_impure[,41:86] |> as_tibble()
+
+
+#Removing ! from the names and Convert first row to header
+colnames(ncbi_pheno_data_impure_cut) <- ncbi_pheno_data_impure_cut[1, ] |>
+  stringr::str_replace_all("!", "")
+
+ncbi_pheno_data_impure_cut_renamed
+
+
+
+ncbi_pheno_data_impure_cut |> View()
+is.data.frame(ncbi_pheno_data_impure_cut) 
+
+```
+
+```{r}
+#| label: from 02_clean Silvia
+
+### Boxplots showing normalization
+
+# BOXPLOTS to check NORMALIZATION
+
+# check ncbi data (original)
+b_raw <- ncbi_data[89:nrow(ncbi_data), 2:10] |> 
+  mutate_all(as.numeric) |>
+  boxplot()
+
+
+# Kaggle normalized data
+b <- norm_exprs[1:nrow(norm_exprs), 1:10] |> 
+  boxplot()
+
+```
+

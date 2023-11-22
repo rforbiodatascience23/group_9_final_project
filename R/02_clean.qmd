@@ -19,62 +19,25 @@ library("tidyverse")
 library(vroom)
 ```
 
-### Clean
+### Load and initial view
 
 ```{r}
-
-feature_data <- vroom("../data/01_feature_data.tsv.gz", delim = "\t")
-pheno_data <- vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
-norm_exprs <- vroom("../data/01_norm_exprs.tsv.gz")
-
 ncbi_data <- read_tsv("../data/01_ncbi_data.tsv.gz")
 ncbi_annot_probes <- read_tsv("../data/01_ncbi_annot_probes.tsv.gz")
 ```
 
 ```{r}
-
-feature_data |> sample_n(5)
-pheno_data |> sample_n(5)
-norm_exprs |> sample_n(5)
-ncbi_data |> sample(5)
-
+ncbi_data |> 
+  sample(5)
+ncbi_annot_probes |>
+  sample(5)
 ```
 
-### Phenotypic clean file stuff
+### Extract phenotype data from NCBI
 
 ```{r}
-clean_pheno_data <- pheno_data |>
-  rename("sample_id" = "geo_accession") |>
-  rename(
-    "Mother_age_years" = "age..years..ch1",
-    "apgar_score" = "apgar.score..5s..ch1",
-    "cord_blood_cotinine_ng_ml" = "cord.blood.cotinine..ng.ml..ch1",
-    "gestational_age_weeks" = "gestational.age..weeks..ch1",
-    "maternal_blood_cotinine_ng_ml" ="maternal.blood.cotinine..ng.ml..ch1",
-    "maternal_bmi" = "maternal.bmi.ch1",
-    "smoking_status" = "smoking.status.ch1",
-    "newborn_weight_g"="newborn.weight..g..ch1") |>
-  select("sample_id",
-         "Mother_age_years",
-         "apgar_score",
-         "cord_blood_cotinine_ng_ml",
-         "gestational_age_weeks",
-         "maternal_blood_cotinine_ng_ml",
-         "maternal_bmi",
-         "smoking_status",
-         "newborn_weight_g",
-         "sex",
-         "description")
-```
-
-### Raw phenotype extraction from NCBI (Masha, Einstein & Magnus)
-
-```{r}
-ncbi_clean_data <- ncbi_pheno_data
-
 ## Magnus
-#Choose relevant data
-ncbi_dirty_pheno <- ncbi_pheno_data |> 
+ncbi_dirty_pheno <- ncbi_data |> 
   as_tibble() |>
   filter(!str_detect(col_1, 
                      "ILMN")) |>
@@ -82,147 +45,83 @@ ncbi_dirty_pheno <- ncbi_pheno_data |>
                      "ID_REF")) |>
   slice(41:n()) |>
   t()
-#Rename coloums
+# Rename coloums
 colnames(ncbi_dirty_pheno) <- ncbi_dirty_pheno[1, ] |> 
-  stringr::str_replace_all("!Sample_","")
-
-#Add colnames to 
+  stringr::str_replace_all("!Sample_",
+                           "")
+# Remove first row
 ncbi_dirty_pheno <- ncbi_dirty_pheno[-1, ] |> 
   as_tibble() |>
   rename_with(tolower, 
               .cols = everything()) 
-
 colnames(ncbi_dirty_pheno)
 
 # more data wrangling
 ncbi_clean_pheno <- ncbi_dirty_pheno |>
-  # Choose important coloums to further wrangle. 
+  # Choose important colunms to further wrangle. 
   select(matches(
-    "geo_accession|title|characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")
-    ) |>
-  # mutate coloumn name and variable string
+    "geo_accession|title|characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")) |>
+  # mutate column name and variable string
   mutate(
-    smoking_status = str_remove(
-      v11, "smoking status: "),
-    tissue = str_remove(characteristics_ch1, "tissue: "),
-    age = as.numeric(str_remove(
-      v12, "age \\(years\\): ")),
-    maternal_bmi = as.numeric(str_remove(
-      v13, "maternal bmi: ")),
-    parity = str_remove(v14, "parity: "),
-    gestational_age = as.numeric(str_remove(
-      v15, "gestational age \\(weeks\\): ")),
-    birth_type = str_remove(
-      v16, "mode of delivery: "),
-    placental_weight = as.numeric(str_remove(
-      v17, "placental weight \\(g\\): ")),
-    newborn_weight = as.numeric(str_remove(
-      v18, "newborn weight \\(g\\): ")),
-    apgar_score = as.numeric(str_remove(
-      v19, "apgar score \\(5s\\): ")),
-    cotinine_conc_maternal = as.numeric(str_remove(
-      v20, "maternal blood cotinine \\(ng/ml\\): ")),
-    cotinine_conc_cord = as.numeric(str_remove(
-      v21, "cord blood cotinine \\(ng/ml\\): ")),
-    individual = str_remove(
-      v22, "individual: ")) |>
+    smoking_status = str_remove(v11, 
+                                "smoking status: "),
+    tissue = str_remove(characteristics_ch1, 
+                        "tissue: "),
+    age = as.numeric(str_remove(v12, 
+                                "age \\(years\\): ")),
+    maternal_bmi = as.numeric(str_remove(v13, 
+                                         "maternal bmi: ")),
+    parity = str_remove(v14, 
+                        "parity: "),
+    gestational_age = as.numeric(str_remove(v15, 
+                                            "gestational age \\(weeks\\): ")),
+    birth_type = str_remove(v16, 
+                            "mode of delivery: "),
+    placental_weight = as.numeric(str_remove(v17, 
+                                             "placental weight \\(g\\): ")),
+    newborn_weight = as.numeric(str_remove(v18, 
+                                           "newborn weight \\(g\\): ")),
+    apgar_score = as.numeric(str_remove(v19, 
+                                        "apgar score \\(5s\\): ")),
+    cotinine_conc_maternal = as.numeric(str_remove(v20, 
+                                                   "maternal blood cotinine \\(ng/ml\\): ")),
+    cotinine_conc_cord = as.numeric(str_remove(v21, 
+                                               "cord blood cotinine \\(ng/ml\\): ")),
+    individual = str_remove(v22, 
+                            "individual: ")) |>
   # Keep new columns
-  select(-matches("characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")
-         ) |>
+  select(-matches("characteristics_ch1|v11|v12|v13|v14|v15|v16|v17|v18|v19|v20|v21|v22")) |>
   t() |> 
   as.data.frame() |>
-  rename_with(~str_replace_all(., "V", ""), .cols = everything()
-              ) |>
-  t()
-
-######################
-ncbi_dirty_data <- ncbi_pheno_data[88:nrow(ncbi_pheno_data), , 
-                                   drop = FALSE]
-colnames(ncbi_dirty_data) <- ncbi_dirty_data[1, ]
-ncbi_dirty_data <- ncbi_dirty_data[-1, ] |>
-  t()
-
-#Add colnames to 
-ncbi_clean_data <- ncbi_dirty_data
-
-ncbi_clean_data <- ncbi_dirty_data[-1,] |> 
-  as.data.frame() |>
-  rename_with(tolower, 
-              .cols = everything()) 
-
-## Oliver
-
-#Firstly chosing the right rows and transposing
-ncbi_pheno_data_impure <- ncbi_pheno_data[1:86,] |> t()
-
-#Then choosing the right columns and making as tibble
-ncbi_pheno_data_impure_cut <- ncbi_pheno_data_impure[,41:86] |> as_tibble()
-
-
-#Removing ! from the names and Convert first row to header
-colnames(ncbi_pheno_data_impure_cut) <- ncbi_pheno_data_impure_cut[1, ] |>
-  stringr::str_replace_all("!", "")
-
-ncbi_pheno_data_impure_cut_renamed
-
-
-
-ncbi_pheno_data_impure_cut |> View()
-is.data.frame(ncbi_pheno_data_impure_cut) 
-
+  rename_with(~str_replace_all(., 
+                               "V", 
+                               ""), 
+              .cols = everything()) |>
+  t() |>
+  as_tibble()
 
 ```
 
-### Boxplots showing normalization
+### Extract gene expression from NCBI data
 
 ```{r}
-
-# BOXPLOTS to check NORMALIZATION
-
-# check ncbi data (original)
-b_raw <- ncbi_data[89:nrow(ncbi_data), 2:10] |> 
-  mutate_all(as.numeric) |>
-  boxplot()
-
-
-# Kaggle normalized data
-b <- norm_exprs[1:nrow(norm_exprs), 1:10] |> 
-  boxplot()
-
-
-# RAW NON NORMALIZED PLACENTA FILE
-file_n <- "GSE27272_non-normalized_placenta.txt.gz"
-raw_dir <- "../_raw/"
-non-normalized_placenta <- read.table(gzfile(str_c(raw_dir, file_n)))
-non-normalized_placenta[2:nrow(non-normalized_placenta), 2:10] |> 
-  mutate_all(as.numeric) |> 
-  boxplot()
-
-       
-```
-
-### Extract gene expression
-
-```{r}
-# extract gene expression from ncbi data
-
 gene_exp_idx <- 89
 
-gene_exp <- ncbi_data |> 
+ncbi_dirty_expr <- ncbi_data |> 
   slice(gene_exp_idx:nrow(ncbi_data))
   
-colnames(gene_exp) <-
+colnames(ncbi_dirty_expr) <-
   ncbi_data |> 
   slice(88) |>
   unlist()
         
-gene_exp <- gene_exp |> 
+ncbi_dirty_expr <- ncbi_dirty_expr |> 
   rename(probe_id = ID_REF) |>
-  mutate(across(-probe_id, ~ as.numeric(.x)))
-
+  mutate(across(-probe_id, 
+                ~ as.numeric(.x)))
 
 ###### Nicer boxplot to show normalization
-gene_exp_longer <- gene_exp  |> 
+gene_exp_longer <- ncbi_dirty_expr  |> 
   select(1:10) |> 
   pivot_longer(
     cols = starts_with("GSM"),
@@ -230,7 +129,9 @@ gene_exp_longer <- gene_exp  |>
     values_to = "gene_expression"
   )
 
-ggplot(data=gene_exp_longer, mapping=aes(x=sample_id, y=gene_expression)) +
+ggplot(data = gene_exp_longer, 
+       mapping = aes(x = sample_id, 
+                     y = gene_expression)) +
   geom_boxplot()
 ```
 
@@ -238,34 +139,66 @@ ggplot(data=gene_exp_longer, mapping=aes(x=sample_id, y=gene_expression)) +
 
 ```{r}
 # extract important columns from annotation
-
 gene_annotation <- ncbi_annot_probes |> 
-  select(Symbol, Probe_Id, Definition, Entrez_Gene_ID, starts_with("Ontology"))
+  select(Symbol, 
+         Probe_Id, 
+         Definition, 
+         Entrez_Gene_ID, 
+         starts_with("Ontology"))
 
-gene_exp <- gene_annotation |> 
-  select(Symbol, Probe_Id) |> 
-  right_join(gene_exp, by=c('Probe_Id'='probe_id')) |> 
+ncbi_clean_expr <- gene_annotation |> 
+  select(Symbol, 
+         Probe_Id) |> 
+  right_join(ncbi_dirty_expr, 
+             by = c('Probe_Id' = 'probe_id')) |> 
   rename(Gene = Symbol) |> 
   select(-Probe_Id)
 
-####### need ncbi_pheno_data_impure_cut df
+# to know what material samples are
+sample_source_table <- ncbi_clean_pheno |>
+  select(geo_accession, 
+         title) |>  
+  mutate(sample_source = str_match(title, 
+                                   "[[:upper:]]+")) |> 
+  rename(sample_id = geo_accession) |> 
+  select(-title)
 
-sample_source_table <- ncbi_pheno_data_impure_cut |>
-  select(Sample_geo_accession, 30) |>  # 30 = Sample_description
-  mutate(sample_source = str_match(Sample_description, "[[:upper:]]+")) |> 
-  rename(sample_id = Sample_geo_accession) |> 
-  select(-Sample_description)
+# gene_expr_placenta
+gene_expr_placenta <- get_gene_expr_by_source(ncbi_clean_expression, 
+                                              sample_source_table, 
+                                              "PL")
 
-# gene_exp_placenta
-gene_exp_placenta <- get_gene_expr_by_source(gene_exp, sample_source_table, "PL")
+# gene_expr_maternal_blood
+gene_expr_maternal_blood <- get_gene_expr_by_source(ncbi_clean_expression, 
+                                                    sample_source_table, 
+                                                    "M")
 
-# gene_exp_maternal_blood
-gene_exp_maternal_blood <- get_gene_expr_by_source(gene_exp, sample_source_table, "M")
+# gene_expr cord blood
+gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expression, 
+                                                sample_source_table, 
+                                                "D")
 
-# gene_exp cord blood
-gene_exp_cord_blood <- get_gene_expr_by_source(gene_exp, sample_source_table, "D")
 ```
 
+### Write tsv-files containing the data frames
+```{r}
+write_tsv(x = ncbi_clean_pheno,
+          file = "../data/02_ncbi_clean_pheno.tsv.gz")
+
+write_tsv(x = ncbi_clean_expr,
+          file = "../data/02_ncbi_clean_expr.tsv.gz")
+
+write_tsv(x = gene_expr_cord_blood,
+          file = "../data/02_gene_expr_cord_blood.tsv.gz")
+
+write_tsv(x = gene_expr_maternal_blood,
+          file = "../data/02_gene_expr_maternal_blood.tsv.gz")
+
+write_tsv(x = gene_expr_placenta,
+          file = "../data/02_gene_expr_placenta.tsv.gz")
+```
+
+<<<<<<< HEAD
 ```{r}
 
 length(unique(rownames(gene_exp_placenta)))
@@ -431,3 +364,5 @@ ncbi_data[89:nrow(ncbi_data), ]
 gene_annotation |> 
   filter(Symbol=="NCOA3")
 ```
+=======
+>>>>>>> master

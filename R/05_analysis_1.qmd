@@ -1,5 +1,168 @@
 ### Source functions
 
 ```{r}
-# some source code
+source("../R/99_proj_func.R")
 ```
+
+### Library:
+
+```{r}
+#| message: false
+library("tidyverse")
+library("ggridges")
+library("viridis")
+library("broom")
+library("ggrepel")
+```
+
+### loading:
+
+```{r}
+#| eval: true
+#| message: false
+
+pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
+                           delim = "\t")
+
+# we haven't augmented expr (Masha)
+# expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
+
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
+                             delim = "\t")
+ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
+                                 delim = "\t")
+
+pheno_data |> 
+  sample_n(5)
+ncbi_joined |> 
+  sample_n(5)
+ncbi_joined_aug |> 
+  sample_n(5)
+```
+
+### Data statistics:
+
+```{r}
+
+joined_colnames <- ncbi_joined_aug |> 
+  colnames()
+
+auged_norm_exprs_00 <- ncbi_joined_aug |> 
+  dplyr::select(-joined_colnames[1],
+                -joined_colnames[4:15]) |>
+  mutate(is_smoker = case_when(str_detect(smoking_status, 
+                                          "non") == 1 ~ 0,
+                               str_detect(smoking_status, 
+                                          "non") == 0 ~ 1),
+         .before = 1) |>
+  dplyr::select(-smoking_status)
+
+auged_norm_exprs_01 <- auged_norm_exprs_00 |>
+  pivot_longer(cols = starts_with("EN"),
+               names_to = "gene",
+               values_to = "expr_level") |>
+  mutate(log_2_expr_level =log2(expr_level)) |>
+  dplyr::select(-expr_level)
+
+auged_norm_exprs_02 <- auged_norm_exprs_01 |>
+  group_by(gene) |>
+  nest() |>
+  ungroup()
+
+# updating data frame. First we group rows by gene, and then we add a variable containing model fitted to expression level against early_metastasis variable
+auged_norm_exprs_03 <- auged_norm_exprs_02 |>
+  group_by(gene) |>
+  mutate(model_object = map(.x = data,
+                            .f = ~lm(formula = log_2_expr_level ~ is_smoker,
+                                     data = .x))) |>
+  
+# using tidy function to turn model summary into a tibble instead of a list  
+  mutate(model_object_tidy = map(.x = model_object,
+                                 .f = ~ tidy(.x,
+                                             conf.int = TRUE,
+                                             conf.level = 0.95)))
+
+# unnesting the tidy models, filtering to only get "slope"-coefficients for models and selecting desired variables
+auged_norm_exprs_04 <- auged_norm_exprs_03 |>
+  unnest(model_object_tidy) |>
+  filter(term == "is_smoker") |>
+  dplyr::select(gene, 
+                p.value, 
+                estimate, 
+                conf.low, 
+                conf.high) |>
+  ungroup() |>
+  
+# creating variables "q-value" which is the p-value adjusted for multiple comparisons and "is_significant" which indicates whether observations are statistically significant when using a level of significance of 0.0
+  mutate(is_significant = case_when(
+           p.value < 0.05 ~ "yes",
+           0.05 < p.value ~ "no"
+         ))
+```
+
+### Volcano plot:
+
+```{r}
+significant_labels <- subset(auged_norm_exprs_04 , 
+                          is_significant == "yes") |>
+  dplyr::select(gene)
+
+auged_norm_exprs_04 |>
+  ggplot(aes(x = gene,
+             y = -log(p.value,10),
+             label = ifelse(is_significant == "yes", 
+                            gene, 
+                            ""))) + 
+  geom_point(aes(x = estimate, 
+                 color = is_significant),
+             alpha = .5,
+             size=1) +
+  geom_hline(yintercept = 0) +
+  theme_minimal(base_size = 10) +
+  labs(title = "Genes Associated with",
+       subtitle = "Genes highlighted in turquoise were significant after multiple testing correction",
+       x = "Estimates",
+       y = "-log10(p)") +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = .95),
+        plot.subtitle = element_text(hjust = .95))
+```
+
+## more rangling:
+
+```{r}
+
+# General exprs of all genes comparing smoking
+
+joined_tables |> select(-joined_colnames[1:7],
+                        -joined_colnames[9:12]) |>
+  pivot_longer(cols = starts_with("EN"),
+               names_to = "gene",
+               values_to = "expr_level") |>
+  sample_n(20) |>
+  ggplot(aes(expr_level, 
+             fill = smoking_status)) +
+  geom_boxplot()
+```
+
+### Gene association plot:
+
+```{r}
+
+auged_norm_exprs_04 |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(y = fct_reorder(gene,estimate))) + 
+  geom_point(aes(x = estimate), 
+             size=1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom") +
+  labs(title = "Genes Associated with Smoking",
+       x = "Estimates (95%CIs)",
+       y = "",)
+```
+
+We can generrely see that when a person smokes there is a major downregulation of some genes. Some are also upregulated. We cant tell the effect of the regulation
