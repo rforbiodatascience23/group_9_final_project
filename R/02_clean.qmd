@@ -265,3 +265,169 @@ gene_exp_maternal_blood <- get_gene_expr_by_source(gene_exp, sample_source_table
 # gene_exp cord blood
 gene_exp_cord_blood <- get_gene_expr_by_source(gene_exp, sample_source_table, "D")
 ```
+
+```{r}
+
+length(unique(rownames(gene_exp_placenta)))
+length(rownames(gene_exp_placenta))
+
+gene_exp_placenta |> t()
+
+placenta_mat <- gene_exp_placenta |> t()
+gene_names <- placenta_mat[1]
+sample_ids <- rownames(placenta_mat)
+
+placenta_tibble <- gene_exp_placenta |> 
+  t() |> 
+  as_tibble()
+colnames(placenta_tibble) <- placenta_tibble |> 
+  slice(1)
+#placenta_tibble <- placenta_tibble 
+placenta_tibble <- placenta_tibble |>
+  as_tibble(.name_repair="minimal")
+placenta_tibble <- placenta_tibble[2:nrow(placenta_tibble), ]
+
+placenta <- gene_exp_placenta |> t() |> as_data_frame()
+length(unique(colnames(placenta)))
+length(colnames(placenta))
+
+
+
+#|> as_tibble()
+colnames(placenta) <- placenta |>
+  slice(1) |> 
+  as.character()
+placenta
+placenta <- placenta |>
+  tail(-1)
+
+colnames(placenta_tibble) <- colnames(placenta)
+
+cols <- colnames(gene_exp_placenta) |> as_tibble() |> 
+  slice(-1)
+nrow(placenta)
+
+cols <- cols |> 
+  unlist()
+
+names(cols) <- NULL
+
+length(cols)
+
+cols
+
+rownames(placenta) <- cols
+```
+
+```{r}
+placenta |> 
+  slice(2:nrow(placenta))
+colnames(placenta)
+
+names(placenta_tibble) <- unlist(placenta[1, ])
+
+placenta_tibble |> rename_with(~unlist(placenta[1, ]))
+names(placenta)
+
+length(unique(colnames(placenta_tibble)))
+length()
+
+placenta$JMJD1A
+placenta$NCOA3
+
+################
+
+
+placenta_tibble <- placenta_tibble[1:10]
+names(placenta_tibble) <- unlist(placenta[1, ])
+placenta_tibble <- placenta_tibble |> 
+  slice(-1)
+
+placenta_tibble  |>  
+  pivot_longer(cols=1:10, names_to = "variable", values_to = "values") |> 
+  ggplot(aes(JMJD1A, values)) + 
+  geom_point() + 
+  facet_grid(. ~ variable, scales = "free_x") + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  scale_y_continuous(trans = "log2") + 
+  scale_x_continuous(trans = "log2")
+
+
+#facet_grid(. ~ variable, scales = "free_x") + 
+  
+```
+
+```{r}
+df <- read.table(text = "
+LINP1   EGFR            RB1       TP53         CDKN2A      MYC
+Sample1 0.02   0.038798682  0.1423662   2.778587067 0.471403939 18.93687655
+Sample2 0      0.059227225  0.208765213 0.818810739 0.353671882 1.379027685
+Sample3 0      0.052116384  0.230437735 2.535040249 0.504061015 9.773089223
+Sample4 0.06   0.199264618  0.261100548 2.516963635 0.63659138  11.01441624
+Sample5 0      0.123521916  0.273330986 2.751309388 0.623572499 34.0563519
+Sample6 0      0.128767634  0.263491811 2.882878373 0.359322715 13.02402045
+Sample7 0      0.080097356  0.234511372 3.568192768 0.386217698 9.068928569
+Sample8 0      0.017421323  0.247775683 5.109428797 0.068760572 15.7490551
+Sample9 0      2.10281137   0.401582013 8.202902242 0.140596724 60.25989178", header = TRUE)
+
+
+placenta_tibble[1:10] |> 
+  mutate_all(as.numeric) |>
+  gather(key = variable, value = values, NCOA3:10) |> 
+  ggplot(aes(JMJD1A, values)) + 
+  geom_point() + 
+  facet_grid(. ~ variable, scales = "free_x") + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  scale_y_continuous(trans = "log2") + 
+  scale_x_continuous(trans = "log2") +
+  labs(x="Gene expression of JMJD1A", y="Gene expression")
+
+# https://stackoverflow.com/questions/51195960/how-to-make-a-scatterplot-showing-correlation-between-a-single-gene-vs-multiple
+
+
+```
+
+```{r}
+
+sample_ids <- colnames(gene_exp_placenta)[2:length(colnames(gene_exp_placenta))]
+
+placenta_tibble[1:10] |> 
+  mutate_all(as.numeric) |>
+  mutate(ids = sample_ids) |> 
+  relocate(ids)
+
+placenta_tibble[1:10] |> 
+  mutate_all(as.numeric) |>
+  mutate(ids = sample_ids) |> 
+  relocate(ids) |> 
+  left_join()
+  mutate(smoker = )
+  gather(key = variable, value = values, NCOA3:10) |> 
+  ggplot(aes(JMJD1A, values)) + 
+  geom_point() + 
+  facet_grid(. ~ variable, scales = "free_x") + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  scale_y_continuous(trans = "log2") + 
+  scale_x_continuous(trans = "log2") +
+  labs(x="Gene expression of JMJD1A", y="Gene expression")
+```
+
+```{r, fig.width=12, fig.height=8}
+library(corrplot)
+
+placenta_numeric <- placenta_tibble[1:10] |> 
+  mutate_all(as.numeric)
+
+corrplot(cor(placenta_numeric),
+  type = "upper" # show only upper side
+)
+```
+
+```{r}
+ncbi_data[89:nrow(ncbi_data), ]
+```
+
+```{r}
+gene_annotation |> 
+  filter(Symbol=="NCOA3")
+```
