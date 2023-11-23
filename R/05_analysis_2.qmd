@@ -77,16 +77,69 @@ pca_fit <- ncbi_joined_aug |>
 # Adding PCA data to joined augmented data frame
 pca_fit_augment <- pca_fit |> 
   augment(ncbi_joined_aug)
+```
 
-# Plot
+
+```{r}
+# Plot PC1 vs PC2
 pca_fit_augment  |> 
   ggplot(aes(x=.fittedPC1, 
              y=.fittedPC2,
              color = tissue)) + 
   geom_point() +
-  theme_bw() +
+  theme_minimal() +
+  labs(x = "PC1",
+       y = "PC2",
+       color = "Tissue",
+       title = "Scatter plot of fitted PC1 and PC2") +
   scale_colour_brewer(palette="Set1") +
   geom_hline(yintercept = 0, linetype = "dashed") + 
   geom_vline(xintercept = 0, linetype = "dashed")
 
+#ggsave("../results/plots/scatter_pc1_pc2.png", 
+#       plot = scatter_pc1_pc2)
+#show(scatter_pc1_pc2)
 ```
+```{r}
+# Plot PC2 vs PC3
+pca_fit_augment  |> 
+  ggplot(aes(x=.fittedPC2, 
+             y=.fittedPC3,
+             color = tissue)) + 
+  geom_point() +
+  theme_minimal() +
+  labs(x = "PC2",
+       y = "PC3",
+       color = "Tissue",
+       title = "Scatter plot of fitted PC2 and PC3") +
+  scale_colour_brewer(palette = "Set1") +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_vline(xintercept = 0, linetype = "dashed")
+
+#ggsave("../results/plots/scatter_pc1_pc2.png", 
+#       plot = scatter_pc1_pc2)
+#show(scatter_pc1_pc2)
+```
+```{r}
+pca_fit_rotation <- pca_fit |> 
+  tidy(matrix = "rotation") |> 
+  pivot_wider(names_from = "PC",
+              names_prefix = "PC",
+              values_from = "value")
+
+ggplot(pca_fit_rotation,
+       mapping = aes(x = PC1,
+                     y = PC2)) +
+  geom_segment(xend = 0, yend = 0, arrow = arrow()) +
+  geom_label(
+    mapping = aes(label = column),
+    hjust = 1, 
+    color = "royalblue", size = 2
+  ) +
+  labs(
+    title = "Rotation matrix"
+  ) +
+  theme_minimal()
+
+```
+
