@@ -36,24 +36,12 @@ make_dir("../data")
 #| message: false
 
 raw_dir <- "../_raw/"
-download_dataset_kaggle(raw_dir)
 download_dataset_ncbi(raw_dir)
 download_data_annotation_ncbi(raw_dir)
-
-file_feature_data <- "GSE27272Norm_featureData"
-file_pheno_data <- "GSE27272Norm_phenoData"
-file_norm_exprs <- "GSE27272Norm_exprs"
-
-feature_data <- read_table(raw_dir, file_feature_data)
-pheno_data <- read_table(raw_dir, file_pheno_data)
-norm_exprs <- read_table(raw_dir, file_norm_exprs)
 
 ncbi_data <- read_unstructured_ncbi_table(str_c(raw_dir, "raw_ncbi_data.txt.gz"))
 annotation_data <- read_bgx_file(raw_dir, "raw_annotation.bgx.gz")
 
-feature_data |> sample_n(5)
-pheno_data |> sample_n(5)
-norm_exprs |> sample_n(5)
 ncbi_data |> sample_n(5)
 
 annotation_data
@@ -65,22 +53,6 @@ annotation_data$probes
 We should write a tsv file to our data folder containing the data frames that have been loaded in. To be improved...
 
 ```{r}
-
-#norm_exprs <- norm_exprs |> 
-#  mutate(gene_id = rownames(norm_exprs)) |> 
-#  relocate(gene_id)
-
-write_tsv(x = as_tibble(feature_data),
-          file = "../data/01_feature_data.tsv.gz")
-
-write_tsv(x = as_tibble(pheno_data),
-          file = "../data/01_pheno_data.tsv.gz")
-
-norm_exprs |>
-  rownames_to_column(var = "gene_id") |> 
-  as_tibble() |> 
-  write_tsv(file = "../data/01_norm_exprs.tsv.gz")
-
 write_tsv(ncbi_data,
             file = "../data/01_ncbi_data.tsv.gz")
 

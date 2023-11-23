@@ -88,6 +88,13 @@ smoking_fold_change_cord_blood <-
 
 ```
 
+### Joining:
+
+```{r}
+ncbi_joined_aug <- ncbi_augment_pheno |>
+  full_join(ncbi_clean_expr)
+```
+
 ### Write tsv file
 
 ```{r}
