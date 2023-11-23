@@ -1,3 +1,9 @@
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
 ### Library:
 
 ```{r}
@@ -9,22 +15,32 @@ library("ggridges")
 library("viridis")
 library("broom")
 library("ggrepel")
+library("RColorBrewer")
 ```
 
 ### loading:
 
 ```{r}
-#| eval: false
+#| eval: true
 #| echo: true
 #| message: false
-source("../R/99_proj_func.R")
 
-pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
-expr_data <- vroom::vroom("../data/02_ncbi_clean_expr.tsv.gz", delim = "\t")
+pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
+                           delim = "\t")
 
-feature_data <- vroom::vroom("../data/04_feature_data.tsv.gz", delim = "\t")
-pheno_data <- vroom::vroom("../data/01_pheno_data.tsv.gz", delim = "\t")
-norm_exprs <- vroom::vroom("../data/01_norm_exprs.tsv.gz", delim = "\t")
+# we haven't augmented expr (Masha)
+# expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
+
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
+                             delim = "\t")
+ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
+                                 delim = "\t")
+pheno_data |> 
+  sample_n(5)
+ncbi_joined |> 
+  sample_n(5)
+ncbi_joined_aug |> 
+  sample_n(5)
 ```
 
 ### joining:
@@ -44,17 +60,33 @@ joined_tables <- pheno_data |>
 #| eval: false 
 #| echo: true
 
+## Magnus
 
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab03.html#/customisation-examples-11
-#https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-8---recreate-the-following-plot
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab03.html#/customisation-examples-11
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab04.html#/briefly-on-tidy-data
-#https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab05.html#/which-correlate-better-with-bmi-whr-or-bfp-3
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab05.html#/title-slide
-#https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab06.html#/title-slide
+my_graph <- ggplot(data = )
 
 
+```
 
+### To be PCA
+```{r}
+# Fitting
+pca_fit <- ncbi_joined_aug |>
+  select(where(is.numeric)) |>
+  prcomp(scale = TRUE)
 
+# Adding PCA data to joined augmented data frame
+pca_fit_augment <- pca_fit |> 
+  augment(ncbi_joined_aug)
+
+# Plot
+pca_fit_augment  |> 
+  ggplot(aes(x=.fittedPC1, 
+             y=.fittedPC2,
+             color = tissue)) + 
+  geom_point() +
+  theme_bw() +
+  scale_colour_brewer(palette="Set1") +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_vline(xintercept = 0, linetype = "dashed")
 
 ```
