@@ -13,6 +13,7 @@ library("ggridges")
 library("viridis")
 library("broom")
 library("ggrepel")
+library("table1")
 ```
 
 ### Loading data:
@@ -25,6 +26,17 @@ expr_data <- vroom::vroom("../data/02_ncbi_clean_expr.tsv.gz", delim = "\t")
 
 pheno_data |> sample_n(5)
 expr_data |> sample_n(5)
+```
+
+### Study subjects description
+
+```{r}
+num_mothers = 55
+
+pheno_data |>
+  slice_head(n = num_mothers) |> 
+  table1(x = formula(~ age + maternal_bmi + gestational_age + newborn_weight | smoking_status),
+         data = _)
 ```
 
 ### Some overall plots:

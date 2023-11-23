@@ -89,5 +89,3 @@ pca_fit_augment  |>
 
 summary()
 ```
-
-
