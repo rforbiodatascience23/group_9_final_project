@@ -16,6 +16,8 @@ library("tidyverse")
 # load tsv files
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
 ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", delim = "\t")
+
 ```
 
 ### BMI class and Age group augmenation:
@@ -59,6 +61,7 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
 ```
 
 ```{r}
+
 gene_exp_cord_blood <- ncbi_joined |> 
   mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
   filter(sample_source == "D") |> 
@@ -91,9 +94,6 @@ smoking_fold_change_cord_blood <-
 
 write_tsv(x = ncbi_augment_pheno,
           file = "../data/04_ncbi_augment_pheno.tsv.gz")
-
-write_tsv(x = ncbi_joined,
-          file = "../data/04_ncbi_joined.tsv.gz")
 
 write_tsv(x = ncbi_joined_aug,
           file = "../data/04_ncbi_joined_aug.tsv.gz")
