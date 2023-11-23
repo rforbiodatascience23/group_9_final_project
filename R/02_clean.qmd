@@ -164,23 +164,24 @@ sample_source_table <- ncbi_clean_pheno |>
   select(-title)
 
 # gene_expr_placenta
-gene_expr_placenta <- get_gene_expr_by_source(ncbi_clean_expression, 
+gene_expr_placenta <- get_gene_expr_by_source(ncbi_clean_expr, 
                                               sample_source_table, 
                                               "PL")
 
 # gene_expr_maternal_blood
-gene_expr_maternal_blood <- get_gene_expr_by_source(ncbi_clean_expression, 
+gene_expr_maternal_blood <- get_gene_expr_by_source(ncbi_clean_expr, 
                                                     sample_source_table, 
                                                     "M")
 
 # gene_expr cord blood
-gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expression, 
+gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expr, 
                                                 sample_source_table, 
                                                 "D")
 
 ```
 
 ### Write tsv-files containing the data frames
+
 ```{r}
 write_tsv(x = ncbi_clean_pheno,
           file = "../data/02_ncbi_clean_pheno.tsv.gz")
@@ -197,4 +198,3 @@ write_tsv(x = gene_expr_maternal_blood,
 write_tsv(x = gene_expr_placenta,
           file = "../data/02_gene_expr_placenta.tsv.gz")
 ```
-
