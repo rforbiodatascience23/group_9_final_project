@@ -152,6 +152,3 @@ create_models <- function(gene_expr_df,
       0.05 < p.value ~ "no"
     ))
 }
-
-create_models(transposed_expr_data,
-              ncbi_clean_pheno)
