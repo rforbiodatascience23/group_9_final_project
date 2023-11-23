@@ -82,7 +82,7 @@ smoking_fc_cord <-
          mean_expr_smoker) |>  
   mutate(Gene = names(mean_expr_nonsmoker)) |> 
   relocate(Gene) |> 
-  mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expression_nonsmoker))
+  mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expr_nonsmoker))
 ```
 
 ### Joining:
@@ -105,5 +105,5 @@ write_tsv(x = ncbi_joined_aug,
           file = "../data/04_ncbi_joined_aug.tsv.gz")
 
 write_tsv(x = smoking_fc_cord,
-          file = "../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz")
+          file = "../data/04_ncbi_smoking_logfc_cord.tsv.gz")
 ```
