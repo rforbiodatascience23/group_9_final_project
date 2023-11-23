@@ -34,6 +34,11 @@ ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
                              delim = "\t")
 ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
                                  delim = "\t")
+
+ncbi_smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz",
+                                 delim = "\t")
+
+
 pheno_data |> 
   sample_n(5)
 ncbi_joined |> 
@@ -41,7 +46,6 @@ ncbi_joined |>
 ncbi_joined_aug |> 
   sample_n(5)
 ```
-
 
 ### plotting:
 
@@ -137,14 +141,17 @@ ggplot(data = ncbi_joined_aug,
 
 
 ```
-# SILIVA
-```{r}
 
+# SILVIA
+
+```{r}
+ncbi_smoking_logfc_cord |> 
+  arrange(desc(abs(log_fold_change))) |> 
+  slice_head(n=5)
 ```
 
-
-
 ### To be PCA
+
 ```{r}
 pca_fit <- ncbi_joined_aug |>
   select(where(is.numeric)) |>
@@ -162,6 +169,7 @@ pca_fit_augment  |>
   geom_vline(xintercept = 0)
 
 summary()
+```
 
 ```{r}
 # Fitting
@@ -173,8 +181,6 @@ pca_fit <- ncbi_joined_aug |>
 pca_fit_augment <- pca_fit |> 
   augment(ncbi_joined_aug)
 ```
-```
-
 
 ```{r}
 # Plot PC1 vs PC2
@@ -196,6 +202,7 @@ pca_fit_augment  |>
 #       plot = scatter_pc1_pc2)
 #show(scatter_pc1_pc2)
 ```
+
 ```{r}
 # Plot PC2 vs PC3
 pca_fit_augment  |> 
@@ -216,6 +223,7 @@ pca_fit_augment  |>
 #       plot = scatter_pc1_pc2)
 #show(scatter_pc1_pc2)
 ```
+
 ```{r}
 pca_fit_rotation <- pca_fit |> 
   tidy(matrix = "rotation") |> 

@@ -18,7 +18,6 @@ ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
 ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
 ```
 
-
 ### BMI class and Age group augmenation:
 
 ```{r}
