@@ -42,16 +42,6 @@ ncbi_joined_aug |>
   sample_n(5)
 ```
 
-### joining:
-
-```{r}
-#| eval: false 
-#| echo: true
-
-# Joining
-joined_tables <- pheno_data |>
-  full_join(wrangled_norm_exprs)
-```
 
 ### plotting:
 
@@ -61,8 +51,84 @@ joined_tables <- pheno_data |>
 
 ## Magnus
 
-my_graph <- ggplot(data = )
+# SKRALD
+# SKRALD
+# SKRALD
 
+ggplot(data = ncbi_joined_aug,
+       mapping = aes(x = newborn_weight,
+                     y = log2(cotinine_conc_maternal))) +
+  geom_point(aes(color = age_group,
+                 size = factor(BMI_class,
+                               levels = c("Severely underweight",
+                                          "Underweight",
+                                          "Normal weight", 
+                                          "Overweight",
+                                          "Obesity", 
+                                          "Obesity class I",
+                                          "Obesity class II", 
+                                          "Obesity class III")))) + 
+  labs(title = "Comparision of smoking severity and newborn weight",
+       x = "Newborn Weight (g)",
+       y = "Log2 of cotinine_conc_maternal",
+       color = "Age Group",
+       size = "BMI class",
+       caption = "Data from NCBI (2011)") +
+  theme_minimal(base_family = "Avenir") + 
+  theme(legend.position = "right") 
+
+# GULD
+# GULD
+# GULD
+ggplot(data = ncbi_joined_aug,
+       mapping = aes(x = smoking_status,
+                     y = newborn_weight,
+                     fill = smoking_status)) +
+  geom_boxplot() +
+  labs(title = "Investigating Effect of Smoking on Newborn",
+       subtitle = "Comparision of newborn weight and smoking status",
+       x = "",
+       fill = "",
+       y = "Newborn Weight (g)",
+       caption = "Data from NCBI (2011)") +
+  theme_minimal(base_family = "Avenir") + 
+  theme(legend.position = "none") 
+
+
+#
+ggplot(data = ncbi_joined_aug,
+       mapping = aes(x = newborn_weight,
+                     y = placental_weight)) +
+  geom_point(aes(color = smoking_status,
+                 size = factor(BMI_class,
+                               levels = c("Severely underweight",
+                                          "Underweight",
+                                          "Normal weight", 
+                                          "Overweight",
+                                          "Obesity", 
+                                          "Obesity class I",
+                                          "Obesity class II", 
+                                          "Obesity class III")))) + 
+  geom_hline(aes(yintercept = mean(placental_weight)),
+             alpha = 0.4,
+             linetype="dashed",
+             color = "purple", 
+             size=0.5) +
+  geom_vline(aes(xintercept = mean(newborn_weight)),
+             alpha = 0.4,
+             linetype="dashed",
+             color = "purple", 
+             size=0.5) +
+  labs(title = "Weight comparison",
+       subtitle = "Measured in grams",
+       x = "Newborn",
+       y = "Placental",
+       color = "Smoking Status",
+       size = "BMI class",
+       caption = "Data from NCBI (2011)") +
+  theme_minimal(base_family = "Avenir") + 
+  theme(legend.position = "right",
+        legend.direction = "vertical") 
 
 ```
 
