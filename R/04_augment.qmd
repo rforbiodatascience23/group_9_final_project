@@ -78,11 +78,12 @@ mean_expression_smoker <- gene_exp_cord_blood |>
   colMeans()
 
 # calculate log fold change
-smoking_fold_change_cord_blood <-
-  tibble(mean_expression_nonsmoker, mean_expression_smoker) |>  
+smoking_fc_cord <-
+  tibble(mean_expression_nonsmoker, 
+         mean_expression_smoker) |>  
   mutate(Gene = names(mean_expression_nonsmoker)) |> 
   relocate(Gene) |> 
-  mutate(log_fold_change = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
+  mutate(log2fc = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
 
 ```
 
