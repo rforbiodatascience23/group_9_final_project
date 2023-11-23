@@ -1,0 +1,77 @@
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
+### Library:
+
+```{r}
+#| eval: false 
+#| echo: true
+#| message: false
+library("tidyverse")
+library("ggridges")
+library("viridis")
+library("broom")
+library("ggrepel")
+```
+
+### loading:
+
+```{r}
+#| eval: true
+#| echo: true
+#| message: false
+
+pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
+                           delim = "\t")
+
+# we haven't augmented expr (Masha)
+# expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
+
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
+                             delim = "\t")
+ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
+                                 delim = "\t")
+pheno_data |> 
+  sample_n(5)
+ncbi_joined |> 
+  sample_n(5)
+ncbi_joined_aug |> 
+  sample_n(5)
+```
+
+
+### plotting:
+
+```{r}
+#| eval: false 
+#| echo: true
+
+## Magnus
+
+my_graph <- ggplot(data = )
+
+
+```
+
+### To be PCA
+```{r}
+pca_fit <- ncbi_joined_aug |>
+  select(where(is.numeric)) |>
+  prcomp(scale = TRUE)
+
+pca_fit_augment <- pca_fit |> 
+  augment(ncbi_joined_aug)
+
+pca_fit_augment  |> 
+  ggplot(aes(x=.fittedPC1, 
+             y=.fittedPC2)) + 
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 0) + 
+  geom_vline(xintercept = 0)
+
+summary()
+```

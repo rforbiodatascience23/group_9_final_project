@@ -15,29 +15,9 @@ library("tidyverse")
 
 # load tsv files
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
-ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expr.tsv.gz")
+ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
 ```
 
-```{r}
-# transpose expression data
-transposed_expr_data <- ncbi_clean_expr |> 
-  distinct(Gene,
-           .keep_all = TRUE) |>
-  pivot_longer(cols = -Gene,
-               names_to = "gene",
-               values_to = "value") |>
-  pivot_wider(names_from = "Gene",
-              values_from = "value") |>
-  rename("geo_accession" = gene)
-
-ncbi_joined <- ncbi_clean_pheno |>
-  full_join(transposed_expr_data)
-
-# fixing the column names (unnessecary)
-#colnames(ncbi_clean_expr) <- ncbi_clean_expression[1,]
-#ncbi_clean_expr <- ncbi_clean_expr[-1,]
-
-```
 
 ### BMI class and Age group augmenation:
 
@@ -77,11 +57,6 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
   relocate(age_group,
            .before = age) |>
   select(-age)
-
-# Making a joined table
-ncbi_joined_aug <- ncbi_augment_pheno |>
-  full_join(transposed_expr_data)
-
 ```
 
 ```{r}

@@ -9,10 +9,6 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 library("tidyverse")
-library("ggridges")
-library("viridis")
-library("broom")
-library("ggrepel")
 library("table1")
 ```
 
@@ -22,7 +18,7 @@ library("table1")
 #| eval: true
 #| message: false
 pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
-expr_data <- vroom::vroom("../data/02_ncbi_clean_expr.tsv.gz", delim = "\t")
+expr_data <- vroom::vroom("../data/02_ncbi_clean_expression.tsv.gz", delim = "\t")
 
 pheno_data |> sample_n(5)
 expr_data |> sample_n(5)
