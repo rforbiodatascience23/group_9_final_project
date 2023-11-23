@@ -7,18 +7,26 @@ format:
     slide-number: true
     show-slide-number: all
     footer: "Group 9 presentation"
+    
 ---
-```{r}
-work_dir <- getwd()
-```
 
 
 # Introduction
 
 ## Subsection 1
 
-- Bullet point 1
-- Bullet point 2
+:::: {.columns}
+
+::: {.column width="40%"}
+
+- A point in the left column
+:::
+
+::: {.column width="60%"}
+- A point in the right column
+:::
+
+::::
 
 ## Subsection 2
 
@@ -103,20 +111,13 @@ ncbi_clean_expr <- ncbi_clean_expr[-1,]
 ## Results (some dramatic name)
 
 ```{mermaid}
-flowchart TB
-    c1-->a2
-    subgraph one
-    a1-->a2
-    end
-    subgraph two
-    b1-->b2
-    end
-    subgraph three
-    c1-->c2
-    end
-    one --> two
-    three --> two
-    two --> c2
+
+    
+flowchart LR
+   X --- D[ ]:::empty
+   Y --- D
+   D --> E
+   classDef empty width:0px,height:0px;
     
 ```
 
