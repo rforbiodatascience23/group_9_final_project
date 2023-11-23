@@ -191,10 +191,8 @@ ncbi_joined |>
 ### Log Fold Change
 
 ```{r}
-# genes <- 16:18646
-
-gene_expression_transposed <- t(ncbi_joined[, 16:18646])
-genes <- ncbi_joined[1:100, c(3, 16:50)]
+genes <- ncbi_joined |> 
+  select(3, 16:last_col())
 
 # calculate mean expressions of genes for both statuses of smoking
 mean_expression_nonsmoker <- genes |>
@@ -213,5 +211,6 @@ smoking_fold_change <-
   relocate(Gene) |> 
   mutate(log_fold_change = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
 
-smoking_fold_change
+smoking_fold_change |>
+  sample_n(5)
 ```
