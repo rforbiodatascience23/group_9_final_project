@@ -146,7 +146,7 @@ gene_annotation <- ncbi_annot_probes |>
          Entrez_Gene_ID, 
          starts_with("Ontology"))
 
-ncbi_clean_expr <- gene_annotation |> 
+ncbi_clean_expression <- gene_annotation |> 
   select(Symbol, 
          Probe_Id) |> 
   right_join(ncbi_dirty_expr, 
