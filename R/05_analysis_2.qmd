@@ -60,14 +60,10 @@ joined_tables <- pheno_data |>
 #| eval: false 
 #| echo: true
 
+## Magnus
 
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab03.html#/customisation-examples-11
-#https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-8---recreate-the-following-plot
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab03.html#/customisation-examples-11
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab04.html#/briefly-on-tidy-data
-#https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab05.html#/which-correlate-better-with-bmi-whr-or-bfp-3
-#https://raw.githack.com/r4bds/r4bds.github.io/main/lecture_lab05.html#/title-slide
-#https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab06.html#/title-slide
+my_graph <- ggplot(data = )
+
 
 ```
 
