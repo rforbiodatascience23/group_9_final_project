@@ -9,6 +9,11 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 library("tidyverse")
+library("ggridges")
+library("viridis")
+library("broom")
+library("ggrepel")
+library(corrplot)
 ```
 
 ### loading:
@@ -26,9 +31,16 @@ pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
 ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
                              delim = "\t")
 
+ncbi_smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz",
+                                 delim = "\t")
+
 pheno_data |> 
   sample_n(5)
 ncbi_joined |> 
+  sample_n(5)
+ncbi_joined_aug |> 
+  sample_n(5)
+ncbi_smoking_logfc_cord |> 
   sample_n(5)
 ```
 
@@ -136,9 +148,9 @@ auged_norm_exprs_04 |>
 
 # non functional(Masha)
 
-ncbi_joined |> select(-joined_colnames[1:7],
-                        -joined_colnames[9:12]) |>
-  pivot_longer(cols = starts_with("EN"),
+ncbi_joined |> select(-joined_colnames[1:2],
+                        -joined_colnames[4:15]) |>
+  pivot_longer(cols = joined_colnames[16:1000],
                names_to = "gene",
                values_to = "expr_level") |>
   sample_n(20) |>
@@ -188,21 +200,47 @@ ncbi_joined |>
     title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A")
 ```
 
+### Gene expression correlation
+
+```{r}
+
+genes_cord_blood <- ncbi_joined |> 
+  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
+  filter(sample_source == "D") |> 
+  select(16:30)
+
+corrplot(cor(genes_pl),
+  type = "upper"
+)
+```
+
 ### Log Fold Change
 
 ```{r}
-genes <- ncbi_joined |> 
-  select(3, 16:last_col())
+
+gene_exp_cord_blood |> 
+  slice_head(n=1)
+
+gene_exp_cord_blood <- ncbi_joined |> 
+  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
+  filter(sample_source == "D") |> 
+  select(smoking_status, "JMJD1A":"KRTAP19-1")
 
 # calculate mean expressions of genes for both statuses of smoking
-mean_expression_nonsmoker <- genes |>
+mean_expression_nonsmoker <- gene_exp_cord_blood |>
   filter(smoking_status == "non-smoker") |> 
   select(-1) |> 
   colMeans()
-mean_expression_smoker <- genes |>
+mean_expression_smoker <- gene_exp_cord_blood |>
   filter(smoking_status == "smoker") |> 
   select(-1) |> 
   colMeans()
+
+gene_exp_cord_blood
+
+t <- gene_exp_cord_blood |>
+  filter(smoking_status == "smoker") |> 
+  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
 
 # calculate log fold change
 smoking_fold_change <-
@@ -212,5 +250,14 @@ smoking_fold_change <-
   mutate(log_fold_change = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
 
 smoking_fold_change |>
-  sample_n(5)
+  arrange(desc(log_fold_change))
+```
+
+```{r}
+smoking_fold_change |> 
+  arrange(desc(abs(log_fold_change)))
+
+ncbi_smoking_logfc_cord |> 
+  arrange(desc(abs(log_fold_change))) |> 
+  slice_head(n=5)
 ```

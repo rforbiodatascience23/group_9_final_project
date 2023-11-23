@@ -338,12 +338,6 @@ group 9
 </div>
 
 </section>
-<section class="slide level2">
-
-<div class="cell">
-
-</div>
-</section>
 <section>
 <section id="introduction" class="title-slide slide level1 center">
 <h1>Introduction</h1>
@@ -351,10 +345,17 @@ group 9
 </section>
 <section id="subsection-1" class="slide level2">
 <h2>Subsection 1</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
 <ul>
-<li>Bullet point 1</li>
-<li>Bullet point 2</li>
+<li>A point in the left column</li>
 </ul>
+</div><div class="column" style="width:60%;">
+<ul>
+<li>A point in the right column</li>
+</ul>
+</div>
+</div>
 </section>
 <section id="subsection-2" class="slide level2">
 <h2>Subsection 2</h2>
@@ -413,9 +414,30 @@ group 9
 </div>
 </div>
 </div>
-<p>%%sample_source_table &lt;- ncbi_clean_pheno |&gt; %% select(geo_accession, %% title) |&gt;<br>
-%% mutate(sample_source = str_match(title, %% “[[:upper:]]+”)) |&gt; %% rename(sample_id = geo_accession) |&gt; %% select(-title) %% %%# gene_expr_placenta %%gene_expr_placenta &lt;- get_gene_expr_by_source(ncbi_clean_expression, %% sample_source_table, %% “PL”) %% %%# gene_expr_maternal_blood %%gene_expr_maternal_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, %% sample_source_table, %% “M”) %% %%# gene_expr cord blood %%gene_expr_cord_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, %% sample_source_table, %% “D”) %% %% %%ncbi_clean_expr &lt;- ncbi_clean_expression |&gt; %% as.data.frame() |&gt; %% t() |&gt; %% as.data.frame() %% # fixing the column names colnames(ncbi_clean_expr) &lt;- ncbi_clean_expr[1,] ncbi_clean_expr &lt;- ncbi_clean_expr[-1,]</p>
+<p>sample_source_table &lt;- ncbi_clean_pheno |&gt; select(geo_accession, title) |&gt;<br>
+mutate(sample_source = str_match(title, “[[:upper:]]+”)) |&gt; rename(sample_id = geo_accession) |&gt; select(-title)</p>
 </section></section>
+<section id="gene_expr_placenta" class="title-slide slide level1 center">
+<h1>gene_expr_placenta</h1>
+<p>gene_expr_placenta &lt;- get_gene_expr_by_source(ncbi_clean_expression, sample_source_table, “PL”)</p>
+</section>
+
+<section id="gene_expr_maternal_blood" class="title-slide slide level1 center">
+<h1>gene_expr_maternal_blood</h1>
+<p>gene_expr_maternal_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, sample_source_table, “M”)</p>
+</section>
+
+<section id="gene_expr-cord-blood" class="title-slide slide level1 center">
+<h1>gene_expr cord blood</h1>
+<p>gene_expr_cord_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, sample_source_table, “D”)</p>
+<p>ncbi_clean_expr &lt;- ncbi_clean_expression |&gt; as.data.frame() |&gt; t() |&gt; as.data.frame()</p>
+</section>
+
+<section id="fixing-the-column-names" class="title-slide slide level1 center">
+<h1>fixing the column names</h1>
+<p>colnames(ncbi_clean_expr) &lt;- ncbi_clean_expr[1,] ncbi_clean_expr &lt;- ncbi_clean_expr[-1,]</p>
+</section>
+
 <section>
 <section id="results-and" class="title-slide slide level1 center">
 <h1>Results (And)</h1>
@@ -427,20 +449,12 @@ group 9
 <div class="cell-output-display">
 <div>
 <p>
-</p><pre class="mermaid mermaid-js" data-tooltip-selector="#mermaid-tooltip-2">flowchart TB
-    c1--&gt;a2
-    subgraph one
-    a1--&gt;a2
-    end
-    subgraph two
-    b1--&gt;b2
-    end
-    subgraph three
-    c1--&gt;c2
-    end
-    one --&gt; two
-    three --&gt; two
-    two --&gt; c2
+</p><pre class="mermaid mermaid-js" data-tooltip-selector="#mermaid-tooltip-2">    
+flowchart LR
+   X --- D[ ]:::empty
+   Y --- D
+   D --&gt; E
+   classDef empty width:0px,height:0px;
     
 </pre>
 <div id="mermaid-tooltip-2" class="mermaidTooltip">

@@ -16,8 +16,9 @@ library("tidyverse")
 # load tsv files
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
 ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
-```
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", delim = "\t")
 
+```
 
 ### BMI class and Age group augmenation:
 
@@ -59,6 +60,39 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
   select(-age)
 ```
 
+```{r}
+
+gene_exp_cord <- ncbi_joined |> 
+  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
+  filter(sample_source == "D") |> 
+  select(smoking_status, "JMJD1A":"KRTAP19-1")
+
+# calculate mean expressions of genes for both statuses of smoking
+mean_expr_nonsmoker <- gene_exp_cord |>
+  filter(smoking_status == "non-smoker") |> 
+  select(-1) |> 
+  colMeans()
+mean_expr_smoker <- gene_exp_cord |>
+  filter(smoking_status == "smoker") |> 
+  select(-1) |> 
+  colMeans()
+
+# calculate log fold change
+smoking_fc_cord <-
+  tibble(mean_expr_nonsmoker, 
+         mean_expr_smoker) |>  
+  mutate(Gene = names(mean_expr_nonsmoker)) |> 
+  relocate(Gene) |> 
+  mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expression_nonsmoker))
+```
+
+### Joining:
+
+```{r}
+ncbi_joined_aug <- ncbi_augment_pheno |>
+  full_join(ncbi_clean_expr)
+```
+
 ### Write tsv file
 
 ```{r}
@@ -68,6 +102,9 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
 write_tsv(x = ncbi_augment_pheno,
           file = "../data/04_ncbi_augment_pheno.tsv.gz")
 
-write_tsv(x = ncbi_joined,
-          file = "../data/04_ncbi_joined.tsv.gz")
+write_tsv(x = ncbi_joined_aug,
+          file = "../data/04_ncbi_joined_aug.tsv.gz")
+
+write_tsv(x = smoking_fc_cord,
+          file = "../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz")
 ```
