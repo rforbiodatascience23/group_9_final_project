@@ -245,4 +245,8 @@ smoking_fold_change |>
 ```{r}
 smoking_fold_change |> 
   arrange(desc(abs(log_fold_change)))
+
+ncbi_smoking_logfc_cord |> 
+  arrange(desc(abs(log_fold_change))) |> 
+  slice_head(n=5)
 ```
