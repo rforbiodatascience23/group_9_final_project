@@ -49,7 +49,7 @@ pheno_data |>
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
   theme_minimal()
-ggsave("../results/Plots/description_age_boxplot.png")
+#ggsave("../results/Plots/description_age_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = maternal_bmi,
@@ -63,7 +63,7 @@ pheno_data |>
   theme(legend.position = "bottom") +
   coord_cartesian(ylim = c(15, 40)) +
   theme_minimal()
-ggsave("../results/Plots/description_BMI_boxplot.png")
+#ggsave("../results/Plots/description_BMI_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = cotinine_conc_maternal,
@@ -77,7 +77,7 @@ pheno_data |>
   theme(legend.position = "bottom") +
   coord_cartesian(ylim = c(0, 50)) +
   theme_minimal()
-ggsave("../results/Plots/description_bloodCotinine_boxplot.png")
+#ggsave("../results/Plots/description_bloodCotinine_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = cotinine_conc_cord,
@@ -91,7 +91,7 @@ pheno_data |>
   theme(legend.position = "bottom") +
   coord_cartesian(ylim = c(0, 50)) +
   theme_minimal()
-ggsave("../results/Plots/description_CordCotinine_boxplot.png")
+#ggsave("../results/Plots/description_CordCotinine_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = newborn_weight,
@@ -105,7 +105,7 @@ pheno_data |>
   theme(legend.position = "bottom") +
   coord_cartesian(ylim = c(2500, 5500)) +
   theme_minimal()
-ggsave("../results/Plots/description_newbornWeight_boxplot.png")
+#ggsave("../results/Plots/description_newbornWeight_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = placental_weight,
@@ -118,5 +118,5 @@ pheno_data |>
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
   coord_cartesian(ylim = c(450, 700))
-ggsave("../results/Plots/description_placentaWeight_boxplot.png")
+#ggsave("../results/Plots/description_placentaWeight_boxplot.png")
 ```
