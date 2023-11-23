@@ -134,9 +134,9 @@ auged_norm_exprs_04 |>
 
 # non functional(Masha)
 
-ncbi_joined |> select(-joined_colnames[1:7],
-                        -joined_colnames[9:12]) |>
-  pivot_longer(cols = starts_with("EN"),
+ncbi_joined |> select(-joined_colnames[1:2],
+                        -joined_colnames[4:15]) |>
+  pivot_longer(cols = joined_colnames[16:1000],
                names_to = "gene",
                values_to = "expr_level") |>
   sample_n(20) |>
