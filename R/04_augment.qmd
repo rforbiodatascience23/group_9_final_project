@@ -65,7 +65,7 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
 gene_exp_cord_blood <- ncbi_joined |> 
   mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
   filter(sample_source == "D") |> 
-  select(3, 16:last_col()-1)
+  select(smoking_status, "JMJD1A":"KRTAP19-1")
 
 # calculate mean expressions of genes for both statuses of smoking
 mean_expression_nonsmoker <- gene_exp_cord_blood |>
@@ -83,7 +83,6 @@ smoking_fold_change_cord_blood <-
   mutate(Gene = names(mean_expression_nonsmoker)) |> 
   relocate(Gene) |> 
   mutate(log_fold_change = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
-
 ```
 
 ### Write tsv file
