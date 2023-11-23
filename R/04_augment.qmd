@@ -90,6 +90,6 @@ write_tsv(x = ncbi_augment_pheno,
 write_tsv(x = ncbi_joined,
           file = "../data/04_ncbi_joined.tsv.gz")
 
-write_tsv(x = ncbi_joined,
-          file = "../data/04_ncbi_augment_pheno.tsv.gz")
+write_tsv(x = transposed_expr_data,
+          file = "../data/04_ncbi_augment_expr.tsv.gz")
 ```
