@@ -138,7 +138,22 @@ ggplot(data = ncbi_joined_aug,
 
 ### 
 ###
-
+ggplot(data = silvia_targets,
+       mapping = aes(x = ???,
+                     y = silvia targets,
+                     fill = silvia targets)) +
+  geom_density_ridges(alpha = 0.5) +
+  scale_full_viridis_d() +
+  labs(x = "???",
+       y = "silvia targets",
+       title = "bla title",
+       subtitle = "bla subtitle",
+       caption = "Data from NCBI (2011)") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 10) +
+  theme(legend.position = "bottom") +
+  facet_wrap(vars(smoking status),
+             ncol = 2)
 
 ```
 
