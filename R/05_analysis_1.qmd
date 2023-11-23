@@ -134,6 +134,8 @@ auged_norm_exprs_04 |>
 
 # General exprs of all genes comparing smoking
 
+# non functional(Masha)
+
 joined_tables |> select(-joined_colnames[1:7],
                         -joined_colnames[9:12]) |>
   pivot_longer(cols = starts_with("EN"),
