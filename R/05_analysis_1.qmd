@@ -28,15 +28,13 @@ pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
 # we haven't augmented expr (Masha)
 # expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
 
-ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
+ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
                              delim = "\t")
 
 ncbi_smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz",
                                  delim = "\t")
 
 pheno_data |> 
-  sample_n(5)
-ncbi_joined |> 
   sample_n(5)
 ncbi_joined_aug |> 
   sample_n(5)
@@ -48,12 +46,12 @@ ncbi_smoking_logfc_cord |>
 
 ```{r}
 
-joined_colnames <- ncbi_joined |> 
+joined_colnames <- ncbi_joined_aug |> 
   colnames()
 
-auged_norm_exprs_00 <- ncbi_joined |> 
+auged_norm_exprs_00 <- ncbi_joined_aug |> 
   dplyr::select(-joined_colnames[1],
-                -joined_colnames[5:15]) |>
+                -joined_colnames[4:15]) |>
   mutate(is_smoker = case_when(str_detect(smoking_status, 
                                           "non") == 1 ~ 0,
                                str_detect(smoking_status, 
@@ -62,7 +60,7 @@ auged_norm_exprs_00 <- ncbi_joined |>
   dplyr::select(-smoking_status)
 
 auged_norm_exprs_01 <- auged_norm_exprs_00 |>
-  pivot_longer(cols = colnames(auged_norm_exprs_00[4:length(colnames(auged_norm_exprs_00))]),
+  pivot_longer(cols = colnames(auged_norm_exprs_00[3:length(colnames(auged_norm_exprs_00))]),
                names_to = "gene",
                values_to = "expr_level") |>
   mutate(log_2_expr_level = log2(expr_level)) |>
@@ -79,13 +77,12 @@ auged_norm_exprs_03 <- auged_norm_exprs_02 |>
   mutate(model_object = map(.x = data,
                             .f = ~lm(formula = log_2_expr_level ~ is_smoker,
                                      data = .x))) |>
-
+  
 # using tidy function to turn model summary into a tibble instead of a list  
   mutate(model_object_tidy = map(.x = model_object,
                                  .f = ~ tidy(.x,
                                              conf.int = TRUE,
                                              conf.level = 0.95)))
-
 
 # unnesting the tidy models, filtering to only get "slope"-coefficients for models and selecting desired variables
 auged_norm_exprs_04 <- auged_norm_exprs_03 |>

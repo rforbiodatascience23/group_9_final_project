@@ -16,7 +16,8 @@ library("tidyverse")
 # load tsv files
 ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
 ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
-ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", delim = "\t")
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", 
+                            delim = "\t")
 
 ```
 
@@ -48,22 +49,20 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
            .before = maternal_bmi) |>
   select(-maternal_bmi) |>
   mutate(age_group = cut(age,
-                         breaks = c(20,
+                         breaks = c(10,
+                                    20,
                                     30,
                                     40,
-                                    50,
-                                    60,
-                                    70,
-                                    80))) |>
+                                    50))) |>
   relocate(age_group,
-           .before = age) |>
-  select(-age)
+           .before = age)
 ```
 
 ```{r}
 
 gene_exp_cord <- ncbi_joined |> 
-  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
+  mutate(sample_source = str_match(title,
+                                   "[[:upper:]]+")) |>
   filter(sample_source == "D") |> 
   select(smoking_status, "JMJD1A":"KRTAP19-1")
 
