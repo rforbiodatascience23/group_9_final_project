@@ -183,7 +183,7 @@ gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expr,
 ### Transposing:
 
 ```{r}
-# transpose expression data
+# transpose all expression data
 transposed_expr_data <- ncbi_clean_expression |> 
   distinct(Gene, .keep_all = TRUE) |>
   pivot_longer(cols = -Gene, names_to = "gene", values_to = "value") |>
@@ -192,6 +192,9 @@ transposed_expr_data <- ncbi_clean_expression |>
 
 ncbi_joined <- ncbi_clean_pheno |>
   full_join(transposed_expr_data)
+
+
+
 ```
 
 ### Write tsv-files containing the data frames
