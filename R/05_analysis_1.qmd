@@ -9,10 +9,6 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 library("tidyverse")
-library("ggridges")
-library("viridis")
-library("broom")
-library("ggrepel")
 ```
 
 ### loading:
@@ -29,14 +25,10 @@ pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
 
 ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
                              delim = "\t")
-ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
-                                 delim = "\t")
 
 pheno_data |> 
   sample_n(5)
 ncbi_joined |> 
-  sample_n(5)
-ncbi_joined_aug |> 
   sample_n(5)
 ```
 
@@ -44,12 +36,12 @@ ncbi_joined_aug |>
 
 ```{r}
 
-joined_colnames <- ncbi_joined_aug |> 
+joined_colnames <- ncbi_joined |> 
   colnames()
 
-auged_norm_exprs_00 <- ncbi_joined_aug |> 
+auged_norm_exprs_00 <- ncbi_joined |> 
   dplyr::select(-joined_colnames[1],
-                -joined_colnames[4:15]) |>
+                -joined_colnames[5:15]) |>
   mutate(is_smoker = case_when(str_detect(smoking_status, 
                                           "non") == 1 ~ 0,
                                str_detect(smoking_status, 
@@ -58,7 +50,7 @@ auged_norm_exprs_00 <- ncbi_joined_aug |>
   dplyr::select(-smoking_status)
 
 auged_norm_exprs_01 <- auged_norm_exprs_00 |>
-  pivot_longer(cols = starts_with("EN"),
+  pivot_longer(cols = colnames(auged_norm_exprs_00[4:1000]),
                names_to = "gene",
                values_to = "expr_level") |>
   mutate(log_2_expr_level =log2(expr_level)) |>
@@ -125,7 +117,13 @@ auged_norm_exprs_04 |>
        y = "-log10(p)") +
   theme(legend.position = "none",
         plot.title = element_text(hjust = .95),
-        plot.subtitle = element_text(hjust = .95))
+        plot.subtitle = element_text(hjust = .95)) +
+  facet_wrap(~antibiotic, 
+             scales = "free_y", 
+             ncol = 2,
+             strip.position = "top",
+             labeller = as_labeller(c(cipro = "P. putida strain B - Ciprofloxacin", 
+                                      oflo = "P. putida strain B - Ofloxacin")))
 ```
 
 ## more rangling:
@@ -136,9 +134,9 @@ auged_norm_exprs_04 |>
 
 # non functional(Masha)
 
-joined_tables |> select(-joined_colnames[1:7],
-                        -joined_colnames[9:12]) |>
-  pivot_longer(cols = starts_with("EN"),
+ncbi_joined |> select(-joined_colnames[1:2],
+                        -joined_colnames[4:15]) |>
+  pivot_longer(cols = joined_colnames[16:1000],
                names_to = "gene",
                values_to = "expr_level") |>
   sample_n(20) |>
@@ -191,10 +189,8 @@ ncbi_joined |>
 ### Log Fold Change
 
 ```{r}
-# genes <- 16:18646
-
-gene_expression_transposed <- t(ncbi_joined[, 16:18646])
-genes <- ncbi_joined[1:100, c(3, 16:50)]
+genes <- ncbi_joined |> 
+  select(3, 16:last_col())
 
 # calculate mean expressions of genes for both statuses of smoking
 mean_expression_nonsmoker <- genes |>
@@ -213,5 +209,6 @@ smoking_fold_change <-
   relocate(Gene) |> 
   mutate(log_fold_change = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
 
-smoking_fold_change
+smoking_fold_change |>
+  sample_n(5)
 ```
