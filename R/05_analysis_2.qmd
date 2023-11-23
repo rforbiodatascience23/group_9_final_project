@@ -15,6 +15,7 @@ library("ggridges")
 library("viridis")
 library("broom")
 library("ggrepel")
+library("RColorBrewer")
 ```
 
 ### loading:
@@ -72,20 +73,24 @@ joined_tables <- pheno_data |>
 
 ### To be PCA
 ```{r}
+# Fitting
 pca_fit <- ncbi_joined_aug |>
   select(where(is.numeric)) |>
   prcomp(scale = TRUE)
 
+# Adding PCA data to joined augmented data frame
 pca_fit_augment <- pca_fit |> 
   augment(ncbi_joined_aug)
 
+# Plot
 pca_fit_augment  |> 
   ggplot(aes(x=.fittedPC1, 
-             y=.fittedPC2)) + 
+             y=.fittedPC2,
+             color = tissue)) + 
   geom_point() +
   theme_bw() +
-  geom_hline(yintercept = 0) + 
-  geom_vline(xintercept = 0)
+  scale_colour_brewer(palette="Set1") +
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_vline(xintercept = 0, linetype = "dashed")
 
-summary()
 ```
