@@ -146,7 +146,7 @@ gene_annotation <- ncbi_annot_probes |>
          Entrez_Gene_ID, 
          starts_with("Ontology"))
 
-ncbi_clean_expression <- gene_annotation |> 
+ncbi_clean_expr <- gene_annotation |> 
   select(Symbol, 
          Probe_Id) |> 
   right_join(ncbi_dirty_expr, 
@@ -164,17 +164,17 @@ sample_source_table <- ncbi_clean_pheno |>
   select(-title)
 
 # gene_expr_placenta
-gene_expr_placenta <- get_gene_expr_by_source(ncbi_clean_expression, 
+gene_expr_placenta <- get_gene_expr_by_source(ncbi_clean_expr, 
                                               sample_source_table, 
                                               "PL")
 
 # gene_expr_maternal_blood
-gene_expr_maternal_blood <- get_gene_expr_by_source(ncbi_clean_expression, 
+gene_expr_maternal_blood <- get_gene_expr_by_source(ncbi_clean_expr, 
                                                     sample_source_table, 
                                                     "M")
 
 # gene_expr cord blood
-gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expression, 
+gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expr, 
                                                 sample_source_table, 
                                                 "D")
 

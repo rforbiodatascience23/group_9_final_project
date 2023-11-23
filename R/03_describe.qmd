@@ -1,7 +1,7 @@
 ### Source functions
 
 ```{r}
-# some source code
+source("../R/99_proj_func.R")
 ```
 
 ### Libraries:
@@ -13,6 +13,7 @@ library("ggridges")
 library("viridis")
 library("broom")
 library("ggrepel")
+library("table1")
 ```
 
 ### Loading data:
@@ -20,13 +21,22 @@ library("ggrepel")
 ```{r}
 #| eval: true
 #| message: false
-source("../R/99_proj_func.R")
-
 pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
 expr_data <- vroom::vroom("../data/02_ncbi_clean_expression.tsv.gz", delim = "\t")
 
 pheno_data |> sample_n(5)
 expr_data |> sample_n(5)
+```
+
+### Study subjects description
+
+```{r}
+num_mothers = 55
+
+pheno_data |>
+  slice_head(n = num_mothers) |> 
+  table1(x = formula(~ age + maternal_bmi + gestational_age + newborn_weight | smoking_status),
+         data = _)
 ```
 
 ### Some overall plots:
