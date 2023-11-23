@@ -9,10 +9,6 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 library("tidyverse")
-library("ggridges")
-library("viridis")
-library("broom")
-library("ggrepel")
 library("table1")
 ```
 

@@ -9,10 +9,6 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 library("tidyverse")
-library("ggridges")
-library("viridis")
-library("broom")
-library("ggrepel")
 ```
 
 ### loading:
@@ -29,14 +25,10 @@ pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
 
 ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
                              delim = "\t")
-ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
-                                 delim = "\t")
 
 pheno_data |> 
   sample_n(5)
 ncbi_joined |> 
-  sample_n(5)
-ncbi_joined_aug |> 
   sample_n(5)
 ```
 
@@ -44,10 +36,10 @@ ncbi_joined_aug |>
 
 ```{r}
 
-joined_colnames <- ncbi_joined_aug |> 
+joined_colnames <- ncbi_joined |> 
   colnames()
 
-auged_norm_exprs_00 <- ncbi_joined_aug |> 
+auged_norm_exprs_00 <- ncbi_joined |> 
   dplyr::select(-joined_colnames[1],
                 -joined_colnames[4:15]) |>
   mutate(is_smoker = case_when(str_detect(smoking_status, 
@@ -136,7 +128,7 @@ auged_norm_exprs_04 |>
 
 # non functional(Masha)
 
-joined_tables |> select(-joined_colnames[1:7],
+ncbi_joined |> select(-joined_colnames[1:7],
                         -joined_colnames[9:12]) |>
   pivot_longer(cols = starts_with("EN"),
                names_to = "gene",
