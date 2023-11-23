@@ -117,7 +117,7 @@ create_models <- function(gene_expr_df,
             gene_expr_df) |>
   dplyr::select(-1,
                 -4:-15) |>
-  tidyverse::mutate(is_smoker = case_when(str_detect(smoking_status, 
+    dplyr::mutate(is_smoker = case_when(str_detect(smoking_status, 
                                             "non") == 1 ~ 0,
                                  str_detect(smoking_status, 
                                             "non") == 0 ~ 1),
@@ -126,16 +126,16 @@ create_models <- function(gene_expr_df,
     pivot_longer(cols = 3:1000,
                  names_to = "gene",
                  values_to = "expr_level") |>
-    tidyverse::mutate(log_2_expr_level = log2(expr_level)) |>
+    dplyr::mutate(log_2_expr_level = log2(expr_level)) |>
     dplyr::select(-expr_level) |>
     group_by(gene) |>
     nest() |>
     ungroup() |>
     group_by(gene) |>
-    tidyverse::mutate(model_object = map(.x = data,
+    dplyr::mutate(model_object = map(.x = data,
                               .f = ~lm(formula = log_2_expr_level ~ is_smoker,
                                        data = .x))) |>
-    tidyverse::mutate(model_object_tidy = map(.x = model_object,
+    dplyr::mutate(model_object_tidy = map(.x = model_object,
                                    .f = ~ tidy(.x,
                                                conf.int = TRUE,
                                                conf.level = 0.95))) |>
@@ -147,7 +147,7 @@ create_models <- function(gene_expr_df,
                   conf.low, 
                   conf.high) |>
     ungroup() |>
-    tidyverse::mutate(is_significant = case_when(
+    dplyr::mutate(is_significant = case_when(
       p.value < 0.05 ~ "yes",
       0.05 < p.value ~ "no"
     ))
