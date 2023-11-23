@@ -15,6 +15,7 @@ library("ggridges")
 library("viridis")
 library("broom")
 library("ggrepel")
+library("viridis")
 ```
 
 ### loading:
@@ -24,23 +25,18 @@ library("ggrepel")
 #| echo: true
 #| message: false
 
-pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
-                           delim = "\t")
+# pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz", delim = "\t")
 
 # we haven't augmented expr (Masha)
 # expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
 
-ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
-                             delim = "\t")
 ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
                                  delim = "\t")
 
-ncbi_smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz",
+smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord.tsv.gz",
                                  delim = "\t")
 
 
-pheno_data |> 
-  sample_n(5)
 ncbi_joined |> 
   sample_n(5)
 ncbi_joined_aug |> 
@@ -119,12 +115,12 @@ ggplot(data = ncbi_joined_aug,
              alpha = 0.4,
              linetype="dashed",
              color = "purple", 
-             size=0.5) +
+             linewidth=0.5) +
   geom_vline(aes(xintercept = mean(newborn_weight)),
              alpha = 0.4,
              linetype="dashed",
              color = "purple", 
-             size=0.5) +
+             linewidth=0.5) +
   labs(title = "Weight comparison",
        subtitle = "Measured in grams",
        x = "Newborn",
@@ -136,24 +132,67 @@ ggplot(data = ncbi_joined_aug,
   theme(legend.position = "right",
         legend.direction = "vertical") 
 
-### 
-###
-ggplot(data = silvia_targets,
-       mapping = aes(x = ???,
-                     y = silvia targets,
-                     fill = silvia targets)) +
-  geom_density_ridges(alpha = 0.5) +
-  scale_full_viridis_d() +
-  labs(x = "???",
-       y = "silvia targets",
-       title = "bla title",
-       subtitle = "bla subtitle",
+
+### GULD
+ggplot(data = ncbi_joined_aug,
+       mapping = aes(x = log2(cotinine_conc_cord),
+                     y = log2(cotinine_conc_maternal))) +
+  geom_point(aes(
+    color = gestational_age)) +
+  geom_smooth(method=lm) + 
+  labs(title = "Concentration of Cotinine",
+       subtitle = "Comparision of log2 transformed cotinine concentration [ng/ml]",
+       x = "Cord Cotinine",
+       y = "Maternal Cotinine",
+       color = "Gestational Age",
        caption = "Data from NCBI (2011)") +
-  theme_minimal(base_family = "Avenir",
-                base_size = 10) +
+  theme_minimal(base_family = "Avenir") + 
   theme(legend.position = "bottom") +
-  facet_wrap(vars(smoking status),
-             ncol = 2)
+  facet_wrap(~factor(BMI_class,
+                               levels = c("Severely underweight",
+                                          "Underweight",
+                                          "Normal weight", 
+                                          "Overweight",
+                                          "Obesity", 
+                                          "Obesity class I",
+                                          "Obesity class II", 
+                                          "Obesity class III")))
+### GULD
+ggplot(data = ncbi_joined_aug,
+       mapping = aes(x = newborn_weight,
+                     y = placental_weight)) +
+  geom_point(aes(
+    color = factor(BMI_class,
+                   levels = c("Severely underweight",
+                              "Underweight",
+                              "Normal weight", 
+                              "Overweight",
+                              "Obesity", 
+                              "Obesity class I",
+                              "Obesity class II", 
+                              "Obesity class III")))) +
+  geom_smooth(method=lm) + 
+  labs(title = "Weight distribution based on BMI of mother",
+       subtitle = "Comparision of weigth [g]",
+       x = "Newborn [g]",
+       y = "Placental [g]",
+       color = "BMI class",
+       caption = "Data from NCBI (2011)") +
+  theme_classic(base_family = "Avenir") + 
+  theme(legend.position = "right",
+        legend.direction = "vertical") +
+  facet_wrap(~smoking_status,
+             scales = "fixed",
+             as.table = TRUE)
+#axis.text.x = element_text(angle = 45,hjust = 1)
+
+# https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-8---recreate-the-following-plot
+# https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-7---recreate-the-following-plot
+
+# Boxplot for each BMI class
+
+###
+
 
 ```
 
