@@ -95,7 +95,9 @@ ggplot(data = ncbi_joined_aug,
   theme(legend.position = "none") 
 
 
-#
+# GULD
+# GULD 
+# GULD
 ggplot(data = ncbi_joined_aug,
        mapping = aes(x = newborn_weight,
                      y = placental_weight)) +
@@ -130,7 +132,17 @@ ggplot(data = ncbi_joined_aug,
   theme(legend.position = "right",
         legend.direction = "vertical") 
 
+### 
+###
+
+
 ```
+# SILIVA
+```{r}
+
+```
+
+
 
 ### To be PCA
 ```{r}
