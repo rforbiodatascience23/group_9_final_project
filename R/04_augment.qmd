@@ -86,6 +86,13 @@ smoking_fc_cord <-
   mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expression_nonsmoker))
 ```
 
+### Joining:
+
+```{r}
+ncbi_joined_aug <- ncbi_augment_pheno |>
+  full_join(ncbi_clean_expr)
+```
+
 ### Write tsv file
 
 ```{r}

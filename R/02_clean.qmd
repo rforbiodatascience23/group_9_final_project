@@ -119,20 +119,6 @@ ncbi_dirty_expr <- ncbi_dirty_expr |>
   rename(probe_id = ID_REF) |>
   mutate(across(-probe_id, 
                 ~ as.numeric(.x)))
-
-###### Nicer boxplot to show normalization
-gene_exp_longer <- ncbi_dirty_expr  |> 
-  select(1:10) |> 
-  pivot_longer(
-    cols = starts_with("GSM"),
-    names_to = "sample_id",
-    values_to = "gene_expression"
-  )
-
-ggplot(data = gene_exp_longer, 
-       mapping = aes(x = sample_id, 
-                     y = gene_expression)) +
-  geom_boxplot()
 ```
 
 ### Split gene expression by source of the samples
