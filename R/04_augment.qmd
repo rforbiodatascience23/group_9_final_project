@@ -1,3 +1,16 @@
+---
+title: "Augment data"
+format: html
+editor: source
+author: authors
+---
+
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
 ### Library
 
 ```{r}
@@ -14,13 +27,15 @@ library("tidyverse")
 #| echo: true
 
 # load tsv files
-ncbi_joined <- vroom::vroom("../data/02_ncbi_joined.tsv.gz", 
+ncbi_clean_pheno <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz",
+                                 delim = "\t")
+transposed_expr_data <- vroom::vroom("../data/02_transposed_expr_data.tsv.gz", 
                             delim = "\t")
-placenta_joined <- vroom::vroom("../data/02_placenta_joined.tsv.gz", 
+transposed_placenta_expr <- vroom::vroom("../data/02_transposed_placenta_expr.tsv.gz", 
                             delim = "\t")
-maternal_joined <- vroom::vroom("../data/02_maternal_joined.tsv.gz", 
+transposed_maternal_expr <- vroom::vroom("../data/02_transposed_maternal_expr.tsv.gz", 
                             delim = "\t")
-cord_joined <- vroom::vroom("../data/02_cord_joined.tsv.gz", 
+transposed_cord_expr <- vroom::vroom("../data/02_transposed_cord_expr.tsv.gz", 
                             delim = "\t")
 ```
 
@@ -61,38 +76,32 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
            .before = age)
 ```
 
-```{r}
-
-gene_exp_cord <- ncbi_joined |> 
-  mutate(sample_source = str_match(title,
-                                   "[[:upper:]]+")) |>
-  filter(sample_source == "D") |> 
-  select(smoking_status, "JMJD1A":"KRTAP19-1")
-
-# calculate mean expressions of genes for both statuses of smoking
-mean_expr_nonsmoker <- gene_exp_cord |>
-  filter(smoking_status == "non-smoker") |> 
-  select(-1) |> 
-  colMeans()
-mean_expr_smoker <- gene_exp_cord |>
-  filter(smoking_status == "smoker") |> 
-  select(-1) |> 
-  colMeans()
-
-# calculate log fold change
-smoking_fc_cord <-
-  tibble(mean_expr_nonsmoker, 
-         mean_expr_smoker) |>  
-  mutate(Gene = names(mean_expr_nonsmoker)) |> 
-  relocate(Gene) |> 
-  mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expr_nonsmoker))
-```
-
-### Joining:
+### Joining and creating logfc dataframes
 
 ```{r}
-ncbi_joined_aug <- ncbi_augment_pheno |>
-  full_join(ncbi_clean_expr)
+
+# join transposed expr data with phenotypical data
+ncbi_joined <- ncbi_augment_pheno |>
+  full_join(transposed_expr_data)
+
+placenta_joined <- ncbi_augment_pheno |>
+  inner_join(transposed_placenta_expr)
+
+maternal_joined <- ncbi_augment_pheno |>
+  inner_join(transposed_maternal_expr)
+
+cord_joined <- ncbi_augment_pheno |>
+  inner_join(transposed_cord_expr)
+
+# calculate log fold change for all data frames
+smoking_fc_placenta <- smoking_expr_fc(placenta_joined)
+
+smoking_fc_maternal <- smoking_expr_fc(maternal_joined)
+
+smoking_fc_cord <- smoking_expr_fc(cord_joined)
+
+smoking_fc_all <- smoking_expr_fc(ncbi_joined)
+
 ```
 
 ### Write tsv file

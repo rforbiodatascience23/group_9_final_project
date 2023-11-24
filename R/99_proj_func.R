@@ -118,6 +118,29 @@ transpose_gene_expr <- function(gene_expr_df) {
     rename("geo_accession" = gene)
 }
 
+mean_expr <- function(gene_expr_df, term){
+  gene_expr_df |>
+    filter(smoking_status == "term") |> 
+    select(-1:16) |> 
+    colMeans()
+}
+
+smoking_expr_fc <- function(gene_expr_df){
+  mean_expr_smoker = gene_expr_df |>
+    filter(smoking_status == "smoker") |> 
+    select(-(1:16)) |> 
+    colMeans()
+  mean_expr_nonsmoker = gene_expr_df |>
+    filter(smoking_status == "non-smoker") |> 
+    select(-(1:16)) |> 
+    colMeans()
+  tibble(mean_expr_nonsmoker, 
+         mean_expr_smoker) |>  
+    mutate(Gene = names(mean_expr_nonsmoker)) |> 
+    relocate(Gene) |> 
+    mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expr_nonsmoker))
+}
+
 create_models <- function(gene_expr_df,
                           pheno_data) {
   dplyr::full_join(pheno_data,

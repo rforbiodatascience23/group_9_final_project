@@ -178,34 +178,24 @@ transposed_maternal_expr <- transpose_gene_expr(gene_expr_maternal_blood)
 
 transposed_cord_expr <- transpose_gene_expr(gene_expr_cord_blood)
 
-# join transposed expr data with phenotypical data
-ncbi_joined <- ncbi_clean_pheno |>
-  full_join(transposed_expr_data)
-
-placenta_joined <- ncbi_clean_pheno |>
-  full_join(transposed_placenta_expr)
-
-maternal_joined <- ncbi_clean_pheno |>
-  full_join(transposed_maternal_expr)
-
-cord_joined <- ncbi_clean_pheno |>
-  full_join(transposed_cord_expr)
-
 ```
 
 ### Write tsv-files containing the data frames
 
 ```{r}
-write_tsv(x = ncbi_joined,
-          file = "../data/02_ncbi_joined.tsv.gz")
+write_tsv(x = ncbi_clean_pheno,
+          file = "../data/02_ncbi_clean_pheno.tsv.gz")
 
-write_tsv(x = placenta_joined,
-          file = "../data/02_placenta_joined.tsv.gz")
+write_tsv(x = transposed_expr_data,
+          file = "../data/02_transposed_expr_data.tsv.gz")
 
-write_tsv(x = maternal_joined,
-          file = "../data/02_maternal_joined.tsv.gz")
+write_tsv(x = transposed_placenta_expr,
+          file = "../data/02_transposed_placenta_expr.tsv.gz")
 
-write_tsv(x = cord_joined,
-          file = "../data/02_cord_joined.tsv.gz")
+write_tsv(x = transposed_maternal_expr,
+          file = "../data/02_transposed_maternal_expr.tsv.gz")
+
+write_tsv(x = transposed_cord_expr,
+          file = "../data/02_transposed_cord_expr.tsv.gz")
 
 ```
