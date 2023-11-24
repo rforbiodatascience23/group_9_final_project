@@ -110,12 +110,27 @@ smoking_fc_all <- smoking_expr_fc(ncbi_joined)
 #| eval: true
 #| echo: true
 
-write_tsv(x = ncbi_augment_pheno,
-          file = "../data/04_ncbi_augment_pheno.tsv.gz")
+write_tsv(x = ncbi_joined,
+          file = "../data/04_ncbi_joined.tsv.gz")
 
-write_tsv(x = ncbi_joined_aug,
-          file = "../data/04_ncbi_joined_aug.tsv.gz")
+write_tsv(x = placenta_joined,
+          file = "../data/04_placenta_joined.tsv.gz")
+
+write_tsv(x = maternal_joined,
+          file = "../data/04_maternal_joined.tsv.gz")
+
+write_tsv(x = cord_joined,
+          file = "../data/04_cord_joined.tsv.gz")
+
+write_tsv(x = smoking_fc_all,
+          file = "../data/04_smoking_fc_all.tsv.gz")
+
+write_tsv(x = smoking_fc_placenta,
+          file = "../data/04_smoking_fc_placenta.tsv.gz")
+
+write_tsv(x = smoking_fc_maternal,
+          file = "../data/04_smoking_fc_maternal.tsv.gz")
 
 write_tsv(x = smoking_fc_cord,
-          file = "../data/04_ncbi_smoking_logfc_cord.tsv.gz")
+          file = "../data/04_smoking_fc_cord.tsv.gz")
 ```

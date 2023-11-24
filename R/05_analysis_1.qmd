@@ -13,7 +13,7 @@ library("ggridges")
 library("viridis")
 library("broom")
 library("ggrepel")
-library(corrplot)
+library("corrplot")
 ```
 
 ### loading:
@@ -22,23 +22,15 @@ library(corrplot)
 #| eval: true
 #| message: false
 
-pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
-                           delim = "\t")
-
-# we haven't augmented expr (Masha)
-# expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
-
-ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
                              delim = "\t")
 
-ncbi_smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord.tsv.gz",
+smoking_fc_cord <- vroom::vroom("../data/04_smoking_fc_cord.tsv.gz",
                                  delim = "\t")
 
-pheno_data |> 
+ncbi_joined |> 
   sample_n(5)
-ncbi_joined_aug |> 
-  sample_n(5)
-ncbi_smoking_logfc_cord |> 
+smoking_fc_cord |> 
   sample_n(5)
 ```
 
@@ -46,12 +38,9 @@ ncbi_smoking_logfc_cord |>
 
 ```{r}
 
-joined_colnames <- ncbi_joined_aug |> 
-  colnames()
-
-auged_norm_exprs_00 <- ncbi_joined_aug |> 
-  dplyr::select(-joined_colnames[1],
-                -joined_colnames[4:15]) |>
+aug_norm_exprs_00 <- ncbi_joined |> 
+  dplyr::select(-names(ncbi_joined)[1],
+                -names(ncbi_joined)[4:16]) |>
   mutate(is_smoker = case_when(str_detect(smoking_status, 
                                           "non") == 1 ~ 0,
                                str_detect(smoking_status, 
@@ -59,20 +48,21 @@ auged_norm_exprs_00 <- ncbi_joined_aug |>
          .before = 1) |>
   dplyr::select(-smoking_status)
 
-auged_norm_exprs_01 <- auged_norm_exprs_00 |>
-  pivot_longer(cols = colnames(auged_norm_exprs_00[3:length(colnames(auged_norm_exprs_00))]),
+aug_norm_exprs_01 <- aug_norm_exprs_00 |>
+  pivot_longer(cols = colnames(aug_norm_exprs_00[3:length(colnames(aug_norm_exprs_00))]),
                names_to = "gene",
                values_to = "expr_level") |>
   mutate(log_2_expr_level = log2(expr_level)) |>
   dplyr::select(-expr_level)
 
-auged_norm_exprs_02 <- auged_norm_exprs_01 |>
+aug_norm_exprs_02 <- aug_norm_exprs_01 |>
+  drop_na() |>
   group_by(gene) |>
   nest() |>
   ungroup()
 
 # updating data frame. First we group rows by gene, and then we add a variable containing model fitted to expression level against early_metastasis variable
-auged_norm_exprs_03 <- auged_norm_exprs_02 |>
+aug_norm_exprs_03 <- aug_norm_exprs_02 |>
   group_by(gene) |>
   mutate(model_object = map(.x = data,
                             .f = ~lm(formula = log_2_expr_level ~ is_smoker,
@@ -85,7 +75,7 @@ auged_norm_exprs_03 <- auged_norm_exprs_02 |>
                                              conf.level = 0.95)))
 
 # unnesting the tidy models, filtering to only get "slope"-coefficients for models and selecting desired variables
-auged_norm_exprs_04 <- auged_norm_exprs_03 |>
+aug_norm_exprs_04 <- aug_norm_exprs_03 |>
   unnest(model_object_tidy) |>
   filter(term == "is_smoker") |>
   dplyr::select(gene, 
@@ -106,11 +96,11 @@ auged_norm_exprs_04 <- auged_norm_exprs_03 |>
 ### Volcano plot:
 
 ```{r}
-significant_labels <- subset(auged_norm_exprs_04 , 
+significant_labels <- subset(aug_norm_exprs_04 , 
                           is_significant == "yes") |>
   dplyr::select(gene)
 
-auged_norm_exprs_04 |>
+aug_norm_exprs_04 |>
   ggplot(aes(x = gene,
              y = -log(p.value,10),
              label = ifelse(is_significant == "yes", 
@@ -128,7 +118,7 @@ auged_norm_exprs_04 |>
        y = "-log10(p)") +
   theme(legend.position = "none",
         plot.title = element_text(hjust = .95),
-        plot.subtitle = element_text(hjust = .95)) +
+        plot.subtitle = element_text(hjust = .95)) 
   facet_wrap(~antibiotic, 
              scales = "free_y", 
              ncol = 2,
@@ -143,11 +133,11 @@ auged_norm_exprs_04 |>
 
 # General exprs of all genes comparing smoking
 
-# non functional(Masha)
-
-ncbi_joined |> select(-joined_colnames[1:2],
-                        -joined_colnames[4:15]) |>
-  pivot_longer(cols = joined_colnames[16:1000],
+ncbi_joined |> 
+  select(-names(ncbi_joined)[1:2],
+         -names(ncbi_joined)[4:15]) |>
+  pivot_longer(cols = -c(smoking_status,
+                         individual),
                names_to = "gene",
                values_to = "expr_level") |>
   sample_n(20) |>
@@ -159,12 +149,13 @@ ncbi_joined |> select(-joined_colnames[1:2],
 ### Gene association plot:
 
 ```{r}
-
-auged_norm_exprs_04 |>
+# we should make this readable
+aug_norm_exprs_04 |>
   filter(is_significant == "yes") |>
-  ggplot(aes(y = fct_reorder(gene,estimate))) + 
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
   geom_point(aes(x = estimate), 
-             size=1.5) +
+             size = 1.5) +
   geom_errorbarh(aes(xmax = conf.high,
                      xmin = conf.low),
                      height = 1) +
@@ -183,18 +174,23 @@ num_genes_to_compare <- 6
 genes_start_idx = 16
 
 ncbi_joined |>
-  select(smoking_status, genes_start_idx : (genes_start_idx + num_genes_to_compare)) |> 
-  pivot_longer(names_to = "variable", values_to = "values", 3:last_col()) |> 
-  ggplot(aes(JMJD1A, values)) + 
-  geom_point(aes(color=smoking_status)) + 
-  facet_grid(. ~ variable, scales = "free_x") + 
-  geom_smooth(method = "lm", se = FALSE) + 
+  select(smoking_status,
+         genes_start_idx : (genes_start_idx + num_genes_to_compare)) |> 
+  pivot_longer(names_to = "variable",
+               values_to = "values",
+               3:last_col()) |> 
+  ggplot(aes(JMJD1A,
+             values)) + 
+  geom_point(aes(color = smoking_status)) + 
+  facet_grid(. ~ variable,
+             scales = "free_x") + 
+  geom_smooth(method = "lm",
+              se = FALSE) + 
   scale_y_continuous(trans = "log2") + 
   scale_x_continuous(trans = "log2") +
-  labs(
-    x="Gene expression of JMJD1A",
-    y="Gene expression",
-    title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A")
+  labs(x="Gene expression of JMJD1A",
+       y="Gene expression",
+       title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A")
 ```
 
 ### Gene expression correlation
@@ -202,7 +198,8 @@ ncbi_joined |>
 ```{r}
 
 genes_cord_blood <- ncbi_joined |> 
-  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
+  mutate(sample_source = str_match(title,
+                                   "[[:upper:]]+")) |>
   filter(sample_source == "D") |> 
   select(16:30)
 
@@ -214,6 +211,14 @@ corrplot(cor(genes_pl),
 ### Log Fold Change
 
 ```{r}
+# this has been done. df names are:
+
+smoking_fc_all
+smoking_fc_placenta
+smoking_fc_maternal
+smoking_fc_cord
+
+######
 
 gene_exp_cord_blood |> 
   slice_head(n=1)
