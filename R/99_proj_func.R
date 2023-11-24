@@ -110,6 +110,13 @@ get_gene_expr_by_source <- function(gene_expr_df, sample_source_table, source_ab
   return(gene_exp_from_source)
 }
 
+transpose_gene_expr <- function(gene_expr_df) {
+  gene_expr_df |> 
+    distinct(Gene, .keep_all = TRUE) |>
+    pivot_longer(cols = -Gene, names_to = "gene", values_to = "value") |>
+    pivot_wider(names_from = "Gene", values_from = "value") |>
+    rename("geo_accession" = gene)
+}
 
 create_models <- function(gene_expr_df,
                           pheno_data) {

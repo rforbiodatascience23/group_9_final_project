@@ -14,11 +14,14 @@ library("tidyverse")
 #| echo: true
 
 # load tsv files
-ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
-ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
-ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", 
+ncbi_joined <- vroom::vroom("../data/02_ncbi_joined.tsv.gz", 
                             delim = "\t")
-
+placenta_joined <- vroom::vroom("../data/02_placenta_joined.tsv.gz", 
+                            delim = "\t")
+maternal_joined <- vroom::vroom("../data/02_maternal_joined.tsv.gz", 
+                            delim = "\t")
+cord_joined <- vroom::vroom("../data/02_cord_joined.tsv.gz", 
+                            delim = "\t")
 ```
 
 ### BMI class and Age group augmenation:
