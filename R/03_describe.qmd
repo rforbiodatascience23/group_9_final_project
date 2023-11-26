@@ -17,8 +17,11 @@ library("table1")
 ```{r}
 #| eval: true
 #| message: false
-pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz",
-                           delim = "\t")
+pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
+expr_data <- vroom::vroom("../data/02_transposed_expr_data.tsv.gz", delim = "\t")
+
+pheno_data |> sample_n(5)
+expr_data |> sample_n(5)
 ```
 
 ### Study subjects description
