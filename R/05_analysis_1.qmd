@@ -87,6 +87,9 @@ regression_all <- join_all(list(regression_placenta,
                                 regression_cord),
                            type='full')
 
+```
+
+```{r}
 regression_all |>
   ggplot(aes(x = gene,
              y = -log(p.value,10),
@@ -114,6 +117,7 @@ regression_all |>
                                       cord = "Samples obtained from cord blood")))
 
 ```
+
 
 ```{r}
 
@@ -275,4 +279,22 @@ smoking_fold_change |>
 ncbi_smoking_logfc_cord |> 
   arrange(desc(abs(log_fold_change))) |> 
   slice_head(n=5)
+
 ```
+
+```{r}
+# Heatmap very much draft
+ncbi_joined |>
+  filter(smoking_status == "smoker") |>
+  select(-colnames(ncbi_joined)[1:15]) %>%
+  pivot_longer(col = -colnames(.)[1],
+               names_to = "gene",
+               values_to = "expr_level") |>
+  ggplot(aes(x = as.factor(individual),
+             y = gene,
+             fill = expr_level)) + 
+    geom_tile() +
+    theme(legend.position="none")
+
+```
+

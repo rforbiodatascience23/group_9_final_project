@@ -22,25 +22,29 @@ library("viridis")
 
 ```{r}
 #| eval: true
-#| echo: true
 #| message: false
 
-# pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz", delim = "\t")
+ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
+                             delim = "\t")
 
-# we haven't augmented expr (Masha)
-# expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
+placenta_joined <- vroom::vroom("../data/04_placenta_joined.tsv.gz",
+                                delim = "\t")
 
-ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
+maternal_joined <- vroom::vroom("../data/04_maternal_joined.tsv.gz",
+                                delim = "\t")
+
+cord_joined <- vroom::vroom("../data/04_cord_joined.tsv.gz",
+                                delim = "\t")
+
+smoking_fc_placenta <- vroom::vroom("../data/04_smoking_fc_placenta.tsv.gz",
                                  delim = "\t")
 
-smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord.tsv.gz",
+smoking_fc_maternal <- vroom::vroom("../data/04_smoking_fc_maternal.tsv.gz",
                                  delim = "\t")
 
+smoking_fc_cord <- vroom::vroom("../data/04_smoking_fc_cord.tsv.gz",
+                                 delim = "\t")
 
-ncbi_joined |> 
-  sample_n(5)
-ncbi_joined_aug |> 
-  sample_n(5)
 ```
 
 ### plotting:
@@ -55,7 +59,7 @@ ncbi_joined_aug |>
 # SKRALD
 # SKRALD
 
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = newborn_weight,
                      y = log2(cotinine_conc_maternal))) +
   geom_point(aes(color = age_group,
@@ -80,7 +84,7 @@ ggplot(data = ncbi_joined_aug,
 # GULD
 # GULD
 # GULD
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = smoking_status,
                      y = newborn_weight,
                      fill = smoking_status)) +
@@ -98,7 +102,7 @@ ggplot(data = ncbi_joined_aug,
 # GULD
 # GULD 
 # GULD
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = newborn_weight,
                      y = placental_weight)) +
   geom_point(aes(color = smoking_status,
@@ -134,7 +138,7 @@ ggplot(data = ncbi_joined_aug,
 
 
 ### GULD
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = log2(cotinine_conc_cord),
                      y = log2(cotinine_conc_maternal))) +
   geom_point(aes(
@@ -158,7 +162,7 @@ ggplot(data = ncbi_joined_aug,
                                           "Obesity class II", 
                                           "Obesity class III")))
 ### GULD
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = newborn_weight,
                      y = placental_weight)) +
   geom_point(aes(
@@ -204,17 +208,17 @@ ncbi_smoking_logfc_cord |>
   slice_head(n=5)
 ```
 
-### To be PCA
+### PCA
 
 ```{r}
 # Fitting
-pca_fit <- ncbi_joined_aug |>
+pca_fit <- ncbi_joined |>
   select(where(is.numeric)) |>
   prcomp(scale = TRUE)
 
 # Adding PCA data to joined augmented data frame
 pca_fit_augment <- pca_fit |> 
-  augment(ncbi_joined_aug)
+  augment(ncbi_joined)
 ```
 
 
@@ -232,9 +236,11 @@ pca_fit_augment  |>
        title = "Scatter plot of fitted PC1 and PC2") +
   scale_colour_brewer(palette = "Set1") +
   geom_hline(yintercept = 0, 
-             linetype = "dashed") + 
+             linetype = "dashed",
+             alpha = .2) + 
   geom_vline(xintercept = 0, 
-             linetype = "dashed")
+             linetype = "dashed",
+             alpha = .2)
 
 #ggsave("../results/plots/scatter_pc1_pc2.png", 
 #       plot = scatter_pc1_pc2)
@@ -256,22 +262,14 @@ pca_fit_augment  |>
        title = "Scatter plot of fitted PC2 and PC3") +
   scale_colour_brewer(palette = "Set1") +
   geom_hline(yintercept = 0, 
-             linetype = "dashed") + 
+             linetype = "dashed",
+             alpha = .2) + 
   geom_vline(xintercept = 0, 
-             linetype = "dashed")
+             linetype = "dashed",
+             alpha = .2)
 
 #ggsave("../results/plots/scatter_pc1_pc2.png", 
 #       plot = scatter_pc1_pc2)
 #show(scatter_pc1_pc2)
 ```
 
-### Masha, plot
-
-```{r}
-ncbi_joined_aug |>
-  ggplot(aes(x = smoking_status,
-             y = newborn_weight,
-             color = age_group)) +
-  geom_point() +
-  theme_minimal()
-```
