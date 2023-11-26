@@ -207,6 +207,8 @@ placenta_joined |>
        y="Gene expression",
        title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A",
        caption = "Data from NCBI (2011)")
+
+#ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
 ```
 
 ### Gene expression correlation
@@ -216,9 +218,10 @@ placenta_joined |>
 genes_exp_selection <- placenta_joined |> 
   select(28:36)
 
-corrplot(cor(genes_exp_selection),
+corrplot_gene_expr <- corrplot(cor(genes_exp_selection),
   type = "upper"
 )
+
 ```
 
 ### Log Fold Change
@@ -240,9 +243,14 @@ smoking_fc_cord |>
     geom_bar(stat="identity") + 
     coord_flip() +
     theme_minimal() +
-  labs(
-    title = "Log fold change of 30 genes most affected by smoking",
-    y = "Log fold change")
+    labs(
+        title = "Log fold change of 30 genes most affected by smoking",
+        y = "Log fold change",
+        caption = "Data from NCBI (2011)"
+      )
+
+#ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking.png")
+
 ```
 
 ### PCR plot of gene expression in placenta tissue
