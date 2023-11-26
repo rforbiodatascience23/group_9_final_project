@@ -265,15 +265,18 @@ PCA <- placenta_joined |>
   select(genes_large_fold_change) |> 
   prcomp() 
 
-summary(PCA)
+# summary(PCA)
 
-pca_data <- PCA$x |> 
-  as.data.frame() |> 
-  mutate(smoking_status = placenta_joined$smoking_status)
+PCA |> 
+  augment(placenta_joined) |> 
+  ggplot(aes(.fittedPC1, .fittedPC2, color = smoking_status)) + 
+    geom_point() +
+    labs(title = "PCA plot",
+         x = "PCA1",
+         y = "PCA2"
+    )
 
-ggplot(pca_data, aes(PC1, PC2)) +
-      geom_point(aes(colour = smoking_status)) +
-  labs(title="PCA plot")
+# ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
 
 ```{r}
