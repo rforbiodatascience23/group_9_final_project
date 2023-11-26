@@ -119,55 +119,12 @@ regression_all |>
 ```
 
 
-```{r}
-
-# didn't correct anything after this (Masha)
-
-aug_norm_exprs_04 |>
-  ggplot(aes(x = gene,
-             y = -log(p.value,10),
-             label = ifelse(is_significant == "yes", 
-                            gene, 
-                            ""))) + 
-  geom_point(aes(x = estimate, 
-                 color = is_significant),
-             alpha = .5,
-             size=1) +
-  geom_hline(yintercept = 0) +
-  theme_minimal(base_size = 10) +
-  labs(title = "Genes Associated with",
-       subtitle = "Genes highlighted in turquoise were significant after multiple testing correction",
-       x = "Estimates",
-       y = "-log10(p)") +
-  theme(legend.position = "none",
-        plot.title = element_text(hjust = .95),
-        plot.subtitle = element_text(hjust = .95)) 
-```
-
-## Expression level based on smoking status of mother:
-
-```{r}
-
-# Don't think this plot says anything, should be dropped(Masha)
-
-ncbi_joined |> 
-  select(-names(ncbi_joined)[1:2],
-         -names(ncbi_joined)[4:15]) |>
-  pivot_longer(cols = -c(smoking_status,
-                         individual),
-               names_to = "gene",
-               values_to = "expr_level") |>
-  #sample_n(20) |>
-  ggplot(aes(expr_level, 
-             fill = smoking_status)) +
-  geom_boxplot()
-```
 
 ### Gene association plot:
 
 ```{r}
-# we should make this readable
-aug_norm_exprs_04 |>
+# one plot of all genes and one plot with a sample of 20 or so genes
+plot1 <- regression_all |>
   filter(is_significant == "yes") |>
   ggplot(aes(y = fct_reorder(gene,
                              estimate))) + 
@@ -182,6 +139,24 @@ aug_norm_exprs_04 |>
   labs(title = "Genes Associated with Smoking",
        x = "Estimates (95%CIs)",
        y = "",)
+
+plot2 <- regression_all |>
+  filter(is_significant == "yes") |>
+  sample_n(20) |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom") +
+  labs(title = "Genes Associated with Smoking",
+       x = "Estimates (95%CIs)",
+       y = "",)
+
 ```
 
 We can generally see that when a person smokes there is a major downregulation of some genes. Some are also upregulated. We cant tell the effect of the regulation
