@@ -274,6 +274,8 @@ pca_data <- PCA$x |>
 ggplot(pca_data, aes(PC1, PC2)) +
       geom_point(aes(colour = smoking_status)) +
   labs(title="PCA plot")
+
+# ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
 
 ```{r}
