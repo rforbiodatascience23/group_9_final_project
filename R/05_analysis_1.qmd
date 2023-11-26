@@ -15,6 +15,7 @@ library("broom")
 library("ggrepel")
 library("corrplot")
 library("plyr")
+library("patchwork")
 ```
 
 ### loading:
@@ -54,7 +55,6 @@ regression_cord <- create_models(cord_joined)
 regression_maternal <- create_models(maternal_joined)
 
 ```
-
 
 ### Volcano plot:
 
@@ -118,13 +118,15 @@ regression_all |>
 
 ```
 
-
-
 ### Gene association plot:
+
+blood_association_plot \| cord_association_plot \| placenta_association_plot
+
+sample_blood_plot \| sample_cord_plot \| sample_placenta_plot
 
 ```{r}
 # one plot of all genes and one plot with a sample of 20 or so genes
-plot1 <- regression_all |>
+blood_association_plot <- regression_maternal |>
   filter(is_significant == "yes") |>
   ggplot(aes(y = fct_reorder(gene,
                              estimate))) + 
@@ -135,12 +137,44 @@ plot1 <- regression_all |>
                      height = 1) +
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
-  theme(legend.position = "bottom") +
-  labs(title = "Genes Associated with Smoking",
-       x = "Estimates (95%CIs)",
+  theme(legend.position = "bottom",
+        axis.text.y = element_blank()) +
+  labs(x = "Estimates (95%CIs)",
        y = "",)
 
-plot2 <- regression_all |>
+cord_association_plot <- regression_cord |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom",
+        axis.text.y = element_blank()) +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+placenta_association_plot <- regression_placenta |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom",
+        axis.text.y = element_blank()) +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+sample_blood_plot <- regression_maternal |>
   filter(is_significant == "yes") |>
   sample_n(20) |>
   ggplot(aes(y = fct_reorder(gene,
@@ -153,13 +187,51 @@ plot2 <- regression_all |>
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
   theme(legend.position = "bottom") +
-  labs(title = "Genes Associated with Smoking",
-       x = "Estimates (95%CIs)",
+  labs(x = "Estimates (95%CIs)",
        y = "",)
-plot1
+
+sample_cord_plot <- regression_cord |>
+  filter(is_significant == "yes") |>
+  sample_n(20) |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom") +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+sample_placenta_plot <- regression_placenta |>
+  filter(is_significant == "yes") |>
+  sample_n(20) |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom") +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+(blood_association_plot | cord_association_plot | placenta_association_plot) +
+  plot_annotation(title = "Genes Associated with Smoking")
+
+(sample_blood_plot | sample_cord_plot | sample_placenta_plot) +
+  plot_annotation(title = "Genes Associated with Smoking")
+
+
 ```
 
-We can generally see that when a person smokes there is a major downregulation of some genes. Some are also upregulated. We cant tell the effect of the regulation
+We can generally see that when a person smokes there seems to be a equal up and downregulation of diffrent genes. it is diffifult to see anything on the first plot so we try and sampling it. ofcourse the genes have a variety of diffrent function, so it makes sense that the up and downregulation is equally divided. but i we looked at a specific type of genes such as immunity, oxidation, metabolitic and so on. It might have a general up or down regulation
 
 ```{r}
 num_genes_to_compare <- 6
@@ -272,4 +344,3 @@ ncbi_joined |>
     theme(legend.position="none")
 
 ```
-

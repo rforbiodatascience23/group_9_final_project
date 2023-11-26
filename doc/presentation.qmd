@@ -70,11 +70,9 @@ flowchart TD
 ## Results (some dramatic name)
 
 ```{r echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("../results/plots/description_age_boxplot.png", error = FALSE)
+options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
+knitr::include_graphics("../results/plots/description_BMI_boxplot.png", error = FALSE)
 ```
 
-```{r echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("../results/plots/description_age_boxplot", error = FALSE)
-```
 
 ## Discussion
