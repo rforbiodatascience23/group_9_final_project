@@ -184,13 +184,12 @@ aug_norm_exprs_04 |>
 
 We can generally see that when a person smokes there is a major downregulation of some genes. Some are also upregulated. We cant tell the effect of the regulation
 
-```{r}
-num_genes_to_compare <- 6
-genes_start_idx = 16
+### Gene expression of gene JMJD1A plotted against gene expression of other 6 genes
 
-ncbi_joined |>
+```{r}
+placenta_joined |>
   select(smoking_status,
-         genes_start_idx : (genes_start_idx + num_genes_to_compare)) |> 
+         "JMJD1A" : "CHKB") |> 
   pivot_longer(names_to = "variable",
                values_to = "values",
                3:last_col()) |> 
@@ -203,17 +202,19 @@ ncbi_joined |>
               se = FALSE) + 
   scale_y_continuous(trans = "log2") + 
   scale_x_continuous(trans = "log2") +
+  theme_linedraw() +
   labs(x="Gene expression of JMJD1A",
        y="Gene expression",
-       title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A")
+       title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A",
+       caption = "Data from NCBI (2011)")
 ```
 
 ### Gene expression correlation
 
 ```{r}
 
-genes_exp_selection <- ncbi_joined |> 
-  select(20:28)
+genes_exp_selection <- placenta_joined |> 
+  select(28:36)
 
 corrplot(cor(genes_exp_selection),
   type = "upper"
@@ -232,38 +233,35 @@ smoking_fc_cord
 
 ######
 
-ncbi_smoking_logfc_cord
-
-ncbi_smoking_logfc_cord |>
-  arrange(desc(abs(log_fold_change))) |> 
+smoking_fc_cord |>
+  arrange(desc(abs(log2fc))) |> 
   slice_head(n=30) |> 
-  ggplot(aes(x=Gene, y=log_fold_change)) +
+  ggplot(aes(x=Gene, y=log2fc)) +
     geom_bar(stat="identity") + 
     coord_flip() +
+    theme_minimal() +
   labs(
     title = "Log fold change of 30 genes most affected by smoking",
     y = "Log fold change")
 ```
 
-### PCR
+### PCR plot of gene expression in placenta tissue
 
 ```{r}
-genes_large_fold_change <- smoking_fc_cord |>
-  arrange(desc(abs(log_fold_change))) |> 
-  slice_head(n=170) |> 
+genes_large_fold_change <- smoking_fc_placenta |>
+  arrange(desc(abs(log2fc))) |> 
+  slice_head(n=25) |> 
   pull(Gene)
 
-gene_exp_cord <- get_gene_expr_by_sample(ncbi_joined, "cord blood", c("smoking_status"))
-
-PCA <- gene_exp_cord |> 
+PCA <- placenta_joined |> 
   select(genes_large_fold_change) |> 
   prcomp() 
 
-# summary(PCA)
+summary(PCA)
 
 pca_data <- PCA$x |> 
   as.data.frame() |> 
-  mutate(smoking_status = gene_exp_cord$smoking_status)
+  mutate(smoking_status = placenta_joined$smoking_status)
 
 ggplot(pca_data, aes(PC1, PC2)) +
       geom_point(aes(colour = smoking_status)) +
