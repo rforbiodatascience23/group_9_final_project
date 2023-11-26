@@ -141,34 +141,38 @@ smoking_expr_fc <- function(gene_expr_df){
     mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expr_nonsmoker))
 }
 
-create_models <- function(gene_expr_df,
-                          pheno_data) {
-  dplyr::full_join(pheno_data,
-            gene_expr_df) |>
-  dplyr::select(-1,
-                -4:-15) |>
+create_models <- function(gene_expr_df) {
+  gene_expr_df1 <- gene_expr_df |>
+    dplyr::select(-names(gene_expr_df)[1],
+                  -names(gene_expr_df)[4:16]) |>
     dplyr::mutate(is_smoker = case_when(str_detect(smoking_status, 
                                             "non") == 1 ~ 0,
                                  str_detect(smoking_status, 
                                             "non") == 0 ~ 1),
            .before = 1) |>
-    dplyr::select(-smoking_status) |>
-    tidyr::pivot_longer(cols = 3:1000,
+    dplyr::select(-smoking_status)
+  gene_expr_df1 |>
+    tidyr::pivot_longer(cols = colnames(gene_expr_df1[3:length(colnames(gene_expr_df1))]),
                  names_to = "gene",
                  values_to = "expr_level") |>
     dplyr::mutate(log_2_expr_level = log2(expr_level)) |>
     dplyr::select(-expr_level) |>
+    drop_na() |>
     dplyr::group_by(gene) |>
     tidyr::nest() |>
     dplyr::ungroup() |>
+    # updating data frame. First we group rows by gene, and then we add a variable 
+    # containing model fitted to expression level against early_metastasis variable
     dplyr::group_by(gene) |>
     dplyr::mutate(model_object = map(.x = data,
                               .f = ~lm(formula = log_2_expr_level ~ is_smoker,
                                        data = .x))) |>
+    # using tidy function to turn model summary into a tibble instead of a list  
     dplyr::mutate(model_object_tidy = map(.x = model_object,
                                    .f = ~ tidy(.x,
                                                conf.int = TRUE,
                                                conf.level = 0.95))) |>
+    # unnesting the tidy models, filtering to only get "slope"-coefficients for models and selecting desired variables
     tidyr::unnest(model_object_tidy) |>
     dplyr::filter(term == "is_smoker") |>
     dplyr::select(gene, 
@@ -177,6 +181,9 @@ create_models <- function(gene_expr_df,
                   conf.low, 
                   conf.high) |>
     dplyr::ungroup() |>
+    # creating variables "q-value" which is the p-value adjusted for multiple comparisons 
+    # and "is_significant" which indicates whether observations are statistically 
+    # significant when using a level of significance of 0.05
     dplyr::mutate(is_significant = case_when(
       p.value < 0.05 ~ "yes",
       0.05 < p.value ~ "no"
