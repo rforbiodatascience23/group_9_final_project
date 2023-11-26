@@ -15,13 +15,24 @@ format:
 
 :::: {.columns}
 
-::: {.column width="40%"}
-
-- A point in the left column
+::: {.column width="60%"}
+Issue
+- Despite anti-smoking campaigns, almost one-third of pregnant women, particularly younger ones, continue to smoke.
 :::
 
-::: {.column width="60%"}
-- A point in the right column
+::: {.column width="40%"}
+Risks during pregnancy
+- Spontanoues abortion
+- Placenta issues
+- Preterm birth
+- Fetal growth restrictions
+Genomic Effects
+- Genotoxic lesions in tissues 
+- Key pathways affected
+Transplacental transfer
+- Harmful compounds transfer to fetus
+Hormonal Disruption
+- Cigarette smoke disrupts hormones in the placenta
 :::
 
 ::::
