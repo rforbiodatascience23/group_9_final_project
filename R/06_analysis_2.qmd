@@ -139,16 +139,14 @@ ggplot(data = ncbi_joined,
 
 ### GULD
 ggplot(data = ncbi_joined,
-       mapping = aes(x = log2(cotinine_conc_cord),
-                     y = log2(cotinine_conc_maternal))) +
-  geom_point(aes(
-    color = gestational_age)) +
+       mapping = aes(x = log2(cotinine_conc_maternal),
+                     y = log2(cotinine_conc_cord))) +
+  geom_point() +
   geom_smooth(method=lm) + 
   labs(title = "Concentration of Cotinine",
        subtitle = "Comparision of log2 transformed cotinine concentration [ng/ml]",
-       x = "Cord Cotinine",
-       y = "Maternal Cotinine",
-       color = "Gestational Age",
+       x = "Maternal Cotinine",
+       y = "Cord Cotinine",
        caption = "Data from NCBI (2011)") +
   theme_minimal(base_family = "Avenir") + 
   theme(legend.position = "bottom") +
@@ -188,26 +186,8 @@ ggplot(data = ncbi_joined,
   facet_wrap(~smoking_status,
              scales = "fixed",
              as.table = TRUE)
-#axis.text.x = element_text(angle = 45,hjust = 1)
-
-# https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-8---recreate-the-following-plot
-# https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-7---recreate-the-following-plot
-
-# Boxplot for each BMI class
-
-###
-
 
 ```
-
-# SILVIA
-
-```{r}
-ncbi_smoking_logfc_cord |> 
-  arrange(desc(abs(log_fold_change))) |> 
-  slice_head(n=5)
-```
-
 ### PCA
 
 ```{r}

@@ -338,8 +338,13 @@ group 9
 </div>
 
 </section>
-<section id="introduction" class="slide level2">
-<h2>Introduction</h2>
+<section>
+<section id="introduction" class="title-slide slide level1 center">
+<h1>Introduction</h1>
+
+</section>
+<section id="subsection-1" class="slide level2">
+<h2>Subsection 1</h2>
 <div class="columns">
 <div class="column" style="width:40%;">
 <ul>
@@ -352,8 +357,26 @@ group 9
 </div>
 </div>
 </section>
-<section id="data-handling-materials-and-methods" class="slide level2 scrollable">
-<h2>Data handling (Materials and Methods)</h2>
+<section id="subsection-2" class="slide level2">
+<h2>Subsection 2</h2>
+<div>
+<ul>
+<li class="fragment">Bullet point 2.1 incremental</li>
+<li class="fragment">Bullet point 2.2 also incremental</li>
+</ul>
+</div>
+</section>
+<section id="image-that-lucio-made" class="slide level2">
+<h2>Image that Lucio made</h2>
+
+<img data-src="../results/plots/description_age_boxplot.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section></section>
+<section>
+<section id="materials-and-methods" class="title-slide slide level1 center">
+<h1>Materials and Methods</h1>
+
+</section>
+<section id="data-handling" class="slide level2 scrollable">
+<h2>Data handling</h2>
 <div class="cell" data-reveal="true">
 <div class="cell-output-display">
 <div>
@@ -391,17 +414,68 @@ group 9
 </div>
 </div>
 </div>
+<p>sample_source_table &lt;- ncbi_clean_pheno |&gt; select(geo_accession, title) |&gt;<br>
+mutate(sample_source = str_match(title, “[[:upper:]]+”)) |&gt; rename(sample_id = geo_accession) |&gt; select(-title)</p>
+</section></section>
+<section id="gene_expr_placenta" class="title-slide slide level1 center">
+<h1>gene_expr_placenta</h1>
+<p>gene_expr_placenta &lt;- get_gene_expr_by_source(ncbi_clean_expression, sample_source_table, “PL”)</p>
 </section>
-<section id="results" class="slide level2">
-<h2>Results</h2>
 
-<img data-src="../results/plots/description_age_boxplot.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
-<section id="discussion" class="slide level2">
-<h2>Discussion</h2>
+<section id="gene_expr_maternal_blood" class="title-slide slide level1 center">
+<h1>gene_expr_maternal_blood</h1>
+<p>gene_expr_maternal_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, sample_source_table, “M”)</p>
+</section>
+
+<section id="gene_expr-cord-blood" class="title-slide slide level1 center">
+<h1>gene_expr cord blood</h1>
+<p>gene_expr_cord_blood &lt;- get_gene_expr_by_source(ncbi_clean_expression, sample_source_table, “D”)</p>
+<p>ncbi_clean_expr &lt;- ncbi_clean_expression |&gt; as.data.frame() |&gt; t() |&gt; as.data.frame()</p>
+</section>
+
+<section id="fixing-the-column-names" class="title-slide slide level1 center">
+<h1>fixing the column names</h1>
+<p>colnames(ncbi_clean_expr) &lt;- ncbi_clean_expr[1,] ncbi_clean_expr &lt;- ncbi_clean_expr[-1,]</p>
+</section>
+
+<section>
+<section id="results-and" class="title-slide slide level1 center">
+<h1>Results (And)</h1>
+
+</section>
+<section id="results-some-dramatic-name" class="slide level2">
+<h2>Results (some dramatic name)</h2>
+<div class="cell" data-reveal="true">
+<div class="cell-output-display">
+<div>
+<p>
+</p><pre class="mermaid mermaid-js" data-tooltip-selector="#mermaid-tooltip-2">    
+flowchart LR
+   X --- D[ ]:::empty
+   Y --- D
+   D --&gt; E
+   classDef empty width:0px,height:0px;
+    
+</pre>
+<div id="mermaid-tooltip-2" class="mermaidTooltip">
+
+</div>
+<p></p>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="discussion" class="title-slide slide level1 center">
+<h1>Discussion</h1>
+
+</section>
+<section id="discussion-about-specifics-in-the-data" class="slide level2">
+<h2>(Discussion about specifics in the data)</h2>
 <div class="footer footer-default">
 <p>Group 9 presentation</p>
 </div>
-</section>
+</section></section>
     </div>
   </div>
 

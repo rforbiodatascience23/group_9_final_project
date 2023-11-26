@@ -110,26 +110,6 @@ get_gene_expr_by_source <- function(gene_expr_df, sample_source_table, source_ab
   return(gene_exp_from_source)
 }
 
-get_gene_expr_by_sample <- function(whole_gene_expr_df, sample, cols_to_include) {
-
-  if (length(cols_to_include) == 0) {
-    
-    gene_exp_by_sample <- whole_gene_expr_df |> 
-      filter(tissue == sample) |> 
-      select("JMJD1A":"KRTAP19-1")
-    
-  } else {
-    
-    gene_exp_by_sample <- whole_gene_expr_df |> 
-      filter(tissue == sample) |> 
-      select(cols_to_include, "JMJD1A":"KRTAP19-1")
-    
-  }
-  
-  return(gene_exp_by_sample)
-
-}
-
 transpose_gene_expr <- function(gene_expr_df) {
   gene_expr_df |> 
     distinct(Gene, .keep_all = TRUE) |>
@@ -208,5 +188,4 @@ create_models <- function(gene_expr_df) {
       p.value < 0.05 ~ "yes",
       0.05 < p.value ~ "no"
     ))
-
 }

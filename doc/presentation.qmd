@@ -4,7 +4,7 @@ author: "group 9"
 format:
   revealjs:
     theme: default
-    slide-number: c/t
+    slide-number: true
     show-slide-number: all
     footer: "Group 9 presentation"
     
@@ -26,7 +26,8 @@ format:
 
 ::::
 
-## Data handling (Materials and Methods) {.scrollable}
+
+## Materials and Methods (Data handling) {.scrollable}
 ```{mermaid}
 flowchart TD
   subgraph 01_load
@@ -55,12 +56,13 @@ flowchart TD
   end
 ```
 
-## Results
+
+ 
+## Results (some dramatic name)
 
 ```{r echo=FALSE, out.width="100%", fig.align='center'}
 knitr::include_graphics("../results/plots/description_age_boxplot", error = FALSE)
 ```
-
 
 
 ## Discussion
