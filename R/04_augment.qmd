@@ -1,3 +1,16 @@
+---
+title: "Augment data"
+format: html
+editor: source
+author: authors
+---
+
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
 ### Library
 
 ```{r}
@@ -20,10 +33,16 @@ source("../R/99_proj_func.R")
 #| echo: true
 
 # load tsv files
-ncbi_clean_pheno <- read_tsv("../data/02_ncbi_clean_pheno.tsv.gz")
-ncbi_clean_expr <- read_tsv("../data/02_ncbi_clean_expression.tsv.gz")
-ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz", delim = "\t")
-
+ncbi_clean_pheno <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz",
+                                 delim = "\t")
+transposed_expr_data <- vroom::vroom("../data/02_transposed_expr_data.tsv.gz", 
+                            delim = "\t")
+transposed_placenta_expr <- vroom::vroom("../data/02_transposed_placenta_expr.tsv.gz", 
+                            delim = "\t")
+transposed_maternal_expr <- vroom::vroom("../data/02_transposed_maternal_expr.tsv.gz", 
+                            delim = "\t")
+transposed_cord_expr <- vroom::vroom("../data/02_transposed_cord_expr.tsv.gz", 
+                            delim = "\t")
 ```
 
 ### BMI class and Age group augmenation:
@@ -54,16 +73,13 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
            .before = maternal_bmi) |>
   select(-maternal_bmi) |>
   mutate(age_group = cut(age,
-                         breaks = c(20,
+                         breaks = c(10,
+                                    20,
                                     30,
                                     40,
-                                    50,
-                                    60,
-                                    70,
-                                    80))) |>
+                                    50))) |>
   relocate(age_group,
-           .before = age) |>
-  select(-age)
+           .before = age)
 ```
 
 ### Add gene fold change for cord blood samples
@@ -90,11 +106,32 @@ smoking_fc_cord |>
   slice_head(n=5)
 ```
 
-### Joining:
+### Joining and creating logfc dataframes
 
 ```{r}
-ncbi_joined_aug <- ncbi_augment_pheno |>
-  full_join(ncbi_clean_expr)
+
+# join transposed expr data with phenotypical data
+ncbi_joined <- ncbi_augment_pheno |>
+  full_join(transposed_expr_data)
+
+placenta_joined <- ncbi_augment_pheno |>
+  inner_join(transposed_placenta_expr)
+
+maternal_joined <- ncbi_augment_pheno |>
+  inner_join(transposed_maternal_expr)
+
+cord_joined <- ncbi_augment_pheno |>
+  inner_join(transposed_cord_expr)
+
+# calculate log fold change for all data frames
+smoking_fc_placenta <- smoking_expr_fc(placenta_joined)
+
+smoking_fc_maternal <- smoking_expr_fc(maternal_joined)
+
+smoking_fc_cord <- smoking_expr_fc(cord_joined)
+
+smoking_fc_all <- smoking_expr_fc(ncbi_joined)
+
 ```
 
 ### Write tsv file
@@ -103,12 +140,27 @@ ncbi_joined_aug <- ncbi_augment_pheno |>
 #| eval: true
 #| echo: true
 
-write_tsv(x = ncbi_augment_pheno,
-          file = "../data/04_ncbi_augment_pheno.tsv.gz")
+write_tsv(x = ncbi_joined,
+          file = "../data/04_ncbi_joined.tsv.gz")
 
-write_tsv(x = ncbi_joined_aug,
-          file = "../data/04_ncbi_joined_aug.tsv.gz")
+write_tsv(x = placenta_joined,
+          file = "../data/04_placenta_joined.tsv.gz")
+
+write_tsv(x = maternal_joined,
+          file = "../data/04_maternal_joined.tsv.gz")
+
+write_tsv(x = cord_joined,
+          file = "../data/04_cord_joined.tsv.gz")
+
+write_tsv(x = smoking_fc_all,
+          file = "../data/04_smoking_fc_all.tsv.gz")
+
+write_tsv(x = smoking_fc_placenta,
+          file = "../data/04_smoking_fc_placenta.tsv.gz")
+
+write_tsv(x = smoking_fc_maternal,
+          file = "../data/04_smoking_fc_maternal.tsv.gz")
 
 write_tsv(x = smoking_fc_cord,
-          file = "../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz")
+          file = "../data/04_smoking_fc_cord.tsv.gz")
 ```

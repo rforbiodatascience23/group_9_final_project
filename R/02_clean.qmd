@@ -170,16 +170,13 @@ gene_expr_cord_blood <- get_gene_expr_by_source(ncbi_clean_expression,
 
 ```{r}
 # transpose all expression data
-transposed_expr_data <- ncbi_clean_expression |> 
-  distinct(Gene, .keep_all = TRUE) |>
-  pivot_longer(cols = -Gene, names_to = "gene", values_to = "value") |>
-  pivot_wider(names_from = "Gene", values_from = "value") |>
-  rename("geo_accession" = gene)
+transposed_expr_data <- transpose_gene_expr(ncbi_clean_expression)
 
-ncbi_joined <- ncbi_clean_pheno |>
-  full_join(transposed_expr_data)
+transposed_placenta_expr <- transpose_gene_expr(gene_expr_placenta)
 
+transposed_maternal_expr <- transpose_gene_expr(gene_expr_maternal_blood)
 
+transposed_cord_expr <- transpose_gene_expr(gene_expr_cord_blood)
 
 ```
 
@@ -190,17 +187,15 @@ write_tsv(x = ncbi_clean_pheno,
           file = "../data/02_ncbi_clean_pheno.tsv.gz")
 
 write_tsv(x = transposed_expr_data,
-          file = "../data/02_ncbi_clean_expression.tsv.gz")
+          file = "../data/02_transposed_expr_data.tsv.gz")
 
-write_tsv(x = ncbi_joined,
-          file = "../data/04_ncbi_joined.tsv.gz")
+write_tsv(x = transposed_placenta_expr,
+          file = "../data/02_transposed_placenta_expr.tsv.gz")
 
-write_tsv(x = gene_expr_cord_blood,
-          file = "../data/02_gene_expr_cord_blood.tsv.gz")
+write_tsv(x = transposed_maternal_expr,
+          file = "../data/02_transposed_maternal_expr.tsv.gz")
 
-write_tsv(x = gene_expr_maternal_blood,
-          file = "../data/02_gene_expr_maternal_blood.tsv.gz")
+write_tsv(x = transposed_cord_expr,
+          file = "../data/02_transposed_cord_expr.tsv.gz")
 
-write_tsv(x = gene_expr_placenta,
-          file = "../data/02_gene_expr_placenta.tsv.gz")
 ```

@@ -15,36 +15,36 @@ library("ggridges")
 library("viridis")
 library("broom")
 library("ggrepel")
+library("viridis")
 ```
 
 ### loading:
 
 ```{r}
 #| eval: true
-#| echo: true
 #| message: false
-
-pheno_data <- vroom::vroom("../data/04_ncbi_augment_pheno.tsv.gz",
-                           delim = "\t")
-
-# we haven't augmented expr (Masha)
-# expr_data <- vroom::vroom("../data/04_ncbi_augment_expr.tsv.gz", delim = "\t")
 
 ncbi_joined <- vroom::vroom("../data/04_ncbi_joined.tsv.gz",
                              delim = "\t")
-ncbi_joined_aug <- vroom::vroom("../data/04_ncbi_joined_aug.tsv.gz",
+
+placenta_joined <- vroom::vroom("../data/04_placenta_joined.tsv.gz",
+                                delim = "\t")
+
+maternal_joined <- vroom::vroom("../data/04_maternal_joined.tsv.gz",
+                                delim = "\t")
+
+cord_joined <- vroom::vroom("../data/04_cord_joined.tsv.gz",
+                                delim = "\t")
+
+smoking_fc_placenta <- vroom::vroom("../data/04_smoking_fc_placenta.tsv.gz",
                                  delim = "\t")
 
-ncbi_smoking_logfc_cord <- vroom::vroom("../data/04_ncbi_smoking_logfc_cord_blood.tsv.gz",
+smoking_fc_maternal <- vroom::vroom("../data/04_smoking_fc_maternal.tsv.gz",
                                  delim = "\t")
 
+smoking_fc_cord <- vroom::vroom("../data/04_smoking_fc_cord.tsv.gz",
+                                 delim = "\t")
 
-pheno_data |> 
-  sample_n(5)
-ncbi_joined |> 
-  sample_n(5)
-ncbi_joined_aug |> 
-  sample_n(5)
 ```
 
 ### plotting:
@@ -59,7 +59,7 @@ ncbi_joined_aug |>
 # SKRALD
 # SKRALD
 
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = newborn_weight,
                      y = log2(cotinine_conc_maternal))) +
   geom_point(aes(color = age_group,
@@ -84,7 +84,7 @@ ggplot(data = ncbi_joined_aug,
 # GULD
 # GULD
 # GULD
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = smoking_status,
                      y = newborn_weight,
                      fill = smoking_status)) +
@@ -102,7 +102,7 @@ ggplot(data = ncbi_joined_aug,
 # GULD
 # GULD 
 # GULD
-ggplot(data = ncbi_joined_aug,
+ggplot(data = ncbi_joined,
        mapping = aes(x = newborn_weight,
                      y = placental_weight)) +
   geom_point(aes(color = smoking_status,
@@ -119,12 +119,12 @@ ggplot(data = ncbi_joined_aug,
              alpha = 0.4,
              linetype="dashed",
              color = "purple", 
-             size=0.5) +
+             linewidth=0.5) +
   geom_vline(aes(xintercept = mean(newborn_weight)),
              alpha = 0.4,
              linetype="dashed",
              color = "purple", 
-             size=0.5) +
+             linewidth=0.5) +
   labs(title = "Weight comparison",
        subtitle = "Measured in grams",
        x = "Newborn",
@@ -136,24 +136,67 @@ ggplot(data = ncbi_joined_aug,
   theme(legend.position = "right",
         legend.direction = "vertical") 
 
-### 
-###
-ggplot(data = silvia_targets,
-       mapping = aes(x = ???,
-                     y = silvia targets,
-                     fill = silvia targets)) +
-  geom_density_ridges(alpha = 0.5) +
-  scale_full_viridis_d() +
-  labs(x = "???",
-       y = "silvia targets",
-       title = "bla title",
-       subtitle = "bla subtitle",
+
+### GULD
+ggplot(data = ncbi_joined,
+       mapping = aes(x = log2(cotinine_conc_cord),
+                     y = log2(cotinine_conc_maternal))) +
+  geom_point(aes(
+    color = gestational_age)) +
+  geom_smooth(method=lm) + 
+  labs(title = "Concentration of Cotinine",
+       subtitle = "Comparision of log2 transformed cotinine concentration [ng/ml]",
+       x = "Cord Cotinine",
+       y = "Maternal Cotinine",
+       color = "Gestational Age",
        caption = "Data from NCBI (2011)") +
-  theme_minimal(base_family = "Avenir",
-                base_size = 10) +
+  theme_minimal(base_family = "Avenir") + 
   theme(legend.position = "bottom") +
-  facet_wrap(vars(smoking status),
-             ncol = 2)
+  facet_wrap(~factor(BMI_class,
+                               levels = c("Severely underweight",
+                                          "Underweight",
+                                          "Normal weight", 
+                                          "Overweight",
+                                          "Obesity", 
+                                          "Obesity class I",
+                                          "Obesity class II", 
+                                          "Obesity class III")))
+### GULD
+ggplot(data = ncbi_joined,
+       mapping = aes(x = newborn_weight,
+                     y = placental_weight)) +
+  geom_point(aes(
+    color = factor(BMI_class,
+                   levels = c("Severely underweight",
+                              "Underweight",
+                              "Normal weight", 
+                              "Overweight",
+                              "Obesity", 
+                              "Obesity class I",
+                              "Obesity class II", 
+                              "Obesity class III")))) +
+  geom_smooth(method=lm) + 
+  labs(title = "Weight distribution based on BMI of mother",
+       subtitle = "Comparision of weigth [g]",
+       x = "Newborn [g]",
+       y = "Placental [g]",
+       color = "BMI class",
+       caption = "Data from NCBI (2011)") +
+  theme_classic(base_family = "Avenir") + 
+  theme(legend.position = "right",
+        legend.direction = "vertical") +
+  facet_wrap(~smoking_status,
+             scales = "fixed",
+             as.table = TRUE)
+#axis.text.x = element_text(angle = 45,hjust = 1)
+
+# https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-8---recreate-the-following-plot
+# https://raw.githack.com/r4bds/r4bds.github.io/main/recap_lab04.html#/task-7---recreate-the-following-plot
+
+# Boxplot for each BMI class
+
+###
+
 
 ```
 
@@ -165,43 +208,25 @@ ncbi_smoking_logfc_cord |>
   slice_head(n=5)
 ```
 
-### To be PCA
-
-```{r}
-pca_fit <- ncbi_joined_aug |>
-  select(where(is.numeric)) |>
-  prcomp(scale = TRUE)
-
-pca_fit_augment <- pca_fit |> 
-  augment(ncbi_joined_aug)
-
-pca_fit_augment  |> 
-  ggplot(aes(x=.fittedPC1, 
-             y=.fittedPC2)) + 
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = 0) + 
-  geom_vline(xintercept = 0)
-
-summary()
-```
+### PCA
 
 ```{r}
 # Fitting
-pca_fit <- ncbi_joined_aug |>
+pca_fit <- ncbi_joined |>
   select(where(is.numeric)) |>
   prcomp(scale = TRUE)
 
 # Adding PCA data to joined augmented data frame
 pca_fit_augment <- pca_fit |> 
-  augment(ncbi_joined_aug)
+  augment(ncbi_joined)
 ```
+
 
 ```{r}
 # Plot PC1 vs PC2
 pca_fit_augment  |> 
-  ggplot(aes(x=.fittedPC1, 
-             y=.fittedPC2,
+  ggplot(aes(x = .fittedPC1, 
+             y = .fittedPC2,
              color = tissue)) + 
   geom_point() +
   theme_minimal() +
@@ -209,20 +234,25 @@ pca_fit_augment  |>
        y = "PC2",
        color = "Tissue",
        title = "Scatter plot of fitted PC1 and PC2") +
-  scale_colour_brewer(palette="Set1") +
-  geom_hline(yintercept = 0, linetype = "dashed") + 
-  geom_vline(xintercept = 0, linetype = "dashed")
+  scale_colour_brewer(palette = "Set1") +
+  geom_hline(yintercept = 0, 
+             linetype = "dashed",
+             alpha = .2) + 
+  geom_vline(xintercept = 0, 
+             linetype = "dashed",
+             alpha = .2)
 
 #ggsave("../results/plots/scatter_pc1_pc2.png", 
 #       plot = scatter_pc1_pc2)
 #show(scatter_pc1_pc2)
 ```
 
+
 ```{r}
 # Plot PC2 vs PC3
 pca_fit_augment  |> 
-  ggplot(aes(x=.fittedPC2, 
-             y=.fittedPC3,
+  ggplot(aes(x = .fittedPC2, 
+             y = .fittedPC3,
              color = tissue)) + 
   geom_point() +
   theme_minimal() +
@@ -231,33 +261,15 @@ pca_fit_augment  |>
        color = "Tissue",
        title = "Scatter plot of fitted PC2 and PC3") +
   scale_colour_brewer(palette = "Set1") +
-  geom_hline(yintercept = 0, linetype = "dashed") + 
-  geom_vline(xintercept = 0, linetype = "dashed")
+  geom_hline(yintercept = 0, 
+             linetype = "dashed",
+             alpha = .2) + 
+  geom_vline(xintercept = 0, 
+             linetype = "dashed",
+             alpha = .2)
 
 #ggsave("../results/plots/scatter_pc1_pc2.png", 
 #       plot = scatter_pc1_pc2)
 #show(scatter_pc1_pc2)
 ```
 
-```{r}
-pca_fit_rotation <- pca_fit |> 
-  tidy(matrix = "rotation") |> 
-  pivot_wider(names_from = "PC",
-              names_prefix = "PC",
-              values_from = "value")
-
-ggplot(pca_fit_rotation,
-       mapping = aes(x = PC1,
-                     y = PC2)) +
-  geom_segment(xend = 0, yend = 0, arrow = arrow()) +
-  geom_label(
-    mapping = aes(label = column),
-    hjust = 1, 
-    color = "royalblue", size = 2
-  ) +
-  labs(
-    title = "Rotation matrix"
-  ) +
-  theme_minimal()
-
-```

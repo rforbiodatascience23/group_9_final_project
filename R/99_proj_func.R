@@ -127,5 +127,86 @@ get_gene_expr_by_sample <- function(whole_gene_expr_df, sample, cols_to_include)
   }
   
   return(gene_exp_by_sample)
-  
+
+}
+
+transpose_gene_expr <- function(gene_expr_df) {
+  gene_expr_df |> 
+    distinct(Gene, .keep_all = TRUE) |>
+    pivot_longer(cols = -Gene, names_to = "gene", values_to = "value") |>
+    pivot_wider(names_from = "Gene", values_from = "value") |>
+    rename("geo_accession" = gene)
+}
+
+mean_expr <- function(gene_expr_df, term){
+  gene_expr_df |>
+    filter(smoking_status == "term") |> 
+    select(-1:16) |> 
+    colMeans()
+}
+
+smoking_expr_fc <- function(gene_expr_df){
+  mean_expr_smoker = gene_expr_df |>
+    filter(smoking_status == "smoker") |> 
+    select(-(1:16)) |> 
+    colMeans()
+  mean_expr_nonsmoker = gene_expr_df |>
+    filter(smoking_status == "non-smoker") |> 
+    select(-(1:16)) |> 
+    colMeans()
+  tibble(mean_expr_nonsmoker, 
+         mean_expr_smoker) |>  
+    mutate(Gene = names(mean_expr_nonsmoker)) |> 
+    relocate(Gene) |> 
+    mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expr_nonsmoker))
+}
+
+create_models <- function(gene_expr_df) {
+  gene_expr_df1 <- gene_expr_df |>
+    dplyr::select(-names(gene_expr_df)[1],
+                  -names(gene_expr_df)[4:16]) |>
+    dplyr::mutate(is_smoker = case_when(str_detect(smoking_status, 
+                                            "non") == 1 ~ 0,
+                                 str_detect(smoking_status, 
+                                            "non") == 0 ~ 1),
+           .before = 1) |>
+    dplyr::select(-smoking_status)
+  gene_expr_df1 |>
+    tidyr::pivot_longer(cols = colnames(gene_expr_df1[3:length(colnames(gene_expr_df1))]),
+                 names_to = "gene",
+                 values_to = "expr_level") |>
+    dplyr::mutate(log_2_expr_level = log2(expr_level)) |>
+    dplyr::select(-expr_level) |>
+    drop_na() |>
+    dplyr::group_by(gene) |>
+    tidyr::nest() |>
+    dplyr::ungroup() |>
+    # updating data frame. First we group rows by gene, and then we add a variable 
+    # containing model fitted to expression level against early_metastasis variable
+    dplyr::group_by(gene) |>
+    dplyr::mutate(model_object = map(.x = data,
+                              .f = ~lm(formula = log_2_expr_level ~ is_smoker,
+                                       data = .x))) |>
+    # using tidy function to turn model summary into a tibble instead of a list  
+    dplyr::mutate(model_object_tidy = map(.x = model_object,
+                                   .f = ~ tidy(.x,
+                                               conf.int = TRUE,
+                                               conf.level = 0.95))) |>
+    # unnesting the tidy models, filtering to only get "slope"-coefficients for models and selecting desired variables
+    tidyr::unnest(model_object_tidy) |>
+    dplyr::filter(term == "is_smoker") |>
+    dplyr::select(gene, 
+                  p.value, 
+                  estimate, 
+                  conf.low, 
+                  conf.high) |>
+    dplyr::ungroup() |>
+    # creating variables "q-value" which is the p-value adjusted for multiple comparisons 
+    # and "is_significant" which indicates whether observations are statistically 
+    # significant when using a level of significance of 0.05
+    dplyr::mutate(is_significant = case_when(
+      p.value < 0.05 ~ "yes",
+      0.05 < p.value ~ "no"
+    ))
+
 }
