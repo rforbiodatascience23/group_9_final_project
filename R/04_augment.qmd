@@ -20,12 +20,6 @@ source("../R/99_proj_func.R")
 library("tidyverse")
 ```
 
-### Source functions
-
-```{r}
-source("../R/99_proj_func.R")
-```
-
 ### Loading
 
 ```{r}
