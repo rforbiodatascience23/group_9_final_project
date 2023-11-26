@@ -16,21 +16,21 @@ format:
 
 :::: {.columns}
 
-::: {.column width="40%"}
-
-- A point in the left column
-:::
-
-::: {.column width="60%"}
-- A point in the right column with some code
+::: {.column width="100%"}
+- Smoking during pregnancy
+- Dataset from NCBI containing, 37-45 non-smokers and 17-19 smokers
 ```{r}
 #| echo: false
 #| eval: true
 #| message: false
 
 library("tidyverse")
-```
 
+maternal_joined <- vroom::vroom("../data/04_maternal_joined.tsv.gz",
+                                delim = "\t")
+
+maternal_joined
+```
 :::
 
 ::::
