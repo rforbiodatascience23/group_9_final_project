@@ -7,6 +7,12 @@
 library("tidyverse")
 ```
 
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
 ### Loading
 
 ```{r}
@@ -60,30 +66,28 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
   select(-age)
 ```
 
+### Add gene fold change for cord blood samples
+
 ```{r}
 
-gene_exp_cord <- ncbi_joined |> 
-  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
-  filter(sample_source == "D") |> 
-  select(smoking_status, "JMJD1A":"KRTAP19-1")
+gene_exp_cord <- get_gene_expr_by_sample(ncbi_joined, "cord blood", c("smoking_status"))
 
 # calculate mean expressions of genes for both statuses of smoking
-mean_expr_nonsmoker <- gene_exp_cord |>
-  filter(smoking_status == "non-smoker") |> 
-  select(-1) |> 
-  colMeans()
-mean_expr_smoker <- gene_exp_cord |>
-  filter(smoking_status == "smoker") |> 
-  select(-1) |> 
-  colMeans()
+# and calculate log fold change
 
-# calculate log fold change
-smoking_fc_cord <-
-  tibble(mean_expr_nonsmoker, 
-         mean_expr_smoker) |>  
-  mutate(Gene = names(mean_expr_nonsmoker)) |> 
-  relocate(Gene) |> 
-  mutate(log2fc = log2(mean_expr_smoker) - log2(mean_expression_nonsmoker))
+gene_exp_cord_mean <- gene_exp_cord |>
+  group_by(smoking_status) |> 
+  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE))) |> 
+  pivot_longer(cols = -smoking_status, names_to = 'Gene') |> 
+  pivot_wider(names_from = smoking_status, values_from = value)
+
+smoking_fc_cord <- gene_exp_cord_mean |> 
+  rename(nonsmoker = `non-smoker`) |> 
+  mutate(log_fold_change = log2(smoker) - log2(nonsmoker))
+
+smoking_fc_cord |>
+  arrange(desc(abs(log_fold_change))) |> 
+  slice_head(n=5)
 ```
 
 ### Joining:
