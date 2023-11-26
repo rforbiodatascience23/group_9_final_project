@@ -4,6 +4,7 @@ author: "group 9"
 format:
   revealjs:
     theme: default
+    embed-resources: true
     slide-number: true
     show-slide-number: all
     footer: "Group 9 presentation"
@@ -21,7 +22,15 @@ format:
 :::
 
 ::: {.column width="60%"}
-- A point in the right column
+- A point in the right column with some code
+```{r}
+#| echo: false
+#| eval: true
+#| message: false
+
+library("tidyverse")
+```
+
 :::
 
 ::::
@@ -61,8 +70,11 @@ flowchart TD
 ## Results (some dramatic name)
 
 ```{r echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("../results/plots/description_age_boxplot", error = FALSE)
+knitr::include_graphics("../results/plots/description_age_boxplot.png", error = FALSE)
 ```
 
+```{r echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("../results/plots/description_age_boxplot", error = FALSE)
+```
 
 ## Discussion

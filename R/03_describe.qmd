@@ -50,7 +50,7 @@ pheno_data |>
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
   theme_minimal()
-#ggsave("../results/Plots/description_age_boxplot.png")
+ggsave("../results/Plots/description_age_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = maternal_bmi,
