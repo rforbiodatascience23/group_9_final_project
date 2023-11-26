@@ -76,7 +76,7 @@ ncbi_augment_pheno <- ncbi_clean_pheno |>
            .before = age)
 ```
 
-### Joining and creating logfc dataframes
+### Joining and creating log fold change dataframes
 
 ```{r}
 

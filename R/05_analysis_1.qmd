@@ -156,7 +156,7 @@ plot2 <- regression_all |>
   labs(title = "Genes Associated with Smoking",
        x = "Estimates (95%CIs)",
        y = "",)
-
+plot1
 ```
 
 We can generally see that when a person smokes there is a major downregulation of some genes. Some are also upregulated. We cant tell the effect of the regulation

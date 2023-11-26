@@ -24,12 +24,13 @@ pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz",
 ### Study subjects description
 
 ```{r}
-num_mothers = 55
+num_mothers = 65
 
 pheno_data |>
   slice_head(n = num_mothers) |> 
   table1(x = formula(~ age + maternal_bmi + gestational_age + newborn_weight | smoking_status),
          data = _)
+
 ```
 
 ### Some overall plots:
