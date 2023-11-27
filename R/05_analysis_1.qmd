@@ -129,6 +129,7 @@ regression_all |>
                                       cord = "Cord blood"))) +
   scale_colour_manual(values = c("purple","green4"))
 
+ggsave("../results/Plots/triple_vulcano_plot_smoking.png")
 ```
 
 ### Gene association plot:
@@ -249,7 +250,7 @@ sample_placenta_plot <- regression_placenta |>
                                                           face = "bold", 
                                                           margin = margin(10,-10,10,10),
                                                           color = "darkred")))
-#ggsave("../results/plots/gene_association_all.png")
+ggsave("../results/plots/gene_association_all.png")
 
 (sample_blood_plot | sample_cord_plot | sample_placenta_plot) +
   plot_annotation(title = "Genes Associated with Smoking",
@@ -260,7 +261,7 @@ sample_placenta_plot <- regression_placenta |>
                                                           face = "bold", 
                                                           margin = margin(10,-10,-10,10),
                                                           color = "darkred")))
-#ggsave("../results/plots/gene_association_sample.png")
+ggsave("../results/plots/gene_association_sample.png")
 
 ```
 
