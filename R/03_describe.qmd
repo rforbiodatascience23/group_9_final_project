@@ -52,7 +52,8 @@ bp_age <- pheno_data |>
   theme(legend.position = "bottom",
         legend.direction = "vertical",
         legend.title = element_text(size=10),
-        legend.text = element_text(size=8))  +
+        legend.text = element_text(size=8),
+        plot.margin=grid::unit(c(0,0,0,0), "mm"))  +
   theme_minimal() + 
   scale_fill_manual(values = c("gold2","red"))
 ggsave("../results/plots/description_age_boxplot.png")
@@ -69,7 +70,8 @@ bp_bmi <- pheno_data |>
   theme(legend.position = "bottom",
         legend.direction = "vertical",
         legend.title = element_text(size=10),
-        legend.text = element_text(size=8))  +
+        legend.text = element_text(size=8),
+        plot.margin=grid::unit(c(0,0,0,0), "mm"))  +
   coord_cartesian(ylim = c(15,
                            40)) +
   theme_minimal() +
@@ -88,7 +90,8 @@ bp_maternal_cotinine <- pheno_data |>
   theme(legend.position = "bottom",
         legend.direction = "vertical",
         legend.title = element_text(size=10),
-        legend.text = element_text(size=8))  +
+        legend.text = element_text(size=8),
+        plot.margin=grid::unit(c(0,0,0,0), "mm"))  +
   coord_cartesian(ylim = c(0,
                            50)) +
   theme_minimal() +
@@ -107,7 +110,8 @@ bp_cord_cotinine <- pheno_data |>
   theme(legend.position = "bottom",
         legend.direction = "vertical",
         legend.title = element_text(size=10),
-        legend.text = element_text(size=8)) +
+        legend.text = element_text(size=8),
+        plot.margin=grid::unit(c(0,0,0,0), "mm")) +
   coord_cartesian(ylim = c(0,
                            50)) +
   theme_minimal() +
@@ -126,7 +130,8 @@ bp_newbornweight <- pheno_data |>
   theme(legend.position = "bottom",
         legend.direction = "vertical",
         legend.title = element_text(size=10),
-        legend.text = element_text(size=8))  +
+        legend.text = element_text(size=8),
+        plot.margin=grid::unit(c(0,0,0,0), "mm")) +
   coord_cartesian(ylim = c(2500,
                            5500)) +
   theme_minimal() +
@@ -146,7 +151,8 @@ bp_placentalweight <- pheno_data |>
   theme(legend.position = "bottom",
         legend.direction = "vertical",
         legend.title = element_text(size=10),
-        legend.text = element_text(size=8))  +
+        legend.text = element_text(size=8),
+        plot.margin=grid::unit(c(0,0,0,0), "mm"))  +
   coord_cartesian(ylim = c(450,
                            700)) +
   theme_minimal() +
@@ -155,9 +161,9 @@ ggsave("../results/plots/description_placentaWeight_boxplot.png")
 
 
 combined_plot1 <- (
-  (bp_placentalweight + theme(legend.position = "none") + 
+  bp_placentalweight + theme(legend.position = "none") + 
      (bp_newbornweight + theme(legend.position = "none")
-      ))) / bp_cord_cotinine + 
+      )) / bp_cord_cotinine + 
      
      plot_annotation(title = "Comparison by Smoking Status",
                      caption = "Data from NCBI (2011)",
@@ -170,10 +176,9 @@ combined_plot1 <- (
                                                              hjust = 0.5, 
                                                              face = "bold", 
                                                              margin = margin(10,-10,10,10),
-                                                             color = "purple4"))) +
-  plot_layout(nrow = 2, 
-              heights = c(1500, 2000),
-              guides = "collect")
+                                                             color = "purple4"),
+                                   plot.margin=grid::unit(c(0,0,0,0), "mm"))) +
+  plot_layout(guides = "collect", heights = unit(c(1.35, 2.35), c('cm', 'cm')))
 ggsave("../results/plots/description_combined_plot1.png")
 combined_plot1
 
