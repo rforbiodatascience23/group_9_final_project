@@ -38,30 +38,56 @@ maternal_joined
 
 ```{mermaid}
 flowchart TD
+  
   subgraph 01_load
+  %%load
+  R{{"download_dataset_ncbi"}} -->|"read_unstructured_ncbi_table"| A[ncbi_data]
+  T{{"download_data_annotation_ncbi"}} -->|"read_bgx_file"| I[annotation_data]
+  
+  %%write
   A[ncbi_data] -->|"write_tsv"| B[01_ncbi_data.tsv.gz]
   I["annotation_data$probes"] --> |"write_tsv"| J["01_ncbi_annot_probes.tsv.gz"]
   end
   subgraph 02_clean
+  %%ncbi_data pipe
   B[01_ncbi_data.tsv.gz] -->|"read_tsv"| C[ncbi_data]
   C[ncbi_data] -->|"as_tibble |> <br/>filter(!str_detect) |> <br/>slice(41:n) |> <br/>t()"| D[ncbi_dirty_pheno]
   D[ncbi_dirty_pheno] --> |"colnames[1, ] |> <br/>str_replace_all('!sample_', ' ')"| E[ncbi_dirty_pheno]
   E[ncbi_dirty_pheno] --> |"[-1, ] |> <br/>as_tibble() |> <br/>rename_with()"| F[ncbi_dirty_pheno]
-  F[ncbi_dirty_pheno] --> |"select() |> <br/>mutate() |> <br/>select() |> <br/>t() |> <br/>as.data.frame() |> <br/>rename_with() |> <br/>as_tibble()"| H[ncbi_clean_pheno]
+  F[ncbi_dirty_pheno] --> |"select() |> <br/>mutate() |> <br/>select() |> <br/>t() |> <br/>as.data.frame() |> <br/>rename_with() |> <br/>as_tibble()"| H[ncbi_clean_pheno]:::red
   
-  C[ncbi_data] --> G[ncbi_dirty_expr]
-  G[ncbi_dirty_expr] --> |"slice() |>  <br/>colnames() |>  <br/>slice() |>  <br/>unlist()"| L[ncbi_dirty_expr]
+  %%sample source and all of the expr
+  H[ncbi_clean_pheno]:::red --> |"select() |> <br/>mutate() |> <br/>rename() |> <br/>select()"| S[sample_source table]
+  S[sample_source table] --- U>"get_gene_expr_by_source()"]
+  Q["ncbi_clean_expression"] --- U>"get_gene_expr_by_source()"]
+  U>"get_gene_expr_by_source()"] --> V[gene_expr_placenta]:::red
+  U>"get_gene_expr_by_source()"] --> W[gene_expr_maternal_blood]:::red
+  U>"get_gene_expr_by_source()"] --> X[gene_expr_cord_blood]:::red
+  
+  %%ncbi_dirty_expr pipe
+  C[ncbi_data] -->|"slice()"| G[ncbi_dirty_expr]
+  G[ncbi_dirty_expr] --> |"colnames() |>  <br/>slice() |>  <br/>unlist()"| L[ncbi_dirty_expr]
   L[ncbi_dirty_expr] --> |"rename() |> <br/>mutate(across(-probe.id, ~ as numeric(.x))) "| M[ncbi_dirty_expr]
   
-  
+  %%annotation probe
   J["01_ncbi_annot_probes.tsv.gz"] -->|"read_tsv()"| N["ncbi_annot_probes"]
   N["ncbi_annot_probes"] --> |"select()"| O["gene_annotation"]
   
+  %%merging to clean ncbi
   O["gene_annotation"] ---|"select()"| P( ):::empty
   M["ncbi_dirty_expr"] --- P( )
-  P( ) -->|"right_join(by = c('Probe_Id' = 'probe_id')) |> <br/>rename() |> <br/>select()"| Q["ncbi_clean_expression"]
+  P( ) -->|"right_join(by = c('Probe_Id' = 'probe_id')) |> <br/>rename() |> <br/>select()"| Q["ncbi_clean_expression"]:::red
   
+  classDef red stroke:#f00,stroke-width:3px
   end
+  %%writing and reading
+  %%subgraph 04_augment
+  %%Q["ncbi_clean_expression"] -->  Y[gene_expr_placenta]
+  %%V[gene_expr_placenta] -->  Z[gene_expr_placenta]
+  %%W[gene_expr_maternal_blood] -->  AA[gene_expr_maternal_blood]
+  %%X[gene_expr_cord_blood] -->  AB[gene_expr_cord_blood]
+  %%H[ncbi_clean_pheno] -->  AC[ncbi_clean_pheno]
+  %%end
 ```
 
 ## Results (some dramatic name)
