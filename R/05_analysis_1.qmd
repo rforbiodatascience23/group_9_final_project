@@ -107,8 +107,7 @@ regression_all |>
   labs(title = "Genes Associated with Smoking",
        subtitle = "Genes highlighted in green were significant at a level of signifcance of p < .05",
        x = "Estimates",
-       y = "-log10(p)",
-       caption = "Data from NCBI (2011)") +
+       y = "-log10(p)") +
   theme(legend.position = "none",
         plot.title = element_text(hjust = .5,
                                   color = "orange3",
@@ -146,9 +145,8 @@ blood_association_plot <- regression_maternal |>
   theme_minimal(base_size = 10) +
   theme(legend.position = "bottom",
         axis.text.y = element_blank()) +
-  labs(x = "",
-       y = "",
-       subtitle = "Maternal Blood")
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
 
 cord_association_plot <- regression_cord |>
   filter(is_significant == "yes") |>
@@ -164,8 +162,7 @@ cord_association_plot <- regression_cord |>
   theme(legend.position = "bottom",
         axis.text.y = element_blank()) +
   labs(x = "Estimates (95%CIs)",
-       y = "",
-       subtitle = "Cord Blood")
+       y = "",)
 
 placenta_association_plot <- regression_placenta |>
   filter(is_significant == "yes") |>
@@ -180,9 +177,8 @@ placenta_association_plot <- regression_placenta |>
   theme_minimal(base_size = 10) +
   theme(legend.position = "bottom",
         axis.text.y = element_blank()) +
-  labs(x = "",
-       y = "",
-       subtitle = "Placenta")
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
 
 sample_blood_plot <- regression_maternal |>
   filter(is_significant == "yes") |>
@@ -197,9 +193,8 @@ sample_blood_plot <- regression_maternal |>
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
   theme(legend.position = "bottom") +
-  labs(x = "",
-       y = "",
-       subtitle = "Maternal Blood")
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
 
 sample_cord_plot <- regression_cord |>
   filter(is_significant == "yes") |>
@@ -215,8 +210,7 @@ sample_cord_plot <- regression_cord |>
   theme_minimal(base_size = 10) +
   theme(legend.position = "bottom") +
   labs(x = "Estimates (95%CIs)",
-       y = "",
-       subtitle = "Cord Blood")
+       y = "",)
 
 sample_placenta_plot <- regression_placenta |>
   filter(is_significant == "yes") |>
@@ -230,35 +224,23 @@ sample_placenta_plot <- regression_placenta |>
                      height = 1) +
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
-  theme(legend.position = "none") +
-  labs(x = "",
-       y = "",
-       subtitle = "Placenta")
+  theme(legend.position = "bottom") +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
 
 (blood_association_plot | cord_association_plot | placenta_association_plot) +
   plot_annotation(title = "Genes Associated with Smoking",
-                  caption = "Data from NCBI (2011)",
-                  theme = theme(plot.title = element_text(size = 12,
-                                                          hjust = 0.5, 
-                                                          face = "bold", 
-                                                          margin = margin(10,-10,10,10),
-                                                          color = "darkred")))
-ggsave("../results/plots/gene_association_all.png")
+                  caption = "Data from NCBI")
+#ggsave("../results/plots/gene_association_all.png")
 
 (sample_blood_plot | sample_cord_plot | sample_placenta_plot) +
   plot_annotation(title = "Genes Associated with Smoking",
-                  caption = "Data from NCBI (2011)",
-                  labs(x = ""),
-                  theme = theme(plot.title = element_text(size = 12,
-                                                          hjust = 0.5, 
-                                                          face = "bold", 
-                                                          margin = margin(10,-10,-10,10),
-                                                          color = "darkred")))
-ggsave("../results/plots/gene_association_sample.png")
+                  caption = "Data from NCBI")
+#ggsave("../results/plots/gene_association_sample.png")
 
 ```
 
-We can generally see that when a person smokes there seems to be a equal up and downregulation of diffrent genes. it is diffifult to see anything on the first plot so we try and sampling it. ofcourse the genes have a variety of diffrent function, so it makes sense that the up and downregulation is equally divided. but if we looked at a specific type of genes such as immunity, oxidation, metabolitic and so on. It might have a general up or down regulation
+We can generally see that when a person smokes there seems to be a equal up and downregulation of diffrent genes. it is diffifult to see anything on the first plot so we try and sampling it. ofcourse the genes have a variety of diffrent function, so it makes sense that the up and downregulation is equally divided. but i we looked at a specific type of genes such as immunity, oxidation, metabolitic and so on. It might have a general up or down regulation
 
 ### Gene expression of gene JMJD1A plotted against gene expression of other 6 genes
 
@@ -273,33 +255,17 @@ placenta_joined |>
   ggplot(aes(JMJD1A,
              values)) + 
   geom_point(aes(color = smoking_status)) + 
-  facet_wrap(~ variable, 
-             scales = "free_x", 
-             ncol = 6) + 
+  facet_grid(. ~ variable,
+             scales = "free_x") + 
   geom_smooth(method = "lm",
-              se = FALSE,
-              color = "darkblue") + 
+              se = FALSE) + 
   scale_y_continuous(trans = "log2") + 
   scale_x_continuous(trans = "log2") +
   theme_linedraw() +
-  theme(legend.position = c(0.8, 0.2),
-        legend.direction = "vertical",
-        legend.title = element_text(size=10),
-        legend.text = element_text(size=8),
-        legend.background = element_rect(linetype = 2, 
-                                         size = 0.5, 
-                                         colour = 1),
-        plot.title = element_text(size = 14, 
-                                  hjust = 0.5, 
-                                  face = "bold", 
-                                  margin = margin(10,-10,10,10),
-                                  color = "darkblue"))  +
   labs(x="Gene expression of JMJD1A",
        y="Gene expression",
-       color = "Smoking Status",
-       title = "Gene expression of 6 genes plotted against that of gene JMJD1A",
-       caption = "Data from NCBI (2011)") +
-  scale_colour_manual(values = c("yellow3","red"))
+       title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A",
+       caption = "Data from NCBI (2011)")
 
 ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
 
@@ -312,12 +278,9 @@ ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
 genes_exp_selection <- placenta_joined |> 
   select(28:36)
 
-corrplot_gene_expr <- corrplot(
-  cor(genes_exp_selection),
-  method = 'circle',
-  order = 'AOE',
-  type = "upper",
-  diag = FALSE)
+corrplot_gene_expr <- corrplot(cor(genes_exp_selection),
+  type = "upper"
+)
 ```
 
 ### Log Fold Change
@@ -336,26 +299,14 @@ smoking_fc_cord |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=30) |> 
   ggplot(aes(x=Gene, y=log2fc)) +
-    geom_bar(stat="identity", fill  = "green4", alpha = 0.6) + 
+    geom_bar(stat="identity") + 
     coord_flip() +
     theme_minimal() +
-  theme(legend.position = "none",
-        axis.line = element_line(colour = "darkred", 
-                      size = 0.5, 
-                      linetype = "solid"),
-        axis.title.x = element_text(size = 9),
-        plot.title = element_text(size = 14, 
-                                  hjust = 0.35, 
-                                  face = "bold", 
-                                  margin = margin(10,-10,10,10),
-                                  color = "darkred")) +
-  labs(
-    title = "The 30 Genes Most Affected By Smoking",
-    y = "Log2 Fold Change",
-    x = "",
-    caption = "Data from NCBI (2011)"
-    )
-# Maybe add color based on positive or negative log2fc
+    labs(
+        title = "Log fold change of 30 genes most affected by smoking",
+        y = "Log fold change",
+        caption = "Data from NCBI (2011)"
+      )
 
 ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking.png")
 ```
@@ -364,7 +315,6 @@ ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking.png")
 
 ```{r}
 
-## top 25 genes with the largest fold changes in the dataset
 genes_large_fold_change <- smoking_fc_placenta |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=25) |> 
@@ -379,36 +329,11 @@ PCA <- placenta_joined |>
 PCA |> 
   augment(placenta_joined) |> 
   ggplot(aes(.fittedPC1, .fittedPC2, color = smoking_status)) + 
-  geom_point(size = 2.5) +
-  labs(title = "Placental PCA plot",
-       subtitle = "Principal components are based on the top 25 genes with the largest fold changes",
-       x = "PC-1",
-       y = "PC-2",
-       color = "Smoking Status",
-       caption = "Data from NCBI (2011)") +
-  theme_minimal() +
-  geom_hline(yintercept=0, 
-             linetype = "dashed",
-             alpha = .2) +
-  geom_vline(xintercept=0, 
-             linetype = "dashed",
-             alpha = .2) +
-  theme(legend.position = c(0.8, 0.8),
-        legend.direction = "vertical",
-        legend.title = element_text(size=9),
-        legend.text = element_text(size=8),
-        legend.background = element_rect(linetype = 1, 
-                                         size = 0.5, 
-                                         colour = 1),
-        plot.title = element_text(size = 16, 
-                                  hjust = 0.5, 
-                                  face = "bold", 
-                                  margin = margin(10,-10,10,10),
-                                  color = "darkblue"),
-        plot.subtitle = element_text(size = 12,
-                                     face = "italic")) +
-  scale_colour_manual(values = c("yellow3","red"))
-  
+    geom_point() +
+    labs(title = "PCA plot",
+         x = "PCA1",
+         y = "PCA2"
+    )
 
 ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
@@ -425,10 +350,6 @@ ncbi_joined |>
              y = gene,
              fill = expr_level)) + 
     geom_tile() +
-    theme(legend.position="none") +
-  labs(title = "Heatmap",
-       x = "Individual",
-       y = "Gene",
-       caption = "Data from NCBI (2011)")
+    theme(legend.position="none")
 
 ```
