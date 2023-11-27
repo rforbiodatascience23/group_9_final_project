@@ -435,10 +435,12 @@ names(selected_genes) <- smoking_fc_placenta |>
 
 fgseaResult <- fgsea(pathways = BP_list, stats = selected_genes)
 
-fgseaResult |> 
+fgsea_result_sliced <- fgseaResult |> 
   arrange(NES) |> 
   slice_head(n = 15) |> 
   select(pathway, NES)
+
+write.csv(fgsea_result_sliced, "../results/plots/fgsea_results.csv")
 ```
 
 ### PCR plot of gene expression in placenta tissue
