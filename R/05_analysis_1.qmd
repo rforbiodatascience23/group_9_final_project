@@ -328,88 +328,99 @@ corrplot_gene_expr <- corrplot(cor(genes_exp_selection),
 
 ```{r}
 
-smoking_fc_placenta |>
+p_fc_placenta <- smoking_fc_placenta |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=30) |> 
   ggplot(aes(x=fct_reorder(Gene, abs(log2fc)), y=log2fc)) +
-  geom_bar(stat="identity", fill  = "green4", alpha = 0.6) + 
+  geom_bar(stat="identity", fill  = "chartreuse4", alpha = 0.6) + 
   coord_flip() +
   theme_minimal() +
   theme(legend.position = "none",
-        axis.line = element_line(colour = "darkred", 
+        axis.line = element_line(colour = "chartreuse4", 
                       size = 0.5, 
                       linetype = "solid"),
         axis.title.x = element_text(size = 9),
         plot.title = element_text(size = 14, 
                                   hjust = 0.35, 
                                   face = "bold", 
-                                  margin = margin(10,-10,10,10),
-                                  color = "darkred"),
-        plot.subtitle = element_text(hjust = 0.5)) +
-  labs(
-    title = "The 30 Genes Most Affected By Smoking",
-    subtitle = "Placenta",
-    y = "Log2 Fold Change",
-    x = "",
-    caption = "Data from NCBI (2011)"
-    )
+                                  margin = margin(0,0,0,0),
+                                  color = "chartreuse4"),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin=grid::unit(c(0,0,0,0), "mm")) +
+  labs(subtitle = "Placenta",
+       y = "Log2 Fold Change",
+       x = "",
+       caption = "")
 # Maybe add color based on positive or negative log2fc
 
 ggsave("../results/plots/logfc_of_30_genes_affected_by_smoking_placenta.png")
 
-smoking_fc_cord |>
+p_fc_cord <- smoking_fc_cord |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=30) |> 
   ggplot(aes(x=fct_reorder(Gene, abs(log2fc)), y=log2fc)) +
-  geom_bar(stat="identity", fill  = "green4", alpha = 0.6) + 
+  geom_bar(stat="identity", fill  = "purple1", alpha = 0.6) + 
   coord_flip() +
   theme_minimal() +
   theme(legend.position = "none",
-        axis.line = element_line(colour = "darkred", 
+        axis.line = element_line(colour = "purple1", 
                       size = 0.5, 
                       linetype = "solid"),
         axis.title.x = element_text(size = 9),
         plot.title = element_text(size = 14, 
                                   hjust = 0.35, 
                                   face = "bold", 
-                                  margin = margin(10,-10,10,10),
-                                  color = "darkred"),
-        plot.subtitle = element_text(hjust = 0.5)) +
-  labs(
-    title = "The 30 Genes Most Affected By Smoking",
-    subtitle = "Cord Blood",
-    y = "Log2 Fold Change",
-    x = "",
-    caption = "Data from NCBI (2011)"
-    )
+                                  margin = margin(0,0,0,0),
+                                  color = "purple1"),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin=grid::unit(c(0,0,0,0), "mm")) +
+  labs(subtitle = "Cord Blood",
+       y = "",
+       x = "",
+       caption = "")
+p_fc_cord
 ggsave("../results/plots/logfc_of_30_genes_affected_by_smoking_cord.png")
 
-smoking_fc_maternal |>
+p_fc_mom <- smoking_fc_maternal |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=30) |> 
   ggplot(aes(x=fct_reorder(Gene, abs(log2fc)), y=log2fc)) +
-  geom_bar(stat="identity", fill  = "green4", alpha = 0.6) + 
+  geom_bar(stat="identity", fill  = "darkorange1", alpha = 0.6) + 
   coord_flip() +
   theme_minimal() +
   theme(legend.position = "none",
-        axis.line = element_line(colour = "darkred", 
+        axis.line = element_line(colour = "darkorange1", 
                       size = 0.5, 
                       linetype = "solid"),
         axis.title.x = element_text(size = 9),
         plot.title = element_text(size = 14, 
                                   hjust = 0.35, 
                                   face = "bold", 
-                                  margin = margin(10,-10,10,10),
-                                  color = "darkred"),
-        plot.subtitle = element_text(hjust = 0.5)) +
-  labs(
-    title = "The 30 Genes Most Affected By Smoking",
-    subtitle = "Maternal Blood",
-    y = "Log2 Fold Change",
-    x = "",
-    caption = "Data from NCBI (2011)"
-    )
+                                  margin = margin(0,0,0,0),
+                                  color = "darkorange1"),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin=grid::unit(c(0,0,0,0), "mm")) +
+  labs(subtitle = "Maternal Blood",
+       y = "",
+       x = "",
+       caption = "")
 ggsave("../results/plots/logfc_of_30_genes_affected_by_smoking_maternal.png")
+
+
+combined_top30 <- p_fc_mom + p_fc_placenta + p_fc_cord + 
+     plot_annotation(title = "The 30 Genes Most Affected By Smoking",
+                     caption = "Data from NCBI (2011)",
+                     theme = theme(plot.title = element_text(size = 18,
+                                                             hjust = 0.5, 
+                                                             face = "bold", 
+                                                             margin = margin(5,0,5,0),
+                                                             color = "black"),
+                                   plot.margin=grid::unit(c(0,0,0,0), "mm"))) +
+  plot_layout(ncol = 3, widths = unit(c(3.4,3.4,3.4), c('cm', 'cm','cm')))
+ggsave("../results/plots/description_combined_top30.png")
+combined_top30
+
+
 ```
 
 ### Gene Set Enrichment Analysis
