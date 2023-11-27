@@ -163,8 +163,13 @@ knitr::include_graphics("../results/plots/pca_plot_smoking_gene_expr_placenta", 
 -   Significant data
 
 -   sample size
+```{r}
+#| message: false
+library("tidyverse")
+```
 :::
-
-::: {.column width="50%"}
-:::
+```{r}
+fgsea <- read_csv("../results/plots/fgsea_results.csv")
+fgsea[2:3]
+```
 :::
