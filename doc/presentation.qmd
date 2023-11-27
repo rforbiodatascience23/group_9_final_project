@@ -32,7 +32,32 @@ format:
 
 ::: columns
 ::: {.column width="50%"}
--   Data from NCBI
+-   NCBI data
+
+    ```{r echo=FALSE, out.width="100%", fig.align='left'}
+    knitr::include_graphics("../results/plots/uglyData.png", error = FALSE)
+    ```
+:::
+
+::: {.column width="50%"}
+```{r}
+library("tidyverse")
+library("table1")
+pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
+num_mothers = 65
+
+pheno_table <- pheno_data |>
+  slice_head(n = num_mothers) |> 
+  table1(x = formula(~ age + maternal_bmi + gestational_age + newborn_weight | smoking_status),
+         data = _)
+```
+```{r, fig.align='right'}
+#| echo: true
+#| eval: true
+#| message: false
+
+pheno_table
+```
 :::
 :::
 
@@ -94,25 +119,11 @@ flowchart TD
 
 ## Results: Boxplots
 
-::: columns
-::: {.column width="50%"}
-```{r echo=FALSE, out.width="100%", fig.align='left'}
-knitr::include_graphics("../results/plots/description_placentaWeight_boxplot.png", error = FALSE)
-```
-:::
-
-::: {.column width="50%"}
-```{r echo=FALSE, out.width="100%", fig.align='right'}
-knitr::include_graphics("../results/plots/description_newbornWeight_boxplot", error = FALSE)
+```{r echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("../results/plots/description_combined_plot1.png", error = FALSE)
 ```
 
-```{r echo=FALSE, out.width="100%", fig.align='left'}
-knitr::include_graphics("../results/plots/description_CordCotinine_boxplot.png", error = FALSE)
-```
-:::
-:::
-
-##  Results: Association plots
+## Results: Association plots
 
 ::: columns
 ::: {.column width="50%"}
@@ -131,13 +142,18 @@ knitr::include_graphics("../results/plots/gene_association_sample.png", error = 
 ## Results: Volcano plots
 
 ```{r echo=FALSE, out.width="100%", fig.align='right'}
-knitr::include_graphics("../results/plots/volcano_plot.png", error = FALSE)
+knitr::include_graphics("../results/plots/triple_vulcano_plot_smoking.png", error = FALSE)
+```
+
+## Results: Most effected Genes
+```{r echo=FALSE, out.width="100%", fig.align='right'}
+knitr::include_graphics("../results/plots/triple_vulcano_plot_smoking.png", error = FALSE)
 ```
 
 ## PCA plot
 
 ```{r echo=FALSE, out.width="100%", fig.align='right'}
-knitr::include_graphics("../results/plots/PCA.png", error = FALSE)
+knitr::include_graphics("../results/plots/pca_plot_smoking_gene_expr_placenta", error = FALSE)
 ```
 
 ## Discussion
