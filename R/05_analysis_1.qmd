@@ -210,7 +210,7 @@ sample_placenta_plot <- regression_placenta |>
   filter(is_significant == "yes") |>
   sample_n(20) |>
   ggplot(aes(y = fct_reorder(gene,
-                             estimate))) + 
+                             estimate),color = )) + 
   geom_point(aes(x = estimate), 
              size = 1.5) +
   geom_errorbarh(aes(xmax = conf.high,
@@ -223,11 +223,14 @@ sample_placenta_plot <- regression_placenta |>
        y = "",)
 
 (blood_association_plot | cord_association_plot | placenta_association_plot) +
-  plot_annotation(title = "Genes Associated with Smoking")
+  plot_annotation(title = "Genes Associated with Smoking",
+                  caption = "Data from NCBI")
+#ggsave("../results/plots/gene_association_all.png")
 
 (sample_blood_plot | sample_cord_plot | sample_placenta_plot) +
-  plot_annotation(title = "Genes Associated with Smoking")
-
+  plot_annotation(title = "Genes Associated with Smoking",
+                  caption = "Data from NCBI")
+#ggsave("../results/plots/gene_association_sample.png")
 
 ```
 

@@ -65,7 +65,7 @@ pheno_data |>
   coord_cartesian(ylim = c(15,
                            40)) +
   theme_minimal()
-#ggsave("../results/Plots/description_BMI_boxplot.png")
+#ggsave("../results/plots/description_BMI_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = cotinine_conc_maternal,

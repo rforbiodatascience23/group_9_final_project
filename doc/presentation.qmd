@@ -8,17 +8,15 @@ format:
     slide-number: true
     show-slide-number: all
     footer: "Group 9 presentation"
-    
 ---
-
 
 ## Introduction
 
-:::: {.columns}
-
+::: columns
 ::: {.column width="100%"}
-- Smoking during pregnancy
-- Dataset from NCBI containing, 37-45 non-smokers and 17-19 smokers
+-   Smoking during pregnancy
+-   Dataset from NCBI containing, 37-45 non-smokers and 17-19 smokers
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -31,12 +29,13 @@ maternal_joined <- vroom::vroom("../data/04_maternal_joined.tsv.gz",
 
 maternal_joined
 ```
+
+/
+:::
 :::
 
-::::
-
-
 ## Materials and Methods (Data handling) {.scrollable}
+
 ```{mermaid}
 flowchart TD
   subgraph 01_load
@@ -65,8 +64,6 @@ flowchart TD
   end
 ```
 
-
- 
 ## Results (some dramatic name)
 
 ```{r echo=FALSE, out.width="100%", fig.align='center'}
@@ -74,5 +71,18 @@ options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
 knitr::include_graphics("../results/plots/description_BMI_boxplot.png", error = FALSE)
 ```
 
+### Gene association plots
+
+```{r echo=FALSE, out.width="100%", fig.align='left'}
+options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
+
+knitr::include_graphics("../results/plots/gene_association_all.png", error = FALSE)
+```
+
+```{r echo=FALSE, out.width="100%", fig.align='right'}
+options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
+
+knitr::include_graphics("../results/plots/gene_association_sample.png", error = FALSE)
+```
 
 ## Discussion
