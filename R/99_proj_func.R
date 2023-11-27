@@ -31,7 +31,7 @@ download_data_annotation_ncbi <- function(raw_dir) {
 
 read_unstructured_ncbi_table <- function(file_path) {
   
-  table <- read.table(file_path, header=FALSE, fill = TRUE, col.names = paste0("col_",seq_len(184)))
+  table <- read.table(file_path, header=FALSE, fill = TRUE, col.names = str_c("col_",seq_len(184)))
   return(table) 
     
 }
