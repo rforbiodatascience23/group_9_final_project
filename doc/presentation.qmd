@@ -1,6 +1,6 @@
 ---
-title: "presentation"
-author: "group 9"
+title: "Study of Smoking During Pregnancy"
+author: ""
 format:
   revealjs:
     theme: default
@@ -13,28 +13,30 @@ format:
 ## Introduction
 
 ::: columns
-::: {.column width="100%"}
--   Smoking during pregnancy
--   Dataset from NCBI containing, 37-45 non-smokers and 17-19 smokers
+::: {.column width="50%"}
+-   One-third of pregnant women smoke
 
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
+-   Risks during pregnancy
+:::
 
-library("tidyverse")
+::: {.column width="50%"}
+-   Genomic Effects
 
-maternal_joined <- vroom::vroom("../data/04_maternal_joined.tsv.gz",
-                                delim = "\t")
+-   Transplacental transfer
 
-maternal_joined
-```
-
-/
+-   Hormonal Disruption
 :::
 :::
 
-## Materials and Methods (Data handling) {.scrollable}
+## Materials
+
+::: columns
+::: {.column width="50%"}
+-   Data from NCBI
+:::
+:::
+
+## Methods (Data handling) {.scrollable}
 
 ```{mermaid}
 flowchart TD
@@ -101,13 +103,13 @@ knitr::include_graphics("../results/plots/description_BMI_boxplot.png", error = 
 
 ::: columns
 ::: {.column width="50%"}
-
 ```{r echo=FALSE, out.width="100%", fig.align='left'}
 options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
 
 knitr::include_graphics("../results/plots/gene_association_all.png", error = FALSE)
 ```
 :::
+
 ::: {.column width="50%"}
 ```{r echo=FALSE, out.width="100%", fig.align='right'}
 options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
@@ -116,4 +118,5 @@ knitr::include_graphics("../results/plots/gene_association_sample.png", error = 
 ```
 :::
 :::
+
 ## Discussion
