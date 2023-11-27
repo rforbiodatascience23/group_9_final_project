@@ -236,10 +236,13 @@ sample_placenta_plot <- regression_placenta |>
 
 We can generally see that when a person smokes there seems to be a equal up and downregulation of diffrent genes. it is diffifult to see anything on the first plot so we try and sampling it. ofcourse the genes have a variety of diffrent function, so it makes sense that the up and downregulation is equally divided. but i we looked at a specific type of genes such as immunity, oxidation, metabolitic and so on. It might have a general up or down regulation
 
+### Gene expression of gene JMJD1A plotted against gene expression of other 6 genes
+
 ```{r}
 
 placenta_joined |>
-  select(smoking_status, "JMJD1A" : "CHKB") |> 
+  select(smoking_status,
+         "JMJD1A" : "CHKB") |> 
   pivot_longer(names_to = "variable",
                values_to = "values",
                3:last_col()) |> 
@@ -266,13 +269,10 @@ ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
 
 ```{r}
 
-genes_cord_blood <- ncbi_joined |> 
-  mutate(sample_source = str_match(title,
-                                   "[[:upper:]]+")) |>
-  filter(sample_source == "D") |> 
-  select(16:30)
+genes_exp_selection <- placenta_joined |> 
+  select(28:36)
 
-corrplot(cor(genes_pl),
+corrplot_gene_expr <- corrplot(cor(genes_exp_selection),
   type = "upper"
 )
 ```
@@ -289,49 +289,47 @@ smoking_fc_cord
 
 ######
 
-gene_exp_cord_blood |> 
-  slice_head(n=1)
+smoking_fc_cord |>
+  arrange(desc(abs(log2fc))) |> 
+  slice_head(n=30) |> 
+  ggplot(aes(x=Gene, y=log2fc)) +
+    geom_bar(stat="identity") + 
+    coord_flip() +
+    theme_minimal() +
+    labs(
+        title = "Log fold change of 30 genes most affected by smoking",
+        y = "Log fold change",
+        caption = "Data from NCBI (2011)"
+      )
 
-gene_exp_cord_blood <- ncbi_joined |> 
-  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
-  filter(sample_source == "D") |> 
-  select(smoking_status, "JMJD1A":"KRTAP19-1")
-
-# calculate mean expressions of genes for both statuses of smoking
-mean_expression_nonsmoker <- gene_exp_cord_blood |>
-  filter(smoking_status == "non-smoker") |> 
-  select(-1) |> 
-  colMeans()
-mean_expression_smoker <- gene_exp_cord_blood |>
-  filter(smoking_status == "smoker") |> 
-  select(-1) |> 
-  colMeans()
-
-gene_exp_cord_blood
-
-t <- gene_exp_cord_blood |>
-  filter(smoking_status == "smoker") |> 
-  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
-
-# calculate log fold change
-smoking_fold_change <-
-  tibble(mean_expression_nonsmoker, mean_expression_smoker) |>  
-  mutate(Gene = names(mean_expression_nonsmoker)) |> 
-  relocate(Gene) |> 
-  mutate(log_fold_change = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
-
-smoking_fold_change |>
-  arrange(desc(log_fold_change))
+ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking.png")
 ```
 
+### PCR plot of gene expression in placenta tissue
+
 ```{r}
-smoking_fold_change |> 
-  arrange(desc(abs(log_fold_change)))
 
-ncbi_smoking_logfc_cord |> 
-  arrange(desc(abs(log_fold_change))) |> 
-  slice_head(n=5)
+genes_large_fold_change <- smoking_fc_placenta |>
+  arrange(desc(abs(log2fc))) |> 
+  slice_head(n=25) |> 
+  pull(Gene)
 
+PCA <- placenta_joined |> 
+  select(genes_large_fold_change) |> 
+  prcomp() 
+
+# summary(PCA)
+
+PCA |> 
+  augment(placenta_joined) |> 
+  ggplot(aes(.fittedPC1, .fittedPC2, color = smoking_status)) + 
+    geom_point() +
+    labs(title = "PCA plot",
+         x = "PCA1",
+         y = "PCA2"
+    )
+
+ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
 
 ```{r}
