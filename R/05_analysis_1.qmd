@@ -332,7 +332,7 @@ smoking_fc_cord
 smoking_fc_placenta |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=30) |> 
-  ggplot(aes(x=Gene, y=log2fc)) +
+  ggplot(aes(x=fct_reorder(Gene, abs(log2fc)), y=log2fc)) +
     geom_bar(stat="identity", fill  = "green4", alpha = 0.6) + 
     coord_flip() +
     theme_minimal() +
