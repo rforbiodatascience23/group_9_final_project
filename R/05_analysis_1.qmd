@@ -129,7 +129,7 @@ regression_all |>
                                       cord = "Cord blood"))) +
   scale_colour_manual(values = c("purple","green4"))
 
-ggsave("../results/Plots/triple_vulcano_plot_smoking.png")
+ggsave("../results/plots/triple_vulcano_plot_smoking.png")
 ```
 
 ### Gene association plot:
@@ -308,7 +308,7 @@ placenta_joined |>
        caption = "Data from NCBI (2011)") +
   scale_colour_manual(values = c("gold2","red"))
 
-ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
+ggsave("../results/plots/multiple_gene_expr_correlation_scaterplot_facet.png")
 
 ```
 
@@ -355,7 +355,7 @@ smoking_fc_placenta |>
     )
 # Maybe add color based on positive or negative log2fc
 
-ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking_placenta.png")
+ggsave("../results/plots/logfc_of_30_genes_affected_by_smoking_placenta.png")
 
 smoking_fc_cord |>
   arrange(desc(abs(log2fc))) |> 
@@ -382,7 +382,7 @@ smoking_fc_cord |>
     x = "",
     caption = "Data from NCBI (2011)"
     )
-ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking_cord.png")
+ggsave("../results/plots/logfc_of_30_genes_affected_by_smoking_cord.png")
 
 smoking_fc_maternal |>
   arrange(desc(abs(log2fc))) |> 
@@ -409,7 +409,7 @@ smoking_fc_maternal |>
     x = "",
     caption = "Data from NCBI (2011)"
     )
-ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking_maternal.png")
+ggsave("../results/plots/logfc_of_30_genes_affected_by_smoking_maternal.png")
 ```
 
 ### Gene Set Enrichment Analysis
@@ -489,7 +489,7 @@ PCA |>
                                      face = "italic")) +
   scale_colour_manual(values = c("yellow3","red"))
 
-ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
+ggsave("../results/plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
 
 25 genes with the highest fold change in the gene expression in placenta samples between smoking mothers and nonsmoking mothers were taken.
