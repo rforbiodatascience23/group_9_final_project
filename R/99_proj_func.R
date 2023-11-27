@@ -115,7 +115,7 @@ transpose_gene_expr <- function(gene_expr_df) {
     distinct(Gene, .keep_all = TRUE) |>
     pivot_longer(cols = -Gene, names_to = "gene", values_to = "value") |>
     pivot_wider(names_from = "Gene", values_from = "value") |>
-    rename("geo_accession" = gene)
+    dplyr::rename("geo_accession" = gene)
 }
 
 mean_expr <- function(gene_expr_df, term){

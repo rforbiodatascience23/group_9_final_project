@@ -116,7 +116,7 @@ colnames(ncbi_dirty_expr) <-
   unlist()
         
 ncbi_dirty_expr <- ncbi_dirty_expr |> 
-  rename(probe_id = ID_REF) |>
+  dplyr::rename(probe_id = ID_REF) |>
   mutate(across(-probe_id, 
                 ~ as.numeric(.x)))
 ```
@@ -137,7 +137,7 @@ ncbi_clean_expression <- gene_annotation |>
          Probe_Id) |> 
   right_join(ncbi_dirty_expr, 
              by = c('Probe_Id' = 'probe_id')) |> 
-  rename(Gene = Symbol) |> 
+  dplyr::rename(Gene = Symbol) |> 
   select(-Probe_Id)
 
 # to know what material samples are
@@ -146,7 +146,7 @@ sample_source_table <- ncbi_clean_pheno |>
          title) |>  
   mutate(sample_source = str_match(title, 
                                    "[[:upper:]]+")) |> 
-  rename(sample_id = geo_accession) |> 
+  dplyr::rename(sample_id = geo_accession) |> 
   select(-title)
 
 # gene_expr_placenta
