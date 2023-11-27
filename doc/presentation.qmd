@@ -7,21 +7,18 @@ format:
     slide-number: true
     show-slide-number: all
     footer: "Group 9 presentation"
-    
 ---
-
 
 ## Introduction
 
-:::: {.columns}
-
+::: columns
 ::: {.column width="40%"}
-
-- A point in the left column
+-   A point in the left column
 :::
 
 ::: {.column width="60%"}
-- A point in the right column with some code
+-   A point in the right column with some code
+
 ```{r}
 #| echo: true
 #| eval: true
@@ -29,13 +26,11 @@ format:
 
 library("tidyverse")
 ```
-
+:::
 :::
 
-::::
+## Methods: Data load and cleaning {.scrollable}
 
-
-## Materials and Methods: Data load and cleaning {.scrollable}
 ```{mermaid}
 flowchart TD
   
@@ -60,9 +55,9 @@ flowchart TD
   H[ncbi_clean_pheno]:::red --> |"select() |> <br/>mutate() |> <br/>rename() |> <br/>select()"| S[sample_source table]
   S[sample_source table] --- U>"get_gene_expr_by_source()"]
   Q["ncbi_clean_expression"] --- U>"get_gene_expr_by_source()"]
-  U>"get_gene_expr_by_source()"] --> V[gene_expr_placenta]:::red
-  U>"get_gene_expr_by_source()"] --> W[gene_expr_maternal_blood]:::red
-  U>"get_gene_expr_by_source()"] --> X[gene_expr_cord_blood]:::red
+  U>"get_gene_expr_by_source()"] -->|"transpose_gene_expr()"| V[transposed_placenta_expr]:::red
+  U>"get_gene_expr_by_source()"] -->|"transpose_gene_expr()"| W[transposed_maternal_expr]:::red
+  U>"get_gene_expr_by_source()"] -->|"transpose_gene_expr()"| X[transposed_cord_expr]:::red
   
   %%ncbi_dirty_expr pipe
   C[ncbi_data] -->|"slice()"| G[ncbi_dirty_expr]
@@ -91,9 +86,30 @@ flowchart TD
   
 ```
 
-## Materials and Methods: Data augment {.scrollable}
+## Methods: Data augment {.scrollable}
 
- 
+```{mermaid}
+flowchart TD
+  
+  subgraph 04_augment
+  
+  A["ncbi_clean_expression"]:::red -->|"full_join"| J[(ncbi_joined)]
+  B["transposed_placenta_expr"]:::red -->|"inner_join"| J[(ncbi_joined)]
+  C["transposed_maternal_expr"]:::red -->|"inner_join"| J[(ncbi_joined)]
+  D["transposed_cord_expr"]:::red -->|"inner_join"| J[(ncbi_joined)]
+  
+  E[ncbi_clean_pheno]:::red -->|"mutate(BMI, BMI_class, age_group)"| J[(ncbi_joined)]
+  
+  J[(ncbi_joined)] -->|"smoking_expr_fc"| F[smoking_fc_placenta]
+  J[(ncbi_joined)] -->|"smoking_expr_fc"| G[smoking_fc_maternal]
+  J[(ncbi_joined)] -->|"smoking_expr_fc"| H[smoking_fc_cord]
+  J[(ncbi_joined)] -->|"smoking_expr_fc"| I[smoking_fc_all]
+  
+  classDef red stroke:#f00,stroke-width:3px
+  end
+
+```
+
 ## Results (some dramatic name)
 
 ```{r echo=TRUE, eval=TRUE, out.width="100%", fig.align='center'}
@@ -118,4 +134,5 @@ options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
 knitr::include_graphics("../results/plots/description_age_boxplot", error = FALSE)
 
 ```
+
 ## Discussion
