@@ -417,7 +417,7 @@ combined_top30 <- p_fc_mom + p_fc_placenta + p_fc_cord +
                                                              color = "black"),
                                    plot.margin=grid::unit(c(0,0,0,0), "mm"))) +
   plot_layout(ncol = 3, widths = unit(c(3.4,3.4,3.4), c('cm', 'cm','cm')))
-ggsave("../results/plots/description_combined_top30.png")
+ggsave("../results/plots/combined_top30.png")
 combined_top30
 
 
