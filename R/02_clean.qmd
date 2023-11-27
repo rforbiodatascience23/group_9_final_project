@@ -116,7 +116,7 @@ colnames(ncbi_dirty_expr) <-
   unlist()
         
 ncbi_dirty_expr <- ncbi_dirty_expr |> 
-  rename(probe_id = ID_REF) |>
+  dplyr::rename(probe_id = ID_REF) |>
   mutate(across(-probe_id, 
                 ~ as.numeric(.x)))
 ```

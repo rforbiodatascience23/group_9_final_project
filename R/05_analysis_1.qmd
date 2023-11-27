@@ -208,7 +208,7 @@ placenta_joined |>
        title = "Gene expression of 6 genes plotted against the gene expression of gene JMJD1A",
        caption = "Data from NCBI (2011)")
 
-#ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
+ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
 ```
 
 ### Gene expression correlation
