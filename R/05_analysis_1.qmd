@@ -304,7 +304,7 @@ placenta_joined |>
   labs(x="Gene expression of C14orf37",
        y="Gene expression",
        color = "Smoking Status",
-       title = "Gene expression of 6 genes plotted against that of gene JMJD1A",
+       title = "Gene expression of 6 genes plotted against that of gene C14orf37",
        caption = "Data from NCBI (2011)") +
   scale_colour_manual(values = c("gold2","red"))
 
