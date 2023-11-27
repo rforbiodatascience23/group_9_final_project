@@ -510,23 +510,3 @@ ggsave("../results/plots/pca_plot_smoking_gene_expr_placenta.png")
 After applying principal component analysis on the gene expression of these genes, we can see that we can see a cluster of the transformed gene expression from the nonsmoking mothers in the lower bottom corner, and a looser cluster in the top left corner of the transformed gene expression from the smoking mothers.
 
 **We can conclude that smoking affects gene expression in placenta.**
-
-```{r}
-# Heatmap very much draft
-ncbi_joined |>
-  filter(smoking_status == "smoker") |>
-  select(-colnames(ncbi_joined)[1:15]) %>%
-  pivot_longer(col = -colnames(.)[1],
-               names_to = "gene",
-               values_to = "expr_level") |>
-  ggplot(aes(x = as.factor(individual),
-             y = gene,
-             fill = expr_level)) + 
-    geom_tile() +
-    theme(legend.position="none") +
-  labs(title = "Heatmap",
-       x = "Individual",
-       y = "Gene",
-       caption = "Data from NCBI (2011)")
-
-```
