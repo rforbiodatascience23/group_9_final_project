@@ -320,14 +320,6 @@ corrplot_gene_expr <- corrplot(
 ### Log Fold Change
 
 ```{r}
-# this has been done. df names are:
-
-smoking_fc_all
-smoking_fc_placenta
-smoking_fc_maternal
-smoking_fc_cord
-
-######
 
 smoking_fc_placenta |>
   arrange(desc(abs(log2fc))) |> 
@@ -382,7 +374,7 @@ fgseaResult <- fgsea(pathways = BP_list, stats = selected_genes)
 
 fgseaResult |> 
   arrange(NES) |> 
-  slice_head(n = 10) |> 
+  slice_head(n = 15) |> 
   select(pathway, NES)
 ```
 
@@ -438,6 +430,12 @@ PCA |>
 
 ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
+
+25 genes with the highest fold change in the gene expression in placenta samples between smoking mothers and nonsmoking mothers were taken.
+
+After applying principal component analysis on the gene expression of these genes, we can see that we can see a cluster of the transformed gene expression from the nonsmoking mothers in the lower bottom corner, and a looser cluster in the top left corner of the transformed gene expression from the smoking mothers.
+
+**We can conclude that smoking affects gene expression in placenta.**
 
 ```{r}
 # Heatmap very much draft
