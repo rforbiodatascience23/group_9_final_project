@@ -145,7 +145,7 @@ knitr::include_graphics("../results/plots/gene_association_sample.png", error = 
 knitr::include_graphics("../results/plots/triple_vulcano_plot_smoking.png", error = FALSE)
 ```
 
-## Results: Most effected Genes
+## Results: Most Affected Genes
 ```{r echo=FALSE, out.width="100%", fig.align='right'}
 knitr::include_graphics("../results/plots/triple_vulcano_plot_smoking.png", error = FALSE)
 ```
