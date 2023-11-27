@@ -113,9 +113,9 @@ regression_all |>
         plot.title = element_text(hjust = .95),
         plot.subtitle = element_text(hjust = .95)) +
   facet_grid(~sample,
-             labeller = as_labeller(c(placenta = "Samples obtained from placenta", 
-                                      maternal = "Samples obtained from maternal blood",
-                                      cord = "Samples obtained from cord blood")))
+             labeller = as_labeller(c(placenta = "Placenta", 
+                                      maternal = "Maternal blood",
+                                      cord = "Cord blood")))
 
 ```
 
@@ -271,7 +271,8 @@ placenta_joined |>
              scales = "free_x", 
              ncol = 6) + 
   geom_smooth(method = "lm",
-              se = FALSE) + 
+              se = FALSE,
+              color = "darkblue") + 
   scale_y_continuous(trans = "log2") + 
   scale_x_continuous(trans = "log2") +
   theme_linedraw() +
@@ -291,7 +292,8 @@ placenta_joined |>
        y="Gene expression",
        color = "Smoking Status",
        title = "Gene expression of 6 genes plotted against that of gene JMJD1A",
-       caption = "Data from NCBI (2011)")
+       caption = "Data from NCBI (2011)") +
+  scale_colour_manual(values = c("yellow3","red"))
 
 ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
 
@@ -356,6 +358,7 @@ ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking.png")
 
 ```{r}
 
+## top 25 genes with the largest fold changes in the dataset
 genes_large_fold_change <- smoking_fc_placenta |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=25) |> 
@@ -370,11 +373,36 @@ PCA <- placenta_joined |>
 PCA |> 
   augment(placenta_joined) |> 
   ggplot(aes(.fittedPC1, .fittedPC2, color = smoking_status)) + 
-    geom_point() +
-    labs(title = "PCA plot",
-         x = "PCA1",
-         y = "PCA2"
-    )
+  geom_point(size = 2.5) +
+  labs(title = "Placental PCA plot",
+       subtitle = "Principal components are based on the top 25 genes with the largest fold changes",
+       x = "PC-1",
+       y = "PC-2",
+       color = "Smoking Status",
+       caption = "Data from NCBI (2011)") +
+  theme_minimal() +
+  geom_hline(yintercept=0, 
+             linetype = "dashed",
+             alpha = .2) +
+  geom_vline(xintercept=0, 
+             linetype = "dashed",
+             alpha = .2) +
+  theme(legend.position = c(0.8, 0.8),
+        legend.direction = "vertical",
+        legend.title = element_text(size=9),
+        legend.text = element_text(size=8),
+        legend.background = element_rect(linetype = 1, 
+                                         size = 0.5, 
+                                         colour = 1),
+        plot.title = element_text(size = 16, 
+                                  hjust = 0.5, 
+                                  face = "bold", 
+                                  margin = margin(10,-10,10,10),
+                                  color = "darkblue"),
+        plot.subtitle = element_text(size = 12,
+                                     face = "italic")) +
+  scale_colour_manual(values = c("yellow3","red"))
+  
 
 ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
@@ -391,6 +419,10 @@ ncbi_joined |>
              y = gene,
              fill = expr_level)) + 
     geom_tile() +
-    theme(legend.position="none")
+    theme(legend.position="none") +
+  labs(title = "Heatmap",
+       x = "Individual",
+       y = "Gene",
+       caption = "Data from NCBI (2011)")
 
 ```
