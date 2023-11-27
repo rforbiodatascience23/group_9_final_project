@@ -18,7 +18,7 @@ library("table1")
 #| eval: true
 #| message: false
 pheno_data <- vroom::vroom("../data/02_ncbi_clean_pheno.tsv.gz", delim = "\t")
-expr_data <- vroom::vroom("../data/02_ncbi_clean_expression.tsv.gz", delim = "\t")
+expr_data <- vroom::vroom("../data/02_transposed_expr_data.tsv.gz", delim = "\t")
 
 pheno_data |> sample_n(5)
 expr_data |> sample_n(5)
@@ -41,7 +41,7 @@ pheno_data |>
 ```{r}
 pheno_data |>
   ggplot(aes(y = age,
-             fill=smoking_status)) +
+             fill = smoking_status)) +
   geom_boxplot() +
   labs(y = "Mother age (years)",
        x= "",
@@ -50,7 +50,7 @@ pheno_data |>
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
   theme_minimal()
-#ggsave("../results/Plots/description_age_boxplot.png")
+ggsave("../results/Plots/description_age_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = maternal_bmi,
@@ -62,13 +62,14 @@ pheno_data |>
        title = "Comparison of mother's BMI by smoking status",
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
-  coord_cartesian(ylim = c(15, 40)) +
+  coord_cartesian(ylim = c(15,
+                           40)) +
   theme_minimal()
-#ggsave("../results/Plots/description_BMI_boxplot.png")
+#ggsave("../results/plots/description_BMI_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = cotinine_conc_maternal,
-             fill=smoking_status)) +
+             fill = smoking_status)) +
   geom_boxplot() +
   labs(x = "",
        y= "Blood cotinine (ng/ml)",
@@ -76,13 +77,14 @@ pheno_data |>
        title = "Comparison of mother's blood cotinine concentration by smoking status",
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
-  coord_cartesian(ylim = c(0, 50)) +
+  coord_cartesian(ylim = c(0,
+                           50)) +
   theme_minimal()
 #ggsave("../results/Plots/description_bloodCotinine_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = cotinine_conc_cord,
-             fill=smoking_status)) +
+             fill = smoking_status)) +
   geom_boxplot() +
   labs(x = "",
        y= "Cord blood cotinine (ng/ml)",
@@ -90,13 +92,14 @@ pheno_data |>
        title = "Comparison of mother's blood cotinine concentration by smoking status",
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
-  coord_cartesian(ylim = c(0, 50)) +
+  coord_cartesian(ylim = c(0,
+                           50)) +
   theme_minimal()
 #ggsave("../results/Plots/description_CordCotinine_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = newborn_weight,
-             fill=smoking_status)) +
+             fill = smoking_status)) +
   geom_boxplot() +
   labs(x = "",
        y= "Weigth (g)",
@@ -104,13 +107,14 @@ pheno_data |>
        title = "Comparison of newborn weight by smoking status",
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
-  coord_cartesian(ylim = c(2500, 5500)) +
+  coord_cartesian(ylim = c(2500,
+                           5500)) +
   theme_minimal()
 #ggsave("../results/Plots/description_newbornWeight_boxplot.png")
 
 pheno_data |>
   ggplot(aes(y = placental_weight,
-             fill=smoking_status)) +
+             fill = smoking_status)) +
   geom_boxplot() +
   labs(x = "",
        y= "Weigth (g)",
@@ -118,6 +122,7 @@ pheno_data |>
        title = "Comparison of placental weight by smoking status",
        fill = "Smoking status") +
   theme(legend.position = "bottom") +
-  coord_cartesian(ylim = c(450, 700))
+  coord_cartesian(ylim = c(450,
+                           700))
 #ggsave("../results/Plots/description_placentaWeight_boxplot.png")
 ```

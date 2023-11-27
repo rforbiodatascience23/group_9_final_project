@@ -15,6 +15,7 @@ library("broom")
 library("ggrepel")
 library("corrplot")
 library("plyr")
+library("patchwork")
 ```
 
 ### loading:
@@ -117,55 +118,15 @@ regression_all |>
 
 ```
 
-```{r}
-
-# didn't correct anything after this (Masha)
-
-aug_norm_exprs_04 |>
-  ggplot(aes(x = gene,
-             y = -log(p.value,10),
-             label = ifelse(is_significant == "yes", 
-                            gene, 
-                            ""))) + 
-  geom_point(aes(x = estimate, 
-                 color = is_significant),
-             alpha = .5,
-             size=1) +
-  geom_hline(yintercept = 0) +
-  theme_minimal(base_size = 10) +
-  labs(title = "Genes Associated with",
-       subtitle = "Genes highlighted in turquoise were significant after multiple testing correction",
-       x = "Estimates",
-       y = "-log10(p)") +
-  theme(legend.position = "none",
-        plot.title = element_text(hjust = .95),
-        plot.subtitle = element_text(hjust = .95)) 
-```
-
-## Expression level based on smoking status of mother:
-
-```{r}
-
-# Don't think this plot says anything, should be dropped(Masha)
-
-ncbi_joined |> 
-  select(-names(ncbi_joined)[1:2],
-         -names(ncbi_joined)[4:15]) |>
-  pivot_longer(cols = -c(smoking_status,
-                         individual),
-               names_to = "gene",
-               values_to = "expr_level") |>
-  #sample_n(20) |>
-  ggplot(aes(expr_level, 
-             fill = smoking_status)) +
-  geom_boxplot()
-```
-
 ### Gene association plot:
 
+blood_association_plot \| cord_association_plot \| placenta_association_plot
+
+sample_blood_plot \| sample_cord_plot \| sample_placenta_plot
+
 ```{r}
-# we should make this readable
-aug_norm_exprs_04 |>
+# one plot of all genes and one plot with a sample of 20 or so genes
+blood_association_plot <- regression_maternal |>
   filter(is_significant == "yes") |>
   ggplot(aes(y = fct_reorder(gene,
                              estimate))) + 
@@ -176,20 +137,109 @@ aug_norm_exprs_04 |>
                      height = 1) +
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
-  theme(legend.position = "bottom") +
-  labs(title = "Genes Associated with Smoking",
-       x = "Estimates (95%CIs)",
+  theme(legend.position = "bottom",
+        axis.text.y = element_blank()) +
+  labs(x = "Estimates (95%CIs)",
        y = "",)
+
+cord_association_plot <- regression_cord |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom",
+        axis.text.y = element_blank()) +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+placenta_association_plot <- regression_placenta |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom",
+        axis.text.y = element_blank()) +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+sample_blood_plot <- regression_maternal |>
+  filter(is_significant == "yes") |>
+  sample_n(20) |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom") +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+sample_cord_plot <- regression_cord |>
+  filter(is_significant == "yes") |>
+  sample_n(20) |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom") +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+sample_placenta_plot <- regression_placenta |>
+  filter(is_significant == "yes") |>
+  sample_n(20) |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate),color = )) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom") +
+  labs(x = "Estimates (95%CIs)",
+       y = "",)
+
+(blood_association_plot | cord_association_plot | placenta_association_plot) +
+  plot_annotation(title = "Genes Associated with Smoking",
+                  caption = "Data from NCBI")
+#ggsave("../results/plots/gene_association_all.png")
+
+(sample_blood_plot | sample_cord_plot | sample_placenta_plot) +
+  plot_annotation(title = "Genes Associated with Smoking",
+                  caption = "Data from NCBI")
+#ggsave("../results/plots/gene_association_sample.png")
+
 ```
 
-We can generally see that when a person smokes there is a major downregulation of some genes. Some are also upregulated. We cant tell the effect of the regulation
-
-### Gene expression of gene JMJD1A plotted against gene expression of other 6 genes
+We can generally see that when a person smokes there seems to be a equal up and downregulation of diffrent genes. it is diffifult to see anything on the first plot so we try and sampling it. ofcourse the genes have a variety of diffrent function, so it makes sense that the up and downregulation is equally divided. but i we looked at a specific type of genes such as immunity, oxidation, metabolitic and so on. It might have a general up or down regulation
 
 ```{r}
+
 placenta_joined |>
-  select(smoking_status,
-         "JMJD1A" : "CHKB") |> 
+  select(smoking_status, "JMJD1A" : "CHKB") |> 
   pivot_longer(names_to = "variable",
                values_to = "values",
                3:last_col()) |> 
@@ -209,19 +259,22 @@ placenta_joined |>
        caption = "Data from NCBI (2011)")
 
 ggsave("../results/Plots/multiple_gene_expr_correlation_scaterplot_facet.png")
+
 ```
 
 ### Gene expression correlation
 
 ```{r}
 
-genes_exp_selection <- placenta_joined |> 
-  select(28:36)
+genes_cord_blood <- ncbi_joined |> 
+  mutate(sample_source = str_match(title,
+                                   "[[:upper:]]+")) |>
+  filter(sample_source == "D") |> 
+  select(16:30)
 
-corrplot_gene_expr <- corrplot(cor(genes_exp_selection),
+corrplot(cor(genes_pl),
   type = "upper"
 )
-
 ```
 
 ### Log Fold Change
@@ -236,47 +289,49 @@ smoking_fc_cord
 
 ######
 
-smoking_fc_cord |>
-  arrange(desc(abs(log2fc))) |> 
-  slice_head(n=30) |> 
-  ggplot(aes(x=Gene, y=log2fc)) +
-    geom_bar(stat="identity") + 
-    coord_flip() +
-    theme_minimal() +
-    labs(
-        title = "Log fold change of 30 genes most affected by smoking",
-        y = "Log fold change",
-        caption = "Data from NCBI (2011)"
-      )
+gene_exp_cord_blood |> 
+  slice_head(n=1)
 
-#ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking.png")
+gene_exp_cord_blood <- ncbi_joined |> 
+  mutate(sample_source = str_match(title, "[[:upper:]]+")) |>
+  filter(sample_source == "D") |> 
+  select(smoking_status, "JMJD1A":"KRTAP19-1")
 
+# calculate mean expressions of genes for both statuses of smoking
+mean_expression_nonsmoker <- gene_exp_cord_blood |>
+  filter(smoking_status == "non-smoker") |> 
+  select(-1) |> 
+  colMeans()
+mean_expression_smoker <- gene_exp_cord_blood |>
+  filter(smoking_status == "smoker") |> 
+  select(-1) |> 
+  colMeans()
+
+gene_exp_cord_blood
+
+t <- gene_exp_cord_blood |>
+  filter(smoking_status == "smoker") |> 
+  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
+
+# calculate log fold change
+smoking_fold_change <-
+  tibble(mean_expression_nonsmoker, mean_expression_smoker) |>  
+  mutate(Gene = names(mean_expression_nonsmoker)) |> 
+  relocate(Gene) |> 
+  mutate(log_fold_change = log2(mean_expression_smoker) - log2(mean_expression_nonsmoker))
+
+smoking_fold_change |>
+  arrange(desc(log_fold_change))
 ```
 
-### PCR plot of gene expression in placenta tissue
-
 ```{r}
-genes_large_fold_change <- smoking_fc_placenta |>
-  arrange(desc(abs(log2fc))) |> 
-  slice_head(n=25) |> 
-  pull(Gene)
+smoking_fold_change |> 
+  arrange(desc(abs(log_fold_change)))
 
-PCA <- placenta_joined |> 
-  select(genes_large_fold_change) |> 
-  prcomp() 
+ncbi_smoking_logfc_cord |> 
+  arrange(desc(abs(log_fold_change))) |> 
+  slice_head(n=5)
 
-# summary(PCA)
-
-PCA |> 
-  augment(placenta_joined) |> 
-  ggplot(aes(.fittedPC1, .fittedPC2, color = smoking_status)) + 
-    geom_point() +
-    labs(title = "PCA plot",
-         x = "PCA1",
-         y = "PCA2"
-    )
-
-# ggsave("../results/Plots/pca_plot_smoking_gene_expr_placenta.png")
 ```
 
 ```{r}
