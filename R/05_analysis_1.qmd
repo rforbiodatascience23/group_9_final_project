@@ -39,6 +39,9 @@ cord_joined <- vroom::vroom("../data/04_cord_joined.tsv.gz",
 smoking_fc_cord <- vroom::vroom("../data/04_smoking_fc_cord.tsv.gz",
                                  delim = "\t")
 
+smoking_fc_placenta <- vroom::vroom("../data/04_smoking_fc_placenta.tsv.gz",
+                                 delim = "\t")
+
 ncbi_joined |> 
   sample_n(5)
 placenta_joined |> 
@@ -289,20 +292,50 @@ smoking_fc_cord
 
 ######
 
-smoking_fc_cord |>
+smoking_fc_placenta |>
   arrange(desc(abs(log2fc))) |> 
   slice_head(n=30) |> 
-  ggplot(aes(x=Gene, y=log2fc)) +
+  ggplot(aes(x=fct_reorder(Gene, abs(log2fc)), y=log2fc)) +
     geom_bar(stat="identity") + 
     coord_flip() +
     theme_minimal() +
     labs(
         title = "Log fold change of 30 genes most affected by smoking",
+        x = "Gene",
         y = "Log fold change",
         caption = "Data from NCBI (2011)"
       )
 
 ggsave("../results/Plots/logfc_of_30_genes_affected_by_smoking.png")
+```
+
+### Gene Set Enrichment Analysis
+
+```{r}
+
+# get gene sets for biological process ontology with respective genes
+
+BP_df = msigdbr(species = "S. cerevisiae", category = "C5", subcategory = "BP")
+
+gene_set_names <- BP_df |> 
+  pull(gs_name)
+BP_list <- BP_df |> 
+  pull(human_gene_symbol) |>
+  split(gene_set_names) 
+
+selected_genes <- smoking_fc_placenta |>
+  drop_na() |> 
+  pull(log2fc) 
+names(selected_genes) <- smoking_fc_placenta |>
+  drop_na() |> 
+  pull(Gene)
+
+fgseaResult <- fgsea(pathways = BP_list, stats = selected_genes)
+
+fgseaResult |> 
+  arrange(NES) |> 
+  slice_head(n = 10) |> 
+  select(pathway, NES)
 ```
 
 ### PCR plot of gene expression in placenta tissue
