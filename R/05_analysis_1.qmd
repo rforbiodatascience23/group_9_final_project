@@ -151,45 +151,16 @@ blood_association_plot <- regression_maternal |>
                      height = 1) +
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
-  theme(legend.position = "bottom",
-        axis.text.y = element_blank()) +
+  theme(legend.position = "none",
+        axis.text.y = element_blank(),
+        plot.title = element_text(size = 12, 
+                                  hjust = 0.0,
+                                  face = "bold.italic", 
+                                  margin = margin(0,0,0,0), 
+                                  color = "darkorange1")) +
   labs(x = "",
        y = "",
-       subtitle = "Maternal Blood",)
-
-cord_association_plot <- regression_cord |>
-  filter(is_significant == "yes") |>
-  ggplot(aes(y = fct_reorder(gene,
-                             estimate))) + 
-  geom_point(aes(x = estimate), 
-             size = 1.5) +
-  geom_errorbarh(aes(xmax = conf.high,
-                     xmin = conf.low),
-                     height = 1) +
-  geom_vline(xintercept = 0) +
-  theme_minimal(base_size = 10) +
-  theme(legend.position = "bottom",
-        axis.text.y = element_blank()) +
-  labs(x = "Estimates (95%CIs)",
-       y = "",
-       subtitle = "Cord Blood",)
-
-placenta_association_plot <- regression_placenta |>
-  filter(is_significant == "yes") |>
-  ggplot(aes(y = fct_reorder(gene,
-                             estimate))) + 
-  geom_point(aes(x = estimate), 
-             size = 1.5) +
-  geom_errorbarh(aes(xmax = conf.high,
-                     xmin = conf.low),
-                     height = 1) +
-  geom_vline(xintercept = 0) +
-  theme_minimal(base_size = 10) +
-  theme(legend.position = "bottom",
-        axis.text.y = element_blank()) +
-  labs(x = "",
-       y = "",
-       subtitle = "Placenta",)
+       title = "Maternal Blood",)
 
 sample_blood_plot <- regression_maternal |>
   filter(is_significant == "yes") |>
@@ -203,10 +174,37 @@ sample_blood_plot <- regression_maternal |>
                      height = 1) +
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
-  theme(legend.position = "bottom") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 12, 
+                                  hjust = 0.0,
+                                  face = "bold.italic", 
+                                  margin = margin(0,0,0,0), 
+                                  color = "darkorange1")) +
   labs(x = "",
        y = "",
-       subtitle = "Maternal Blood",)
+       title = "Maternal Blood",)
+
+cord_association_plot <- regression_cord |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "none",
+        axis.text.y = element_blank(),
+        plot.title = element_text(size = 12, 
+                                  hjust = 0.0,
+                                  face = "bold.italic", 
+                                  margin = margin(0,0,0,0), 
+                                  color = "purple1")) +
+  labs(x = "Estimates (95%CIs)",
+       y = "",
+       title = "Cord Blood",)
 
 sample_cord_plot <- regression_cord |>
   filter(is_significant == "yes") |>
@@ -220,10 +218,36 @@ sample_cord_plot <- regression_cord |>
                      height = 1) +
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
-  theme(legend.position = "bottom") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 12, 
+                                  hjust = 0.0,
+                                  face = "bold.italic", 
+                                  margin = margin(0,0,0,0), 
+                                  color = "purple1")) +
   labs(x = "Estimates (95%CIs)",
        y = "",
-       subtitle = "Cord Blood",)
+       title = "Cord Blood")
+
+placenta_association_plot <- regression_placenta |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(y = fct_reorder(gene,
+                             estimate))) + 
+  geom_point(aes(x = estimate), 
+             size = 1.5) +
+  geom_errorbarh(aes(xmax = conf.high,
+                     xmin = conf.low),
+                     height = 1) +
+  geom_vline(xintercept = 0) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 12, 
+                                  hjust = 0.0,
+                                  face = "bold.italic", 
+                                  margin = margin(0,0,0,0), 
+                                  color = "chartreuse4")) +
+  labs(x = "",
+       y = "",
+       title = "Placenta",)
 
 sample_placenta_plot <- regression_placenta |>
   filter(is_significant == "yes") |>
@@ -237,51 +261,31 @@ sample_placenta_plot <- regression_placenta |>
                      height = 1) +
   geom_vline(xintercept = 0) +
   theme_minimal(base_size = 10) +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",
+        plot.title = element_text(size = 12,
+                                  hjust = 0.0,
+                                  face = "bold.italic", 
+                                  margin = margin(0,0,0,0), 
+                                  color = "chartreuse4")) +
   labs(x = "",
        y = "",
-       subtitle = "Placenta")
+       title = "Placenta")
 
-(blood_association_plot | cord_association_plot | placenta_association_plot) +
-  plot_annotation(title = "Genes Associated with Smoking",
-                  caption = "Data from NCBI (2011)",
-                  theme = theme(plot.title = element_text(size = 12,
-                                                          hjust = 0.5, 
-                                                          face = "bold", 
-                                                          margin = margin(10,-10,10,10),
-                                                          color = "darkred")))
-ggsave("../results/plots/gene_association_all.png")
 
-(sample_blood_plot | sample_cord_plot | sample_placenta_plot) +
-  plot_annotation(title = "Genes Associated with Smoking",
-                  caption = "Data from NCBI (2011)",
-                  labs(x = ""),
-                  theme = theme(plot.title = element_text(size = 12,
-                                                          hjust = 0.5, 
-                                                          face = "bold", 
-                                                          margin = margin(10,-10,-10,10),
-                                                          color = "darkred")))
-ggsave("../results/plots/gene_association_sample.png")
+
 
 # All the plots together
-((sample_blood_plot | sample_cord_plot | sample_placenta_plot) +
+(sample_blood_plot | sample_cord_plot | sample_placenta_plot
+  ) / (
+    blood_association_plot | cord_association_plot | placenta_association_plot) + 
   plot_annotation(title = "Genes Associated with Smoking",
                   caption = "Data from NCBI (2011)",
-                  labs(x = ""),
-                  theme = theme(plot.title = element_text(size = 12,
+                  theme = theme(plot.title = element_text(size = 14,
                                                           hjust = 0.5, 
                                                           face = "bold", 
-                                                          margin = margin(10,-10,-10,10),
-                                                          color = "darkred")))) /
-((blood_association_plot | cord_association_plot | placenta_association_plot) +
-  plot_annotation(title = "Genes Associated with Smoking",
-                  caption = "Data from NCBI (2011)",
-                  theme = theme(plot.title = element_text(size = 12,
-                                                          hjust = 0.5, 
-                                                          face = "bold", 
-                                                          margin = margin(10,-10,10,10),
-                                                          color = "darkred"))))
-
+                                                          margin = margin(0,-10,0,0),
+                                                          color = "black")))
+ggsave("../results/plots/gene_association.png")
 ```
 
 We can generally see that when a person smokes there seems to be a equal up and downregulation of diffrent genes. it is diffifult to see anything on the first plot so we try and sampling it. ofcourse the genes have a variety of diffrent function, so it makes sense that the up and downregulation is equally divided. but if we looked at a specific type of genes such as immunity, oxidation, metabolitic and so on. It might have a general up or down regulation
