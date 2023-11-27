@@ -89,5 +89,22 @@ options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
 knitr::include_graphics("../results/plots/gene_association_sample.png", error = FALSE)
 ```
 :::
+
+::: {.column width="100%"}
+```{r echo=FALSE, out.width="40%", fig.align='center', out.height="40%"}
+options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
+
+knitr::include_graphics("../results/Plots/logfc_of_30_genes_affected_by_smoking.png", error = FALSE)
+```
 :::
+:::
+
+## Volcano Plot
+
+```{r echo=FALSE, out.width="100%", fig.align='left'}
+options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
+
+knitr::include_graphics("../results/plots/volcanoplots.png", error = FALSE)
+```
+
 ## Discussion
