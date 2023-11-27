@@ -100,9 +100,9 @@ bp_cord_cotinine <- pheno_data |>
              fill = smoking_status)) +
   geom_boxplot() +
   labs(x = "",
-       y= "Cord blood cotinine (ng/ml)",
+       y= "Cotinine (ng/ml)",
        caption = "",
-       title = "Cord Cotinine Concentration",
+       title = "Cord Blood Cotinine Concentration",
        fill = "Smoking Status") +
   theme(legend.position = "bottom",
         legend.direction = "vertical",
@@ -171,7 +171,9 @@ combined_plot1 <- (
                                                              face = "bold", 
                                                              margin = margin(10,-10,10,10),
                                                              color = "purple4"))) +
-  plot_layout(nrow = 2, widths = c(2, 3)) 
+  plot_layout(nrow = 2, 
+              heights = c(1500, 2000),
+              guides = "collect")
 ggsave("../results/plots/description_combined_plot1.png")
 combined_plot1
 
