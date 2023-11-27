@@ -4,38 +4,38 @@ author: "group 9"
 format:
   revealjs:
     theme: default
+    embed-resources: true
     slide-number: true
     show-slide-number: all
     footer: "Group 9 presentation"
-    
 ---
-
 
 ## Introduction
 
-:::: {.columns}
+::: columns
+::: {.column width="100%"}
+-   Smoking during pregnancy
+-   Dataset from NCBI containing, 37-45 non-smokers and 17-19 smokers
 
-::: {.column width="40%"}
-
-- A point in the left column
-:::
-
-::: {.column width="60%"}
-- A point in the right column with some code
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: true
 #| message: false
 
 library("tidyverse")
+
+maternal_joined <- vroom::vroom("../data/04_maternal_joined.tsv.gz",
+                                delim = "\t")
+
+maternal_joined
 ```
 
+/
+:::
 :::
 
-::::
+## Materials and Methods (Data handling) {.scrollable}
 
-
-## Materials and Methods: Data load and cleaning {.scrollable}
 ```{mermaid}
 flowchart TD
   
@@ -88,34 +88,32 @@ flowchart TD
   %%X[gene_expr_cord_blood] -->  AB[gene_expr_cord_blood]
   %%H[ncbi_clean_pheno] -->  AC[ncbi_clean_pheno]
   %%end
-  
 ```
 
-## Materials and Methods: Data augment {.scrollable}
-
- 
 ## Results (some dramatic name)
 
-```{r echo=TRUE, eval=TRUE, out.width="100%", fig.align='center'}
+```{r echo=FALSE, out.width="50%", fig.align='center'}
 options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
-
-knitr::include_graphics("/results/plots/description_age_boxplot.png", error = FALSE)
+knitr::include_graphics("../results/plots/description_BMI_boxplot.png", error = FALSE)
 ```
 
-```{r echo=TRUE, eval=TRUE, out.width="100%", fig.align='center'}
+## Association plots
+
+::: columns
+::: {.column width="50%"}
+
+```{r echo=FALSE, out.width="100%", fig.align='left'}
 options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
-knitr::include_graphics("../results/plots/description_age_boxplot.png", error = FALSE)
 
+knitr::include_graphics("../results/plots/gene_association_all.png", error = FALSE)
 ```
-
-```{r echo=TRUE, eval=TRUE, out.width="100%", fig.align='center'}
+:::
+::: {.column width="50%"}
+```{r echo=FALSE, out.width="100%", fig.align='right'}
 options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
-knitr::include_graphics("/results/plots/description_age_boxplot", error = FALSE)
-```
 
-```{r echo=TRUE, eval=TRUE, out.width="100%", fig.align='center'}
-options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
-knitr::include_graphics("../results/plots/description_age_boxplot", error = FALSE)
-
+knitr::include_graphics("../results/plots/gene_association_sample.png", error = FALSE)
 ```
+:::
+:::
 ## Discussion
