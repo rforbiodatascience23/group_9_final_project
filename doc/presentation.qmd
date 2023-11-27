@@ -92,31 +92,63 @@ flowchart TD
   %%end
 ```
 
-## Results (some dramatic name)
-
-```{r echo=FALSE, out.width="50%", fig.align='center'}
-options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
-knitr::include_graphics("../results/plots/description_BMI_boxplot.png", error = FALSE)
-```
-
-## Association plots
+## Results: Boxplots
 
 ::: columns
 ::: {.column width="50%"}
 ```{r echo=FALSE, out.width="100%", fig.align='left'}
-options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
+knitr::include_graphics("../results/plots/description_placentaWeight_boxplot.png", error = FALSE)
+```
+:::
 
+::: {.column width="50%"}
+```{r echo=FALSE, out.width="100%", fig.align='right'}
+knitr::include_graphics("../results/plots/description_newbornWeight_boxplot", error = FALSE)
+```
+
+```{r echo=FALSE, out.width="100%", fig.align='left'}
+knitr::include_graphics("../results/plots/description_CordCotinine_boxplot.png", error = FALSE)
+```
+:::
+:::
+
+##  Results: Association plots
+
+::: columns
+::: {.column width="50%"}
+```{r echo=FALSE, out.width="100%", fig.align='left'}
 knitr::include_graphics("../results/plots/gene_association_all.png", error = FALSE)
 ```
 :::
 
 ::: {.column width="50%"}
 ```{r echo=FALSE, out.width="100%", fig.align='right'}
-options(bitmapType='cairo', reproducible=TRUE, X11.options=list(type='cairo'))
-
 knitr::include_graphics("../results/plots/gene_association_sample.png", error = FALSE)
 ```
 :::
 :::
 
+## Results: Volcano plots
+
+```{r echo=FALSE, out.width="100%", fig.align='right'}
+knitr::include_graphics("../results/plots/volcano_plot.png", error = FALSE)
+```
+
+## PCA plot
+
+```{r echo=FALSE, out.width="100%", fig.align='right'}
+knitr::include_graphics("../results/plots/PCA.png", error = FALSE)
+```
+
 ## Discussion
+
+::: columns
+::: {.column width="50%"}
+-   Significant data
+
+-   sample size
+:::
+
+::: {.column width="50%"}
+:::
+:::
